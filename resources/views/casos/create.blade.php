@@ -63,15 +63,14 @@
                   <input  id="index">
               </div> 
 
-              <div style="margin-top: 100px;">
-                <label for="">Banco de Datos:</label>
+              <div style="margin-top: 100px;">                
                 <div id="camposLlenar">
                 </div>
               </div>
 
               <br>
  
-              <div id="div_template" class="row" style="margin-top: 100px;">
+              <div id="div_template" class="row" style="margin-top: 0px;">
                 <div class="col-12 col-sm-6 col-md-6">
                   <div class="form-group">
                     <label for="">Vista Previa: </label>
@@ -86,7 +85,6 @@
                     <textarea required name="texto" id="summernote"></textarea>       
                   </div>
                 </div>
-
                 
               </div>             
 
@@ -159,32 +157,36 @@
       //console.log("Indice:"+index);
       document.getElementById("div_template").hidden = false;
       var configInfo = @json($configuraciones);
-      //console.log(configInfo[index-1]);
-      //console.log(configInfo[index-1].plantillaInfo.texto);
-      //console.log(configInfo[index-1].plantillaInfo.plantillaId);
       document.getElementById("index").value = index;
       document.getElementById("plantilla_id").value = configInfo[index-1].plantillaInfo.plantillaId;
       $('#summernote').summernote('code', configInfo[index-1].plantillaInfo.texto);
       $('#texto_final').summernote('code', configInfo[index-1].plantillaInfo.texto);
       var contenedorDiv = document.getElementById('camposLlenar');
       document.getElementById("camposLlenar").innerHTML = "";  
-      var cadHtml = "";
 
-      for (var campo of configInfo[index-1].dataBank){
-          cadHtml += '<div class="col-12 col-sm-6 col-md-6">';
-          cadHtml += '<input style="text-transform:none;width:300px;float:left;" ';
-          cadHtml += 'type="text" class="form-control input100" ';
-          cadHtml += 'name="'+campo.nombre+'" id="'+campo.nombre+'" placeholder="'+campo.nombre+'" ';
-          cadHtml += 'onkeyup="replaceText(\''+String(campo.nombre)+'\','+index+')" ';
+      var cadHtml = '<label style="margin-left:400px;" for="">Banco de Datos de la Plantilla Inicial:'+configInfo[index-1].plantillaInfo.nombre+'</label>';
+      cadHtml += '<a onclick="addField()" class="btn btn-info" style="width: 40px; margin-top:100px;"><i class="fas fa-plus"></i><p>Agregar Campo</p></a>';
+      cadHtml += '<div class="table-responsive table-striped table-bordered">';
+      cadHtml += '<table class="table"><tr><th>Clave de uso</th><th>Valor</th></tr>';
+
+      for (var c of configInfo[index-1].campos){
+        cadHtml += "<tr>";
+        cadHtml += '<td>|'+c.campo+'|</td>';
+        cadHtml += '<td>';
+        cadHtml += '<input style="text-transform:none;width:600px;float:left;" ';
+        cadHtml += 'type="text" class="form-control input100" required ';
+        cadHtml += 'name="'+c.campo+'" id="'+c.campo+'" ';
+        cadHtml += 'onkeyup="replaceText(\''+String(c.campo)+'\','+index+')" ';
           //cadHtml += 'onkeyup="replaceText('+index+')" value="" ';
-          cadHtml += '>' ;
+        cadHtml += '>' ;
 
-          cadHtml += '<input style="margin-top:15px; margin-left:20px; transform: scale(1.5);" type="checkbox" ';
+          /*cadHtml += '<input style="margin-top:15px; margin-left:20px; transform: scale(1.5);" type="checkbox" ';
           cadHtml += ' class="check-active" ';
-          cadHtml += 'name="'+campo.nombre+'_check" id="'+campo.nombre+'_check" ';
-          cadHtml += '><i style="margin-left:10px;" class="far fa-eye-slash"></i>';
-          cadHtml += "</div>";
+          cadHtml += 'name="'+c.campo+'_check" id="'+c.campo+'_check" ';
+          cadHtml += '><i style="margin-left:10px;" class="far fa-eye-slash"></i>';*/
+        cadHtml += "</td>";
       }
+      cadHtml += "</table></div>";
       document.getElementById("camposLlenar").innerHTML = cadHtml;
     }
 
@@ -194,16 +196,20 @@
       var configInfo = @json($configuraciones);
       //var textoAux = configInfo[index-1].plantillaInfo.texto;
 
-      for (const campo of configInfo[index-1].dataBank){
+      for (const c of configInfo[index-1].campos){
         //console.log("Nombre del campo:"+campo.nombre);
-        var element = document.getElementById(campo.nombre);
+        var element = document.getElementById(c.campo);
         //console.log(element);
         if(element != null){
             if(element.value != "")
-                textoAux = textoAux.replaceAll("|"+campo.nombre+"|", element.value);
+                textoAux = textoAux.replaceAll("|"+c.campo+"|", element.value);
         }
       }
       $('#texto_final').summernote('code', textoAux);
+    }
+
+    function addField(){
+      console.log("Entree");
     }
 
   </script>

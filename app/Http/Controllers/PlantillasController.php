@@ -198,7 +198,7 @@ class PlantillasController extends Controller
         if($band_delete)
             PlantillaCampo::where("plantillaId", $plantillaId)->delete();
         foreach ($campos as $campo) 
-            PlantillaCampo::create(['nombre' => $campo, "plantillaId" => $plantillaId]);
+            PlantillaCampo::create(['campo' => $campo, "plantillaId" => $plantillaId]);
     }
 
     public function viewPdf(Request $request) {

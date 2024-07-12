@@ -41,7 +41,7 @@
             <div class="col-12 col-sm-6 col-md-4">
                 <div class="form-group">
                   <label for="">Plantilla: <span style="color:red">*</span></label>
-                  <select id="select_plantilla" onchange="showConfigInfo(this.selectedIndex)"  class="form-control selectpicker @error('plantilla_id') is-invalid @enderror input100" name="plantilla_id" title="-- Selecciona una Plantilla --" data-live-search="true">
+                  <select id="select_plantilla" onchange="showConfigInfo(this.selectedIndex-1)"  class="form-control selectpicker @error('plantilla_id') is-invalid @enderror input100" name="plantilla_id" title="-- Selecciona una Plantilla --" data-live-search="true">
                       @foreach($plantillas as $plantilla)
                         <option value="{{$plantilla->plantillaId}}">{{$plantilla->plantilla->nombre}}</option>
                       @endforeach
@@ -61,7 +61,6 @@
             </div>
 
             <div style="margin-top: 50px;">
-                <label for="">Banco de Datos:</label>
                 <div id="camposLlenar">
                 </div>
             </div>
@@ -78,12 +77,11 @@
                 </div>
 
                 <div class="col-12 col-sm-6 col-md-6">
-                  <label for=""> Editar Plantilla: <input style="margin-top:15px; margin-left:10px; transform: scale(1.5);" type="checkbox" class="check-active" id="check_edit_template" onclick="hiddenTemplate()"></label>
+                  <label for=""> Editar Plantilla: <input style="margin-top:0px; margin-left:10px; transform: scale(1.5);" type="checkbox" class="check-active" id="check_edit_template" onclick="hiddenTemplate()"></label>
                   <div id ="div_summernote" class="form-group">                    
                     <textarea required name="texto" id="summernote"></textarea>       
                   </div>
                 </div>
-
                 
               </div>             
 
@@ -129,7 +127,7 @@
 
       $('#summernote').on('summernote.change', function(we, contents, $editable) {
           //console.log('summernote.change', contents, $editable);
-          replaceText("", document.getElementById("index").value);
+          replaceText();
       });
 
       document.getElementById("div_summernote").hidden = true;
@@ -147,65 +145,69 @@
 
 
  function hiddenTemplate(){
-        if (document.getElementById('check_edit_template').checked)
-          document.getElementById("div_summernote").hidden = false;
-        else
-          document.getElementById("div_summernote").hidden = true;
-    }
+    if (document.getElementById('check_edit_template').checked)
+      document.getElementById("div_summernote").hidden = false;
+    else
+      document.getElementById("div_summernote").hidden = true;
+  }
 
 
 function showConfigInfo(index){
-	document.getElementById("div_template").hidden = false;
-	var plantillas = @json($plantillas);
-	document.getElementById("index").value = index;
-  document.getElementById("orden").value = plantillas[index-1].orden;
-    document.getElementById("plantilla_id").value = plantillas[index-1].plantillaId;
-    $('#summernote').summernote('code', plantillas[index-1].plantilla.texto);
-    $('#texto_final').summernote('code', plantillas[index-1].plantilla.texto);
-    var contenedorDiv = document.getElementById('camposLlenar');
-    document.getElementById("camposLlenar").innerHTML = "";  
-    var cadHtml = "";
+  var plantillas = @json($plantillas);
+  document.getElementById("div_template").hidden = false;
+  document.getElementById("orden").value = plantillas[index].orden;
+  document.getElementById("index").value = index;
+  document.getElementById("plantilla_id").value = plantillas[index].plantillaId;
+  $('#summernote').summernote('code', plantillas[index].plantilla.texto);
+  $('#texto_final').summernote('code', plantillas[index].plantilla.texto);
+  var contenedorDiv = document.getElementById('camposLlenar');
+  document.getElementById("camposLlenar").innerHTML = "";  
+  var cadHtml = "";
+  //console.log(plantillas[index].campos_valores);
+  if(plantillas[index].campos_valores.length > 0){
+      cadHtml = '<label style="margin-left:100px;" for="">Banco de Datos de la Plantilla</label>';
+      cadHtml += '<div class="table-responsive table-striped table-bordered">';
+      cadHtml += '<table class="table"><tr><th>Clave de uso</th><th>Valor</th><th>Sin Guardar</th></tr>';
 
-    for (var campo of plantillas[index-1].plantilla_campos){
-      console.log(campo);
-        cadHtml += '<div class="col-12 col-sm-6 col-md-6">';
-        cadHtml += '<input style="text-transform:none;width:300px;float:left;" ';
-        cadHtml += 'type="text" class="form-control input100" ';
-        cadHtml += 'name="'+campo.nombre+'" id="'+campo.nombre+'" placeholder="'+campo.nombre+'" value="'+campo.valor+'" ';
-        cadHtml += 'onkeyup="replaceText(\''+String(campo.nombre)+'\','+index+')" ';
-        //cadHtml += 'onkeyup="replaceText('+index+')" value="" ';
-        cadHtml += '>' ;
+      for (var c of plantillas[index].campos_valores){
+        cadHtml += "<tr>";
+        cadHtml += '<td>|'+c.campo+'|</td>';
 
-        cadHtml += '<input style="margin-top:15px; margin-left:20px; transform: scale(1.5);" type="checkbox" ';
-        cadHtml += ' class="check-active" ';
-        cadHtml += 'name="'+campo.nombre+'_check" id="'+campo.nombre+'_check" ';
-        if(campo.sensible==1)
-        	cadHtml += 'checked';
-        cadHtml += '>';
-        cadHtml += '<i style="margin-left:10px;" class="far fa-eye-slash"></i>';
-        cadHtml += "</div>";
-    }
-    document.getElementById("camposLlenar").innerHTML = cadHtml;
-    this.replaceText("",index);
+        var valor_aux = c.valor_ultimo;
+        if(valor_aux == null)
+          valor_aux = "";
+
+        cadHtml += '<td><p id="'+c.campo+'">'+valor_aux+'</p></td>';
+        if(c.valor_ultimo != c.valor_plantilla || c.valor_plantilla == null)
+          cadHtml += '<td>SIN GUARDAR<i class="fa-regular fa-floppy-disk-circle-xmark"></i></td>';
+        else
+          cadHtml += '<td></td>';
+        cadHtml += "</tr>";
+      }
+      cadHtml += "</table></div>";
+  }
+  document.getElementById("camposLlenar").innerHTML = cadHtml;
+  this.replaceText();
 }
 
-	function replaceText(nombre,index){
+	function replaceText(){
+      var index = document.getElementById("index").value;
       var textoAux = document.getElementById("summernote").value;
-      //console.log("Texto summernote:"+textoAux);
       var plantillas = @json($plantillas);
-      //var textoAux = configInfo[index-1].plantillaInfo.texto;
 
-      for (const campo of plantillas[index-1].plantilla_campos){
-        //console.log("Nombre del campo:"+campo.nombre);
-        var element = document.getElementById(campo.nombre);
-        //console.log(element);
+      for (const c of plantillas[index].campos_valores){
+        var element = document.getElementById(c.campo);
+        
         if(element != null){
-            if(element.value != "")
-                textoAux = textoAux.replaceAll("|"+campo.nombre+"|", element.value);
+            //console.log(element.innerHTML);
+            if(element.innerHTML != "")
+                textoAux = textoAux.replaceAll("|"+c.campo+"|", element.innerHTML);
         }
       }
       $('#texto_final').summernote('code', textoAux);
-    }
+      //$('#summernote').summernote('code', textoAux);
+
+  }
 </script>
 
 @stop
