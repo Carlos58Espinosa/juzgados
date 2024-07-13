@@ -67,7 +67,7 @@
 
             <br>
  
-              <div id="div_template" class="row" style="margin-top: 100px;">
+              <div id="div_template" class="row">
                 <div class="col-12 col-sm-6 col-md-6">
                   <div class="form-group">
                     <label for="">Vista Previa: </label>
@@ -87,7 +87,7 @@
 
               <div class="col-12">
                 <div class="form-group">
-                  <button type="submit" class="btn btn-success">Guardar</button>
+                  <button id="boton_guardar" type="submit" class="btn btn-success" disabled>Guardar</button>
                 </div>
               </div>
 
@@ -164,6 +164,7 @@ function showConfigInfo(index){
   document.getElementById("camposLlenar").innerHTML = "";  
   var cadHtml = "";
   //console.log(plantillas[index].campos_valores);
+  var bandera = false;
   if(plantillas[index].campos_valores.length > 0){
       cadHtml = '<label style="margin-left:100px;" for="">Banco de Datos de la Plantilla</label>';
       cadHtml += '<div class="table-responsive table-striped table-bordered">';
@@ -178,14 +179,16 @@ function showConfigInfo(index){
           valor_aux = "";
 
         cadHtml += '<td><p id="'+c.campo+'">'+valor_aux+'</p></td>';
-        if(c.valor_ultimo != c.valor_plantilla || c.valor_plantilla == null)
-          cadHtml += '<td>SIN GUARDAR<i class="fa-regular fa-floppy-disk-circle-xmark"></i></td>';
-        else
+        if(c.valor_ultimo != c.valor_plantilla || c.valor_plantilla == null){
+          cadHtml += '<td><i class="fas fa-times"></i></td>';
+          bandera = true;
+        }else
           cadHtml += '<td></td>';
         cadHtml += "</tr>";
       }
       cadHtml += "</table></div>";
   }
+  document.getElementById("boton_guardar").disabled = bandera;
   document.getElementById("camposLlenar").innerHTML = cadHtml;
   this.replaceText();
 }

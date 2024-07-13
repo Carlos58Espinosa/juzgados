@@ -69,6 +69,15 @@ class CasosController extends Controller
 
             $this->saveFieldsByTemplateIdByCaseId($caso->id, $request->plantilla_id, $campos);
 
+            //Guarda Nuevos Campos
+            if($request->nuevos_campos_cad != ""){
+                $nuevos_campos = explode('.', $request->nuevos_campos_cad);
+                if(count($nuevos_campos) > 0){
+                   $this->saveFieldsByTemplateIdByCaseId($caso->id, $request->plantilla_id, $nuevos_campos, false);
+                   $this->saveDataBankByTemplateIdAndCaseId($nuevos_campos, $request->all(), $request->plantilla_id, $caso->id, 1, false);
+                }
+            }
+
             $notification = array(
                   'message' => 'Registro Guardado.',
                   'alert-type' => 'success'
@@ -312,8 +321,6 @@ class CasosController extends Controller
             $banco_datos = $this->getAllFieldsTemplatesByConfigId($request->configuracionId, $request->casoId);
             $this->saveDataSensibleByCasoId($banco_datos, $request->all(), $request->casoId);
 
-
-            
             $notification = array(
                   'message' => 'Registro Guardado.',
                   'alert-type' => 'success'
@@ -354,14 +361,7 @@ class CasosController extends Controller
     /************************************************************************/
 
     /***** Función usada en el STORE, se usa para traer los campos de un texto ****/
-   /* public function getFieldsByText($texto){
-        $res = [];
-        $plantillas_ctrl = new PlantillasController();
-        $campos = $plantillas_ctrl->getTemplateFields($texto, env('SEPARADOR'));
-        foreach($campos as $c)
-            array_push($res, (object)["campo" => $c]);
-        return $res;
-    }*/
+   
 
     //Guarda le valor de campo por plantilla
     public function saveDataBankByTemplateIdAndCaseId($campos, $arr, $plantillaId, $casoId, $orden,$eliminacion=false){

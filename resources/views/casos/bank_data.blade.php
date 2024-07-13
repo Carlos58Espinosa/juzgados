@@ -138,6 +138,7 @@
     var plantillas = @json($plantillas);
     document.getElementById('orden').value = plantillas[index].orden;
     var campos_valores = plantillas[index].campos_valores;
+console.log(campos_valores);
     var htmlTable = '';
 
     if(campos_valores.length > 0){
@@ -150,17 +151,24 @@
         htmlTable += '<input style="text-transform:none;width:600px;float:left;" ';
         htmlTable += 'type="text" class="form-control input100" ';
         htmlTable += 'name="'+campo_val.campo+'" id="'+campo_val.campo+'" ';
+
         if(campo_val.valor_plantilla == null || campo_val.valor_plantilla == ""){         
           if(campo_val.valor_ultimo != null && campo_val.valor_ultimo != "")
             htmlTable += 'value = "'+campo_val.valor_ultimo+'"';
         } else
             htmlTable += 'value = "'+campo_val.valor_plantilla+'"';
-        htmlTable += '></td>';
+        htmlTable += ' required></td>';
 
-        if(campo_val.valor_ultimo != campo_val.valor_plantilla)
-          htmlTable += '<td><i class="fas fa-times"></i></td>';
-        else
-          htmlTable += '<td></td>';
+
+        ///Chechar cuando los  dos son nulos
+        if(campo_val.valor_ultimo == null && campo_val.valor_plantilla == null)
+            htmlTable += '<td><i class="fas fa-times"></i></td>';
+        else{
+          if(campo_val.valor_ultimo != campo_val.valor_plantilla)
+            htmlTable += '<td><i class="fas fa-times"></i></td>';
+          else
+            htmlTable += '<td></td>';
+        }
         htmlTable += "</tr>";
       }
       htmlTable += "</table></div>";      
@@ -173,7 +181,7 @@
       var html = '<tr><td>|'+campo+"|</td>";
       html += '<td><input style="text-transform:none;width:600px;float:left;" ';
       html += 'type="text" class="form-control input100" ';
-      html += 'name="'+campo+'" id="'+campo+'" ></td>';
+      html += 'name="'+campo+'" id="'+campo+'" required></td>';
       html += '<td><i class="fas fa-times"></i></td>';
       html += "</tr>";
       return html;
@@ -191,10 +199,32 @@
         document.getElementById("nuevo_campo").value = "";
 
         document.getElementById("camposLlenar").getElementsByTagName('tbody')[0].insertRow().innerHTML = this.getRowTableFields(nuevo_campo);
+        var value = this.getValueByKey(nuevo_campo);
+        console.log(value);
+        if(value != null)
+          document.getElementById(nuevo_campo).value = value;
 
         document.getElementById("camposSensibles").getElementsByTagName('tbody')[0].insertRow().innerHTML = this.getRowTableSensibility(nuevo_campo, 0);
       }
     }
+  }
+
+  function getValueByKey(busqueda_campo){
+    var res = null;
+    var plantillas = @json($plantillas);
+    var orden = document.getElementById('orden').value;
+    for(var plantilla of plantillas){
+      if(plantilla.orden <= orden){
+          for(var campo_val of plantilla.campos_valores){
+              if(campo_val.campo == busqueda_campo){
+                  if(campo_val.valor_ultimo != null && campo_val.valor_ultimo != "")
+                      res = campo_val.valor_ultimo;
+              }
+          }
+      }else
+        break;
+    }
+    return res;
   }
 
   

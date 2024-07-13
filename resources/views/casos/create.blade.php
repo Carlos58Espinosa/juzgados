@@ -63,12 +63,20 @@
                   <input  id="index">
               </div> 
 
-              <div style="margin-top: 100px;">                
+              <div style="margin-top: 20px;"> 
+                <div style="margin-top:20px;" class="input-group mb-2">
+                  <input id="nuevo_campo" type="text" placeholder="   Clave del campo" style="text-transform:none;width:300px; height: 30px;float:left;">
+                  <a onclick="addField()" class="btn btn-info" style="width: 40px; margin-left:20px;"><i class="fas fa-plus"></i></a>                  
+                </div>  
+
                 <div id="camposLlenar">
                 </div>
               </div>
 
               <br>
+
+              <input type="hidden" name="nuevos_campos_cad" id="nuevos_campos_cad" value="">
+
  
               <div id="div_template" class="row" style="margin-top: 0px;">
                 <div class="col-12 col-sm-6 col-md-6">
@@ -94,13 +102,12 @@
                 </div>
               </div>
             
-          </form>         
+          </form>       
 
         </div>
       </div>
     </div>
   </div>
-
   <script>
     $(document).ready(function() {
       document.getElementById("div_template").hidden = true;
@@ -165,7 +172,6 @@
       document.getElementById("camposLlenar").innerHTML = "";  
 
       var cadHtml = '<label style="margin-left:400px;" for="">Banco de Datos de la Plantilla Inicial:'+configInfo[index-1].plantillaInfo.nombre+'</label>';
-      cadHtml += '<a onclick="addField()" class="btn btn-info" style="width: 40px; margin-top:100px;"><i class="fas fa-plus"></i><p>Agregar Campo</p></a>';
       cadHtml += '<div class="table-responsive table-striped table-bordered">';
       cadHtml += '<table class="table"><tr><th>Clave de uso</th><th>Valor</th></tr>';
 
@@ -205,11 +211,44 @@
                 textoAux = textoAux.replaceAll("|"+c.campo+"|", element.value);
         }
       }
+
+       var nuevos_campos = document.getElementById("nuevos_campos_cad").value.split(",");
+       for(const nc of nuevos_campos){
+          var element = document.getElementById(nc);
+          if(element != null){
+              if(element.value != "")
+                  textoAux = textoAux.replaceAll("|"+nc+"|", element.value);
+          }
+       }
+
       $('#texto_final').summernote('code', textoAux);
+
+    }
+
+    function getRowTableFields(campo){
+      var html = '<tr><td>|'+campo+"|</td>";
+      html += '<td><input style="text-transform:none;width:600px;float:left;" ';
+      html += 'type="text" class="form-control input100" ';
+      html += 'name="'+campo+'" id="'+campo+'" required></td>';
+      html += "</tr>";
+      return html;
     }
 
     function addField(){
-      console.log("Entree");
+      var nuevo_campo = document.getElementById("nuevo_campo").value;
+      
+      if(nuevo_campo != ""){
+        const arrAux = document.getElementById("nuevos_campos_cad").value.split(",");
+        if(!arrAux.includes(nuevo_campo)){
+          if(document.getElementById("nuevos_campos_cad").value !== "")
+            document.getElementById("nuevos_campos_cad").value += ",";
+          document.getElementById("nuevos_campos_cad").value += nuevo_campo;
+          document.getElementById("nuevo_campo").value = "";
+
+          document.getElementById("camposLlenar").getElementsByTagName('tbody')[0].insertRow().innerHTML = this.getRowTableFields(nuevo_campo);
+
+        }
+      }
     }
 
   </script>
