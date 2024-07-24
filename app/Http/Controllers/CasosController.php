@@ -239,7 +239,7 @@ class CasosController extends Controller
 
     public function getAllDataBankByCasoId($casoId, $configuracionId){
         $query = "select *, (select valor from casos_valores where casoId = ".$casoId." and campo = t1.campo and plantillaId = t1.plantillaId) as valor_plantilla,
-            (select valor from casos_valores where casoId = ".$casoId." and campo = t1.campo and orden <=t1.orden and valor is not null and valor != '' order by orden limit 1) as valor_ultimo
+            (select valor from casos_valores where casoId = ".$casoId." and campo = t1.campo and orden <=t1.orden and valor is not null and valor != '' order by orden desc limit 1) as valor_ultimo
                 from (
                 select cpc.campo, cpc.plantillaId, cp.orden
                 from configuracion_plantillas cp, casos_plantillas_campos cpc
