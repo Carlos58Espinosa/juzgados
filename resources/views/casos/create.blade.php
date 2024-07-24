@@ -61,9 +61,10 @@
               <div hidden>
                   <input  id="plantilla_id" name="plantilla_id" >
                   <input  id="index">
+                  <input type="hidden" name="nuevos_campos_cad" id="nuevos_campos_cad" value="">
               </div> 
 
-              <div style="margin-top: 20px;"> 
+              <div id="div_nuevo_campo" style="margin-top: 20px;" hidden> 
                 <div style="margin-top:20px;" class="input-group mb-2">
                   <input id="nuevo_campo" type="text" placeholder="   Clave del campo" style="text-transform:none;width:300px; height: 30px;float:left;">
                   <a onclick="addField()" class="btn btn-info" style="width: 40px; margin-left:20px;"><i class="fas fa-plus"></i></a>                  
@@ -73,10 +74,7 @@
                 </div>
               </div>
 
-              <br>
-
-              <input type="hidden" name="nuevos_campos_cad" id="nuevos_campos_cad" value="">
-
+              <br>           
  
               <div id="div_template" class="row" style="margin-top: 0px;">
                 <div class="col-12 col-sm-6 col-md-6">
@@ -94,7 +92,10 @@
                   </div>
                 </div>
                 
-              </div>             
+              </div>   
+
+              <br>
+              <br>          
 
               <div class="col-12">
                 <div class="form-group">
@@ -102,12 +103,17 @@
                 </div>
               </div>
             
-          </form>       
+          </form>   
 
         </div>
       </div>
     </div>
   </div>
+
+  <script src="https://unpkg.com/pdf-lib"></script>
+
+
+
   <script>
     $(document).ready(function() {
       document.getElementById("div_template").hidden = true;
@@ -163,6 +169,7 @@
     function showConfigInfo(index){
       //console.log("Indice:"+index);
       document.getElementById("div_template").hidden = false;
+      document.getElementById("div_nuevo_campo").hidden = false;
       var configInfo = @json($configuraciones);
       document.getElementById("index").value = index;
       document.getElementById("plantilla_id").value = configInfo[index-1].plantillaInfo.plantillaId;
@@ -222,7 +229,6 @@
        }
 
       $('#texto_final').summernote('code', textoAux);
-
     }
 
     function getRowTableFields(campo){
@@ -236,12 +242,13 @@
 
     function addField(){
       var nuevo_campo = document.getElementById("nuevo_campo").value;
+      var elemento_html = document.getElementById(nuevo_campo);
       
-      if(nuevo_campo != ""){
+      if(nuevo_campo != "" && elemento_html == null){
         const arrAux = document.getElementById("nuevos_campos_cad").value.split(",");
         if(!arrAux.includes(nuevo_campo)){
           if(document.getElementById("nuevos_campos_cad").value !== "")
-            document.getElementById("nuevos_campos_cad").value += ",";
+              document.getElementById("nuevos_campos_cad").value += ",";
           document.getElementById("nuevos_campos_cad").value += nuevo_campo;
           document.getElementById("nuevo_campo").value = "";
 

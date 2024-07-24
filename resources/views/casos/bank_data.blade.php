@@ -137,8 +137,8 @@
     var control = document.getElementById('contenedor_camposLLenar').hidden = false;
     var plantillas = @json($plantillas);
     document.getElementById('orden').value = plantillas[index].orden;
+    document.getElementById("nuevos_campos_cad").value = "";
     var campos_valores = plantillas[index].campos_valores;
-console.log(campos_valores);
     var htmlTable = '';
 
     if(campos_valores.length > 0){
@@ -189,8 +189,9 @@ console.log(campos_valores);
 
   function addField(){
     var nuevo_campo = document.getElementById("nuevo_campo").value;
+    var elemento_html = document.getElementById(nuevo_campo);
     
-    if(nuevo_campo != ""){
+    if(nuevo_campo != "" && elemento_html == null){
       const arrAux = document.getElementById("nuevos_campos_cad").value.split(",");
       if(!arrAux.includes(nuevo_campo)){
         if(document.getElementById("nuevos_campos_cad").value !== "")
@@ -200,11 +201,12 @@ console.log(campos_valores);
 
         document.getElementById("camposLlenar").getElementsByTagName('tbody')[0].insertRow().innerHTML = this.getRowTableFields(nuevo_campo);
         var value = this.getValueByKey(nuevo_campo);
-        console.log(value);
         if(value != null)
-          document.getElementById(nuevo_campo).value = value;
+            document.getElementById(nuevo_campo).value = value;
 
-        document.getElementById("camposSensibles").getElementsByTagName('tbody')[0].insertRow().innerHTML = this.getRowTableSensibility(nuevo_campo, 0);
+        var elemento_check_html = document.getElementById(nuevo_campo+"_check");
+        if(elemento_check_html == null)
+            document.getElementById("camposSensibles").getElementsByTagName('tbody')[0].insertRow().innerHTML = this.getRowTableSensibility(nuevo_campo, 0);
       }
     }
   }
