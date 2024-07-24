@@ -170,16 +170,12 @@ class CasosController extends Controller
             $caso->save();
 
             $arr = $request->all();
-            $banco_datos = $this->getFieldsByText($request->texto);
+            $plantillas_ctrl = new PlantillasController();
+            $banco_datos = $plantillas_ctrl->getTemplateFields($request->texto, env('SEPARADOR'));
 
-            $this->saveTemplateDataBank($banco_datos, $arr, $request->plantilla_id, $id, $request->orden, true);
-            $caso_plantilla = CasosPlantillas::where('casoId', $id)->where('plantillaId', $request->plantilla_id)->first();
-            if($caso_plantilla != null){
-                $caso_plantilla->texto = $request->texto;
-                $caso_plantilla->save();
-            }else{
-                CasosPlantillas::create(["texto" => $request->texto, "plantillaId" => $request->plantilla_id, "casoId" => $id]);
-            }
+            $this->saveDataBankByTemplateIdAndCaseId($banco_datos, $arr, $request->plantilla_id, $id, $request->orden, true);
+
+            CasosPlantillas::updateOrCreate(["plantillaId" => $request->plantilla_id, "casoId" => $id],["texto" => $request->texto, "plantillaId" => $request->plantilla_id, "casoId" => $id]);
 
             $this->saveCasoPlantillaCampo($caso->id, $request->plantilla_id, $request->texto);
 
