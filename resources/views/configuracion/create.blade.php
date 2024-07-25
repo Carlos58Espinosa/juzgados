@@ -108,6 +108,10 @@
   }
 
   $(function () {
+ 
+      if($('#plantillas_ids_aux').val().length > 0)
+          fillTableTemplates();
+
 
       $("#tabla_plantillas").sortable({
           items: 'tr:not(tr:first-child)',
