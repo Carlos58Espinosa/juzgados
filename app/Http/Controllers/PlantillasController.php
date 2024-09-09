@@ -14,19 +14,29 @@ class PlantillasController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $plantillas = DB::table('plantillas')->orderBy('nombre')->get();
-        /*$notification = array(
-                  'message' => 'Successful!!',
-                  'alert-type' => 'success'
-            );
-        session()->flash("message", "Carlangas");   
-        session()->flash("alert-type", "success"); 
-        session()->flash("title", "alerta"); */  
-        //print_r($plantillas);
-        //return true;
-        return view('plantillas.index',compact('plantillas'));
+        $res = [];
+
+        switch ($request->option) {
+            case 'fields_text_by_template_id':
+                $res = $this->getFieldsAndTemplateByTemplateId($request->plantillaId);
+                break;            
+            default:
+                $plantillas = DB::table('plantillas')->orderBy('nombre')->get();
+                /*$notification = array(
+                          'message' => 'Successful!!',
+                          'alert-type' => 'success'
+                    );
+                session()->flash("message", "Carlangas");   
+                session()->flash("alert-type", "success"); 
+                session()->flash("title", "alerta"); */  
+                //print_r($plantillas);
+                //return true;
+                $res = view('plantillas.index',compact('plantillas'));
+                break;
+        }
+        return $res;
     }
 
     /**
@@ -209,5 +219,17 @@ class PlantillasController extends Controller
         $view = preg_replace('/>\s+</', '><', $view);
         $pdf = \PDF::loadHTML($view);
         return $pdf->stream();
+    }
+
+    /***** Función usada en el CREATE de CASOS, se usa para traer los datos de una plantilla ****/
+    public function getFieldsAndTemplateByTemplateId($plantillaId){
+        $res = [];
+
+        $query = "select pc.campo from plantillas_campos pc
+                where pc.plantillaId = ".$plantillaId." order by pc.campo;";
+        $res['campos'] = DB::select($query);
+        $plantilla = Plantilla::findOrFail($plantillaId);
+        $res['texto'] = $plantilla->texto;
+        return $res;
     }
 }

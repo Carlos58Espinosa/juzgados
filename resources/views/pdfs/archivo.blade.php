@@ -2,7 +2,7 @@
 <html lang="es-ES">
   <head>
     <meta charset="utf-8">
-    <title>Slots4Fun</title>
+    <title>Turi - Inforela</title>
     <style>
         body {
             font-family:"Trebuchet MS", Helvetica, sans-serif;

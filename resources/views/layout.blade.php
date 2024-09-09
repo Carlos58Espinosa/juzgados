@@ -18,7 +18,7 @@
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Juzgados Vic</title>
+	<title>Turi - Inforela</title>
 
 	<!-- Apple icons -->
 	<link rel="apple-touch-icon" sizes="57x57" href="{{ asset('/favicon/apple-icon-57x57.png') }}" />
@@ -31,7 +31,7 @@
 	<link rel="apple-touch-icon" sizes="152x152" href="{{ asset('/favicon/apple-icon-152x152.png') }}" />
 	<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('/favicon/apple-icon-180x180.png') }}" />
 	<!-- favicon -->
-	<link rel="icon" type="image/png" sizes="192x192" href="{{ asset('/favicon/android-icon-192x192.png') }}">
+	<link rel="icon" type="image/png" sizes="192x192" href="{{ asset('/images/R.png') }}">
 	<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('/favicon/favicon-16x16.png') }}">
 	<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('/favicon/favicon-32x32.png') }}">
 	<link rel="icon" type="image/png" sizes="96x96" href="{{ asset('/favicon/favicon-96x96.png') }}">
@@ -146,6 +146,8 @@
 			background: #D0DFE7;
 		}
 </style>
+
+
 
 <script src="{{ asset('adminjs/jquery3.3.1.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>

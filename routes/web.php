@@ -27,4 +27,3 @@ Route::post("casos_banco_datos","CasosController@getDataBank");
 Route::post("casos_guardar_banco_datos","CasosController@saveDataBank");
 Route::post("casos_update/{id}","CasosController@update");
 
-

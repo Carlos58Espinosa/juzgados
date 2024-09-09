@@ -18,7 +18,7 @@ class CasosController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $casos = Caso::with(['configuracion' => function ($query) {
             $query->select('id', 'nombre');
@@ -26,7 +26,7 @@ class CasosController extends Controller
         'etapa_plantilla' => function ($query) {
             $query->select('id', 'nombre');
         }])->orderBy('created_at')->get();
-        return view('casos.index',compact('casos'));
+        return view('casos.index',compact('casos'));          
     }
 
     /**
@@ -41,11 +41,10 @@ class CasosController extends Controller
             session(['urlBack' => url()->previous()]);
         }
         $configuraciones = DB::table('configuracion')->select('id','nombre')->orderBy('nombre')->get();
-        foreach($configuraciones as $config){
+        /*foreach($configuraciones as $config){
             $config->campos = $this->getFieldsFirstTemplateByConfigurationId($config->id);
             $config->plantillaInfo = $this->getInitialTemplateByConfigurationId($config->id);
-        }
-        //return $configuraciones;
+        }*/
         return view('casos.create', compact('configuraciones'));
     }
 
@@ -57,7 +56,6 @@ class CasosController extends Controller
      */
     public function store(Request $request)
     {
-        //return $request->all();
         $transaction = DB::transaction(function() use($request){
             $caso = Caso::create(["nombre_cliente" => $request->nombre_cliente, "configuracionId" => $request->configuracion_id, "etapaPlantillaId" => $request->plantilla_id]);
 
@@ -69,15 +67,6 @@ class CasosController extends Controller
             CasosPlantillas::create(["texto" => $request->texto, "plantillaId" => $request->plantilla_id, "casoId" => $caso->id]);
 
             $this->saveFieldsByTemplateIdByCaseId($caso->id, $request->plantilla_id, $campos, false);
-
-            //Guarda Nuevos Campos
-    /*        if($request->nuevos_campos_cad != ""){
-                $nuevos_campos = explode('.', $request->nuevos_campos_cad);
-                if(count($nuevos_campos) > 0){
-                   $this->saveFieldsByTemplateIdByCaseId($caso->id, $request->plantilla_id, $nuevos_campos, false);
-                   $this->saveDataBankByTemplateIdAndCaseId($nuevos_campos, $request->all(), $request->plantilla_id, $caso->id, 1, false);
-                }
-            }*/
 
             $notification = array(
                   'message' => 'Registro Guardado.',
@@ -353,7 +342,7 @@ class CasosController extends Controller
     /************************************************************************/
 
     /***** Función usada en el CREATE, se usa para traer los datos de una plantilla ****/
-    public function getFieldsFirstTemplateByConfigurationId($configuracionId){
+/*    public function getFieldsFirstTemplateByConfigurationId($configuracionId){
         $query = "select pc.campo 
                 from configuracion_plantillas cp, plantillas_campos pc
                 where cp.configuracionId = ".$configuracionId." and pc.plantillaId = cp.plantillaId and cp.orden = 1 order by pc.campo;";
@@ -363,7 +352,7 @@ class CasosController extends Controller
     public function getInitialTemplateByConfigurationId($configId){
         $query = "select cp.plantillaId, p.nombre, p.texto from configuracion_plantillas cp, plantillas p where cp.configuracionId = ".$configId." and p.id = cp.plantillaId and cp.orden = 1 order by cp.orden;";
         return DB::select($query)[0];
-    }
+    }*/
 
     /************************************************************************/
 
@@ -448,5 +437,9 @@ class CasosController extends Controller
             CasoPlantillaCampo::create(["campo" => $campo, "plantillaId" => $plantillaId, "casoId" => $casoId]);  
     }
 
+    public function  prueba(Request $request){
+        return $request->all();
+        return "uno";
+    }
     
 }

@@ -14,10 +14,24 @@ class ConfiguracionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $configuraciones = DB::table('configuracion')->orderBy('nombre')->get();
-        return view('configuracion.index',compact('configuraciones'));
+        $res = [];
+
+        switch ($request->option) {
+            case 'templates_by_config_id':
+                $res = ConfiguracionPlantilla::with(['plantilla' => function ($query) {
+                    $query->select('id', 'nombre');
+                }])->where('configuracionId', $request->configId)->orderBy('orden')->get();
+                break;
+            
+            default:
+                $configuraciones = DB::table('configuracion')->orderBy('nombre')->get();
+                $res = view('configuracion.index',compact('configuraciones'));
+                break;
+        }
+        
+        return $res;        
     }
 
     /**
