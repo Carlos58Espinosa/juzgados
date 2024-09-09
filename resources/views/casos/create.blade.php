@@ -337,7 +337,10 @@
 
     function deleteParamFromTable(campo){
         //console.log("deleteDataParam:"+campo);
-        $("#" + campo).remove();
+        var fila = document.getElementById(campo);
+        if (fila) 
+            fila.parentNode.removeChild(fila);
+        
         var textoAux = document.getElementById("summernote").value;
         textoAux = textoAux.replaceAll('|' + campo + '|', "");
         $('#summernote').summernote('code', textoAux);    
