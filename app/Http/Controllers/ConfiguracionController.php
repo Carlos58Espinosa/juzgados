@@ -26,7 +26,7 @@ class ConfiguracionController extends Controller
                 break;
             
             default:
-                $configuraciones = DB::table('configuracion')->orderBy('nombre')->get();
+                $configuraciones = DB::table('configuracion')->orderBy('id', 'desc')->get();
                 $res = view('configuracion.index',compact('configuraciones'));
                 break;
         }

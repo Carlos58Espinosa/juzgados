@@ -34,7 +34,7 @@
                         </div>
 
                         <div class="col-4" style="padding: 0;">
-                          <form method="POST" action="{{action('CasosController@getDataBank')}}">
+                          <form method="POST" action="{{action('CasosController@getSensitiveData')}}">
                           @csrf
                             <input type="hidden" name="caso_id" value="{{$caso->id}}">
                             <button class="btn btn-link m-0 p-0" style="width:40px; margin: 0"><i class="far fa-keyboard"></i></button>

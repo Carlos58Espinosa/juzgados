@@ -23,7 +23,7 @@ Route::post("plantillas_pdf","PlantillasController@viewPdf");
 Route::resource("configuracion",'ConfiguracionController');
 Route::resource("casos",'CasosController');
 Route::post("casos_pdf", "CasosController@viewCasosPdf");
-Route::post("casos_banco_datos","CasosController@getDataBank");
-Route::post("casos_guardar_banco_datos","CasosController@saveDataBank");
+Route::post("casos_campos_sensibles","CasosController@getSensitiveData");
+Route::post("casos_guardar_campos_sensibles","CasosController@saveSensitiveData");
 Route::post("casos_update/{id}","CasosController@update");
 

@@ -23,7 +23,7 @@ class PlantillasController extends Controller
                 $res = $this->getFieldsAndTemplateByTemplateId($request->plantillaId);
                 break;            
             default:
-                $plantillas = DB::table('plantillas')->orderBy('nombre')->get();
+                $plantillas = DB::table('plantillas')->orderBy('id', 'desc')->get();
                 /*$notification = array(
                           'message' => 'Successful!!',
                           'alert-type' => 'success'
