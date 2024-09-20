@@ -1,18 +1,8 @@
 @extends('layout')
 
 @section('content')
-<!--
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">   
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
--->
-
 
 @include('casos.methods')
-
-
-
 
 <div class="main-content">
     <div class="section__content section__content--p30">
@@ -110,6 +100,8 @@
             
             <!-- Contenedor de: Texto de Plantillas (SummerNote) -->
             <div id="div_textos_summernote" class="row" style="margin-top: 0px;" hidden>
+
+                <input type="number" id="line_height" value=1 hidden>
 
                 <div class="col-12 col-sm-6 col-md-6">
                   <div class="form-group">

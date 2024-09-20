@@ -10,6 +10,8 @@
       document.getElementById("div_textos_summernote").hidden = true;   
       document.getElementById("nuevo_campo").value = "";
       document.getElementById('check_edit_template').checked = false;
+      document.getElementById("line_height").value = 1;
+
 
 
       $('div.note-group-select-from-files').remove();
@@ -22,14 +24,15 @@
               ['font', ['bold', 'underline', 'clear']],
               ['color', ['color']],
               ['para', ['ul', 'ol', 'paragraph']],
-              ['mybutton', ['undo']]
-              //['table', ['table']],
-              //['insert', ['link', 'picture', 'video']],
-              //['view', ['fullscreen', 'codeview', 'help']]
+              ['misc', ['undo', 'redo']],
+              ['height', ['height']],
+              //['mybutton', ['undo', 'lineHeightPlus']],
             ],
-            buttons: {
-              undo: UndoButton
-            }
+            lineHeights: ['1.0', '1.2', '1.4', '1.6', '1.8', '2.0', '2.2', '2.4', '2.6', '2.8','3.0', '4.0', '5.0'],
+            /*buttons: {
+              undo: UndoButton, 
+              lineHeightPlus: LineHeightPlusButton,
+            }*/
             /*callbacks: {
                 onChange: function(contents, $editable) {
                 console.log('onChange:', contents, $editable);
@@ -52,16 +55,18 @@
           }
         );
       $('#texto_final').summernote('disable');
+
+
     });
 
     /*************** Botón de Undo (Summernote) *********/
-    var UndoButton = function (context) {
+    /*var UndoButton = function (context) {
         var ui = $.summernote.ui;
 
         // create button
         var button = ui.button({
           contents: '<i class="fas fa-long-arrow-rotate-left"/>',
-          tooltip: 'undo',
+          tooltip: 'Deshacer',
           click: function () {
             //console.log("Entre a Undo");
             document.execCommand('undo');
@@ -70,9 +75,29 @@
           }
         });
         return button.render();   // return button as jquery object
-    }
+    }*/
 
+    /*************** + Line Height   ***************************/
+    /*var LineHeightPlusButton = function (context) {
+        var ui = $.summernote.ui;
 
+        // create button
+        var button = ui.button({
+          contents: '<i class="fas fa-long-arrow-rotate-left"/>Line Height +',
+          tooltip: '+ Interlineado',
+          click: function () {
+            //console.log("Entre a Line Plus");
+            var text = document.getSelection();
+            let valor = +document.getElementById("line_height").value;
+            valor += 1;
+            $('#summernote').summernote('lineHeight', valor);
+            document.getElementById("line_height").value = valor;
+          }
+        });
+        return button.render();   // return button as jquery object
+    }*/
+
+  
     /******** Combo de Configuración *******/
     function getAndShowTemplatesByConfigId(){
       //console.log("Entre a: showConfigInfo");

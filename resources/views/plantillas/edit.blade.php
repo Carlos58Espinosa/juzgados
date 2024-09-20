@@ -73,12 +73,14 @@
               ['style', ['style']],
               ['font', ['bold', 'underline', 'clear', 'italic', 'strikethrough']],
               ['color', ['color']],
-              ['para', ['ul', 'ol', 'paragraph']]
+              ['para', ['ul', 'ol', 'paragraph']],
+              ['misc', ['undo', 'redo']],
+              ['height', ['height']],
               //['table', ['table']],
               //['insert', ['link', 'picture', 'video']],
               //['view', ['fullscreen', 'codeview', 'help']]
             ],
-
+            lineHeights: ['1.0', '1.2', '1.4', '1.6', '1.8', '2.0', '2.2', '2.4', '2.6', '2.8','3.0', '4.0', '5.0'],
           }
         );
 
