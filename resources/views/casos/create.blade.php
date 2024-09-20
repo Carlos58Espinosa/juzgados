@@ -101,8 +101,6 @@
             <!-- Contenedor de: Texto de Plantillas (SummerNote) -->
             <div id="div_textos_summernote" class="row" style="margin-top: 0px;" hidden>
 
-                <input type="number" id="line_height" value=1 hidden>
-
                 <div class="col-12 col-sm-6 col-md-6">
                   <div class="form-group">
                     <label for="">Vista Previa: </label>

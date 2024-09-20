@@ -10,8 +10,6 @@
       document.getElementById("div_textos_summernote").hidden = true;   
       document.getElementById("nuevo_campo").value = "";
       document.getElementById('check_edit_template').checked = false;
-      document.getElementById("line_height").value = 1;
-
 
 
       $('div.note-group-select-from-files').remove();
@@ -28,7 +26,7 @@
               ['height', ['height']],
               //['mybutton', ['undo', 'lineHeightPlus']],
             ],
-            lineHeights: ['1.0', '1.2', '1.4', '1.6', '1.8', '2.0', '2.2', '2.4', '2.6', '2.8','3.0', '4.0', '5.0'],
+            lineHeights: ['1.0', '1.2', '1.4', '1.6', '1.8', '2.0', '2.2', '2.4', '2.6', '2.8','3.0', '4.0', '5.0']
             /*buttons: {
               undo: UndoButton, 
               lineHeightPlus: LineHeightPlusButton,
