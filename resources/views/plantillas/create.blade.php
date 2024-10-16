@@ -1,11 +1,8 @@
 @extends('layout')
 
 @section('content')
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">   
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+
+@include('editor_summernote.summernote_methods')
 
 <div class="main-content">
     <div class="section__content section__content--p30">
@@ -35,65 +32,26 @@
             </div>
 
             <div class="row">
-              <div class="col-12 col-sm-6 col-md-6">
-                <div class="form-group">
-
-                  <input type="hidden" name="texto_aux" value="{{old('texto_aux')}}" id="texto_aux">
+                <div class="form-group">                 
 
                   <label for="">Texto / Contenido de la Plantilla: <span style="color:red">*</span></label>
-                  <textarea required name="texto" id="summernote" value="{{old('texto')}}"></textarea>
+                  <div id ="div_summernote" class="form-group">  
+                      <textarea required name="texto" id="summernote" value="{{old('texto')}}"></textarea>
+                  </div>
                   
-                </div>
               </div>
-            </div>
 
-               <div class="col-12">
-                <div class="form-group">
-                  <button type="submit" class="btn btn-success">Guardar</button>
-                </div>
+              <div class="col-12">
+                  <div class="form-group">
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                  </div>
               </div>
 
             </div>
+
           </form>
         </div>
       </div>
     </div>
   </div>
-
-  <script>
-                    
-    $(document).ready(function() {
-
-      $('div.note-group-select-from-files').remove();
-      $('#summernote').summernote(
-          {
-            disableDragAndDrop:true,
-            height: 500,
-            width: 630,
-            toolbar: [
-              ['style', ['style']],
-              ['font', ['bold', 'underline', 'clear', 'italic', 'strikethrough']],
-              ['color', ['color']],
-              ['para', ['ul', 'ol', 'paragraph']],
-              ['misc', ['undo', 'redo']],
-              ['height', ['height']],
-              //['table', ['table']],
-              //['insert', ['link', 'picture', 'video']],
-              //['view', ['fullscreen', 'codeview', 'help']]
-            ],
-            lineHeights: ['1.0', '1.2', '1.4', '1.6', '1.8', '2.0', '2.2', '2.4', '2.6', '2.8','3.0', '4.0', '5.0'],
-          }
-        );
-
-        $('#summernote').on('summernote.change', function(we, contents, $editable) {
-          //console.log('summernote.change', contents, $editable);
-          document.getElementById("texto_aux").value = document.getElementById("summernote").value;
-        });
-
-
-        if(document.getElementById("texto_aux")){
-          $('#summernote').summernote('code', document.getElementById("texto_aux").value);
-        }
-    });
-  </script>
   @stop

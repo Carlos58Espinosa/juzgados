@@ -68,7 +68,7 @@
 <script>
   function getRowTableSensibility(nombre_campo, sensible){
       var html = "<tr>";
-      html += '<td>|'+nombre_campo+'|</td>';
+      html += '<td>'+nombre_campo+'</td>';
       html += '<td>';
       html += '<input style="margin-top:0px; margin-left:20px; transform: scale(1.5);" type="checkbox" ';
       html += ' class="check-active" ';

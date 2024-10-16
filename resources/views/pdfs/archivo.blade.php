@@ -4,6 +4,11 @@
     <meta charset="utf-8">
     <title>Turi - Inforela</title>
     <style>
+        .span_param {
+            border:1px solid #0dcaf0;
+            border-radius: 5px;
+            padding: 1px;
+        }
         body {
             font-family:"Trebuchet MS", Helvetica, sans-serif;
             font-size: 14px;            

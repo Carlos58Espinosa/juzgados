@@ -58,7 +58,6 @@ class ConfiguracionController extends Controller
     public function store(Request $request)
     {
         //return $request->all();
-        //print_r($request->all());return false;
         $this->validate($request, [
             'nombre' => 'required|unique:configuracion',
         ], ['nombre.unique' => 'El nombre debe de ser único.', 'nombre.required', "este campo es requerido."]);

@@ -1,12 +1,8 @@
 @extends('layout')
 
 @section('content')
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js">
-</script> <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/themes/smoothness/jquery-ui.css" />
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/jquery-ui.min.js"></script>
 
-
+@include('configuracion.config_methods')
 
 <div class="main-content">
     <div class="section__content section__content--p30">
@@ -41,7 +37,7 @@
               <div class="col-12 col-sm-6 col-md-4">
                 <div class="form-group">
                   <label for="">Plantillas: <span style="color:red">*</span></label>
-                  <select class="form-control selectpicker show-menu-arrow @error('plantillas') is-invalid @enderror input100" data-style="form-control" data-live-search="true" title="-- Selecciona las Plantillas --" multiple="multiple" name="plantillas_ids[]"              id="plantillas_ids_aux" onchange="fillTableTemplates()">
+                  <select class="form-control selectpicker" data-style="form-control" data-live-search="true" title="-- Selecciona las Plantillas --" multiple="multiple" name="plantillas_ids[]" id="plantillas_ids_aux" onchange="addTemplateRowListGroup()">
                   @foreach($plantillas as $plantilla)
                     <option  {{ in_array($plantilla->id, $plantillas_ids)  ? 'selected':'' }}  value="{{$plantilla->id}}">{{$plantilla->nombre}}<a href="" class="btn btn-link" style="width:40px; margin: 0"><i class="far fa-eye"></i></a></option>
                   @endforeach
@@ -51,20 +47,11 @@
 
             </div>
 
-                <div style="margin-top: 100px;" class=" table-responsive table-striped table-bordered" >
-                  <table id="tabla_plantillas" class="table" name="plantillas_orden_ids[]" style="width: 100%; table-layout: fixed;font-size:16px;">
-                      <thead>
-                          <tr>
-                            <th hidden>Id</th>
-                            <th>Nombre</th>
-                            <th>Orden</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                       
-                      </tbody>
-                  </table>
-                </div>                 
+            <div id="div_list_group">
+              <nav>
+                <ul onclick="reorderArrayIds()" id="list_templates" class="list-group connectedSortable"> </ul>
+              </nav>
+            </div>               
               
               <div class="col-12">
                 <div class="form-group">
@@ -79,78 +66,4 @@
     </div>
   </div>
 
-  <script>
-
-  function fillTableTemplates(){
-    var plantillas_ids_selected = $('#plantillas_ids_aux').val();  
-    document.getElementById('old_ids').value = plantillas_ids_selected;   
-    //console.log(document.getElementById('old_ids').value);
-    var plantillas = @json($plantillas);
-    //console.log(plantillas_ids_selected);
-    //console.log(plantillas);
-
-    $("#tabla_plantillas tr").remove(); 
-    var cad = "<thead><tr><th hidden>Id</th><th>Nombre</th><th>Orden</th><tr></thead>";
-    document.getElementById("tabla_plantillas").insertRow(-1).innerHTML = cad;   
-
-    var plantillas_selected = plantillas.filter(function (pl) {
-      if (plantillas_ids_selected.includes(String(pl.id)))
-        return pl;
-    });
-
-    //console.log("Plantillas Seleccionadas");
-    //console.log(plantillas_selected);
-    this.addTrToTableTemplates(plantillas_selected);
-  }
-
-  function addTrToTableTemplates(plantillas_selected){
-    var orden = 1;
-    plantillas_selected.forEach(function (item) {
-        cad = "<tr>";
-        cad += "<td hidden value=\""+item.id+"\">"+item.id+"</td>";
-        cad += "<td>"+item.nombre+"</td>";
-        cad += "<td>"+orden+"</td>";
-        cad += "</tr>";
-        orden +=1;  
-        document.getElementById("tabla_plantillas").insertRow(-1).innerHTML = cad;   
-    });
-  }
-
-  $(function () {
-      $("#tabla_plantillas").sortable({
-          items: 'tr:not(tr:first-child)',
-          dropOnEmpty: false,
-          start: function (G, ui) {
-              ui.item.addClass("select");
-          },
-          stop: function (G, ui) {
-              ui.item.removeClass("select");
-              $(this).find("tr").each(function (GFG) {
-                  if (GFG > 0) {
-                      $(this).find("td").eq(2).html(GFG);
-                  }
-              });
-              var tabla_aux = document.getElementById("tabla_plantillas");
-              var tabla_trs = tabla_aux.getElementsByTagName("tr");
-              var arr_ids_final = []
-              for (var i = 0; i < tabla_trs.length; i++) {
-                var td = tabla_trs[i].getElementsByTagName("td")[0];
-                if(td != undefined)
-                  arr_ids_final.push(''+td.innerHTML);
-              }
-              document.getElementById('old_ids').value=arr_ids_final;
-          } 
-      });      
-  });
-
-  function fillTableTemplatesWithOrder(){
-    var plantillas_orden = @json($plantillas_orden);
-    console.log(plantillas_orden);
-    this.addTrToTableTemplates(plantillas_orden)
-  }
-
-  $(document).ready(function() {
-    fillTableTemplatesWithOrder();
-  });
-  </script>
   @stop

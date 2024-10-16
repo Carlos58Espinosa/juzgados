@@ -10,7 +10,7 @@
             </div>
 
             <div class="table-responsive table-striped table-bordered" style="font-size: 14px; padding: 0;">
-            <table id="table" class="table" style="width: 100%; table-layout: fixed; text-align: center;">
+            <table id="table" class="table table-striped" style="width: 100%; table-layout: fixed; text-align: center;">
               <thead style="text-align: center;">
                 <tr >
                   <th style="width:200px;text-align: center;">Nombre del Caso / Cliente</th>

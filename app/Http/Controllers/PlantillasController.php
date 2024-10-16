@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Plantilla;
 use App\Models\PlantillaCampo;
+use App\Models\Grupo;
+use App\Models\CasosPlantillas;
 use Validator;
 
 class PlantillasController extends Controller
@@ -20,8 +22,8 @@ class PlantillasController extends Controller
 
         switch ($request->option) {
             case 'fields_text_by_template_id':
-                $res = $this->getFieldsAndTemplateByTemplateId($request->plantillaId);
-                break;            
+                $res = $this->getFieldsAndTemplateByTemplateId($request->all());
+                break;           
             default:
                 $plantillas = DB::table('plantillas')->orderBy('id', 'desc')->get();
                 /*$notification = array(
@@ -50,7 +52,8 @@ class PlantillasController extends Controller
             session()->forget('urlBack');
             session(['urlBack' => url()->previous()]);
         }
-        return view('plantillas.create');
+        $campos = $this->getAllFields();
+        return view('plantillas.create', compact('campos'));
     }
 
     /**
@@ -60,19 +63,20 @@ class PlantillasController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {    
+    {   
         $this->validate($request, [
             'nombre' => 'required|unique:plantillas,nombre,',                       
             'texto' => 'required',
         ], ['nombre.unique' => 'El nombre debe de ser único.']);
+
         if( url()->previous() != url()->current() ){
             session()->forget('urlBack');
             session(['urlBack' => url()->previous()]);
         }
+
         $transaction = DB::transaction(function() use($request){
-            $separador = '|';
+            $campos = $this->getTemplateFields($request->texto);
             $plantilla = Plantilla::create(['nombre'=> $request->nombre, 'texto'=> $request->texto]);
-            $campos = $this->getTemplateFields($request->texto, $separador);
             $this->insertPlantillaCampos($campos, false, $plantilla->id);
             
             $notification = array(
@@ -112,8 +116,9 @@ class PlantillasController extends Controller
             session()->forget('urlBack');
             session(['urlBack' => url()->previous()]);
         }
+        $campos = $this->getAllFields();
         $plantilla = Plantilla::findOrFail($id);
-        return view('plantillas.edit', compact('plantilla'));
+        return view('plantillas.edit', compact('plantilla', 'campos'));
     }
 
     /**
@@ -129,14 +134,15 @@ class PlantillasController extends Controller
             'nombre' => 'required|unique:plantillas,nombre,'.$id,            
             'texto' => 'required'
         ], ['nombre.unique' => 'El nombre debe de ser único.']);
+
         return DB::transaction(function() use($request, $id){
-            $separador = '|';
+            $campos = $this->getTemplateFields($request->texto);
+
             $plantilla = Plantilla::findOrFail($id);
             $plantilla->nombre = $request->nombre;
             $plantilla->texto = $request->texto;
             $band = $plantilla->save();
 
-            $campos = $this->getTemplateFields($request->texto, $separador);
             $this->insertPlantillaCampos($campos, true, $plantilla->id);
 
             if ($band) {
@@ -186,22 +192,25 @@ class PlantillasController extends Controller
         });     
     }
 
-    public function getTemplateFields($texto, $char){
-        $result = [];
+    public function getAllFields(){
+        $qry = "select campo from plantillas_campos
+                group by campo
+                union
+                select campo from casos_plantillas_campos
+                group by campo;";
+        return DB::select($qry);
+    }
 
-        $pos = 1;
-        while($pos != false){
-            $pos = strpos($texto, $char);
-            if($pos != false){
-                $texto = substr($texto, $pos + 1);
-                $pos2 = strpos($texto, $char);
-                if($pos2 != false){
-                    array_push($result, substr($texto, 0, $pos2));
-                    $texto = substr($texto, $pos2 + 1);
-                }
-            }
-        }
-        return array_unique($result);
+    public function getTemplateFields($texto){
+        $campos_plantilla = [];
+        $span_txt = '<span hidden="">|</span>';
+        $arr = explode($span_txt, $texto);
+
+        array_filter($arr, function($iter) use(&$campos_plantilla){
+            if(!str_contains($iter, '<') || !str_contains($iter, '>'))
+                array_push($campos_plantilla, $iter);
+        });
+        return array_unique($campos_plantilla);
     }
 
     public function insertPlantillaCampos($campos, $band_delete, $plantillaId){
@@ -211,10 +220,12 @@ class PlantillasController extends Controller
             PlantillaCampo::create(['campo' => $campo, "plantillaId" => $plantillaId]);
     }
 
-    public function viewPdf(Request $request) {
+    public function viewPdf(Request $request) {        
         $plantilla = Plantilla::findOrFail($request->id);
         $estado = "slp";
-        $res = $plantilla->texto;
+        $res = str_replace('<button type="button" class="button_summernote" contenteditable="false">', '<span class="span_param">', $plantilla->texto);
+        $res = str_replace('</button>', '</span>', $res);
+        $res = str_replace('<span hidden="">|</span>', '', $res);       
         $view = view('pdfs.archivo', compact('res', 'estado'));
         $view = preg_replace('/>\s+</', '><', $view);
         $pdf = \PDF::loadHTML($view);
@@ -222,14 +233,64 @@ class PlantillasController extends Controller
     }
 
     /***** Función usada en el CREATE de CASOS, se usa para traer los datos de una plantilla ****/
-    public function getFieldsAndTemplateByTemplateId($plantillaId){
-        $res = [];
+    public function getFieldsAndTemplateByTemplateId($arr){
+        $res["grupos_campos"] = [];
+        $qry2 = ""; $casoId = $arr['casoId']; $configId = $arr['configId'];
 
-        $query = "select pc.campo from plantillas_campos pc
-                where pc.plantillaId = ".$plantillaId." order by pc.campo;";
-        $res['campos'] = DB::select($query);
-        $plantilla = Plantilla::findOrFail($plantillaId);
-        $res['texto'] = $plantilla->texto;
+        if($casoId != 0) { 
+            $qry2 = ",(select valor from casos_valores where casoId = ".$casoId." and campo = gc.campo 
+            and plantillaId = ".$arr['plantillaId'].") as valor_plantilla, (select valor from casos_valores where casoId = ".$casoId." and campo = gc.campo and orden <= (select orden from configuracion_plantillas where configuracionId=".$configId." and plantillaId = ".$arr['plantillaId'].") and valor is not null and valor != '' order by orden desc limit 1) as valor_ultimo";
+        }
+
+        $qry = "select g.id, g.nombre, gc.campo ". $qry2 . " from grupos_campos gc, grupos g
+                where gc.grupoId = g.id and gc.campo in (select campo from plantillas_campos where plantillaId = ".$arr['plantillaId'].") order by g.nombre, gc.campo;";                 
+        $this->getArrayGroupFields($qry, $res, '');       
+
+        $qry = "select 0 as id, 'Otros' as nombre, gc.campo ". $qry2 . " from plantillas_campos gc where plantillaId = ".$arr['plantillaId']." and campo not in (select campo from grupos_campos)";
+        $this->getArrayGroupFields($qry, $res, 'Otros');
+
+        $caso_plantilla = CasosPlantillas::where('casoId', $casoId)->where('plantillaId', $arr['plantillaId'])->first();
+        if($caso_plantilla != null)
+            $res['texto'] = $caso_plantilla->texto;
+        else{
+            $plantilla = Plantilla::findOrFail($arr['plantillaId']);
+            $res['texto'] = $plantilla->texto;
+        }
+
         return $res;
+    }
+
+    public function getArrayGroupFields($qry, &$res, $option){
+        $aux = DB::select($qry);
+
+        $cad = "";
+        if(count($aux) > 0){
+            $cad = $aux[0]->id;
+            $raux['id'] = $cad;
+            $raux['grupo'] = $aux[0]->nombre;
+            $raux["campos"] = [];  
+            foreach($aux as $a){
+                if($a->id != $cad){
+                    array_push($res["grupos_campos"], $raux);
+                    $cad = $a->id;
+                    $raux['id'] = $cad;
+                    $raux['grupo'] = $a->nombre;
+                    $raux["campos"] = [];
+                }
+                $row = ['campo' => $a->campo, 
+                'valor_plantilla' => (array_key_exists('valor_plantilla',$a)) ? $a->valor_plantilla : null, 
+                'valor_ultimo' => (array_key_exists('valor_ultimo',$a)) ? $a->valor_ultimo : null];
+                array_push($raux["campos"], $row);
+            } 
+            if($aux[count($aux)-1]->id == $cad)
+                array_push($res["grupos_campos"], $raux);         
+        }else{
+            if($option == "Otros"){
+                $raux['id'] = 0;
+                $raux['grupo'] = 'Otros';
+                $raux["campos"] = [];
+                array_push($res["grupos_campos"], $raux);
+            }
+        }
     }
 }
