@@ -3,6 +3,7 @@
     $(document).ready(function() {      
         document.getElementById('check_edit_template').checked = false;
         document.getElementById("div_textos_summernote").hidden = true; 
+        document.getElementById("nuevos_campos_cad").value = "";
         initSummernotes();
     });
 
@@ -31,6 +32,7 @@
 
           document.getElementById("div_plantillas").hidden = false;
           document.getElementById("div_textos_summernote").hidden = true;
+          document.getElementById("nuevos_campos_cad").value = "";
 
           $.ajax({
             dataType: 'json',
@@ -65,6 +67,7 @@
           var templateId = document.getElementById("select_template").value;
           var elementConfig = document.getElementById("configuracion_id");
           var elementCaso = document.getElementById("caso_id");
+          document.getElementById("nuevos_campos_cad").value = "";
           var configId, casoId;
 
           (elementConfig != null) ? configId = elementConfig.value : configId = 0;
@@ -99,6 +102,12 @@
 
         var contenedorDiv = document.getElementById('div_campos_plantilla');
         contenedorDiv.innerHTML = this.getStringHtmlFieldTemplate(data['grupos_campos']);
+        if(data['grupos_campos'].length > 0){
+            console.log("Enetreree");
+            console.log(data['grupos_campos'][0]['id']);
+            console.log(document.getElementById('a_'+data['grupos_campos'][0]['id']));
+            $('#a_'+data['grupos_campos'][0]['id']).focus();
+        }
 
         $('#texto_final').summernote('code', data['texto']);
         $('#summernote').summernote('code', data['texto']);
@@ -107,24 +116,27 @@
     /****  Regresa el STRING HTML para la tabla de CAMPOS  *****/
     function getStringHtmlFieldTemplate(arr){ 
         var html1 = '<ul class="nav nav-tabs">', html2 = '<div>';
-        for(let a of arr){
-            html1 += `<li class="nav-item" onclick="showTable(${a["id"]})"><a class="nav-link" href="#">${a["grupo"]}</a></li>`;
+        var cad_hidden = '';
+        var element_id = '';
 
-            html2 += `<div id="${a["id"]}" hidden><table class="table table-info" style="margin-left: 5px; width:600px; position: absolute;"><tr><th>Nombre del Parámetro</th><th style="text-align:center">Valor</th></tr>`;
+        for(let a of arr){
+            html1 += `<li class="nav-item" onclick="showTable(${a["id"]})"><a id="a_${a["id"]}" class="nav-link" href="#" aria-current="page">${a["grupo"]}</a></li>`;
+
+            html2 += `<div id="${a["id"]}" ${cad_hidden}><table id="tabla_${a["id"]}" class="table table-info" style="margin-left: 5px; width:600px; position: absolute;"><tr><th>Nombre del Parámetro</th><th style="text-align:center">Valor</th></tr>`;
             for(let campo of a["campos"]){
                 var valor = '';
 
-                if(campo['valor_plantilla']){
-                    if(campo['valor_plantilla'] != null)
-                        valor = campo['valor_plantilla'];
-                    else{ 
-                        if(campo['valor_ultimo'] != null)
-                            valor = campo['valor_ultimo'];
-                    }
+                if(campo['valor_plantilla'] != null)
+                    valor = campo['valor_plantilla'];
+                else{ 
+                    if(campo['valor_ultimo'] != null)
+                        valor = campo['valor_ultimo'];
                 }
+
                 html2 += getRowStringHtmlFieldTemplate(campo['campo'], valor);
             }
             html2 += "</table></div>";
+            cad_hidden = "hidden";
         }
         html1 +=  '</ul>';
         html2 += "</div>";
@@ -243,66 +255,6 @@
 
 */
 
-
-
-
-
-
-
-    /*************************************** Edición ************************************/
-
-   /* function getAndShowFieldsByTemplateIdEdit(plantillas){
-      //console.log("Entre a:getAndShowFieldsByTemplateIdEdit");
-      var plantillaId = document.getElementById("select_template").value;
-      var configuracionId = document.getElementById("configuracion_id").value;
-      var casoId = document.getElementById("caso_id").value;
-      var url = "{{action('CasosController@index')}}";
-
-      var plantilla = plantillas.find((element) => element.plantillaId == plantillaId);
-      document.getElementById("orden").value = plantilla.orden;
-
-      $.ajax({
-        dataType: 'json',
-        type:'GET',
-        url: url,
-        cache: false,
-        data: {'option' : "fields_values_template_text", 'plantillaId' : plantillaId, 'casoId' : casoId, 'configuracionId' : configuracionId ,'_token':"{{ csrf_token() }}"},
-        success: function(data){
-          //console.log(data);
-          showFieldsAndTemplate(data, 'edit');
-          //toastr.success('Información actualizada correctamente.', '', {timeOut: 3000});
-        },
-        error: function(){
-          toastr.error('Hubo un problema por favor intentalo de nuevo mas tarde.', '', {timeOut: 3000});
-        }
-      });
-    }*/
-
-/*    function getStringHtmlFieldEdit(arr){
-        //console.log("getRowTableFieldsEdit");
-        var valor = '';
-        if(arr.valor_plantilla != null)
-            valor = arr.valor_plantilla;
-        else{ 
-            if(arr.valor_ultimo != null)
-                valor = arr.valor_ultimo;
-        }
-
-        var html = '<tr id="'+arr.campo+'">';
-        html += '<td>|'+arr.campo+'|';
-        html += '<button type="button" style="align:left" class="btn btn-link" onclick="copyText(\''+String(arr.campo)+'\')">';
-        html += '<i class="far fa-copy"></i></button>';
-        html += '</td>';
-        html += '<td><input onCopy="return false;" style="text-transform:none;width:600px;float:left;" ';
-        html += 'type="text" class="form-control input100" ';
-        html += 'name="'+arr.campo+'"  oninput="replaceText()" ';
-        html += ' value="'+valor+'"';
-        html += ' required></td>';
-        html += '<td><button type="button" class="delete-param-alert btn btn-link" data-message1="No podrás recuperar el registro." data-message2="¡Borrado! Verifica la redacción de la Plantilla." data-message3="Verifica la redacción de la Plantilla." data-message4="'+arr.campo+'" style="width:40px; margin: 0; padding: 0;"><i class="far fa-trash-alt"></i></button></td>';
-        html += "</tr>";
-        return html;
-    }  
-*/
     
     
 </script>

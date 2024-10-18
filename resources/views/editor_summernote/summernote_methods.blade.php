@@ -3,15 +3,15 @@
 <script src="https://unpkg.com/pdf-lib"></script>
 <script src="{{ asset('js/sweetalert.js') }}"></script>
 
-<dialog id="modal" style="padding:30px; width: 700px; height: 400px;position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">
-    <div class="row">
+<dialog id="modal" style="padding:30px; width:700px; height: 400px;position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">
+    <div class="row" style="width:420px;">
         <button style="width: 40px;" onclick="changeTextInput('bold')" type="button" class="btn btn-light"><i class="note-icon-bold"></i></button>
         <button style="width: 40px;" onclick="changeTextInput('underline')" type="button" class="btn btn-light"><i class="note-icon-underline"></i></button>
         <button style="width: 40px;" onclick="changeTextInput('eraser')" type="button" class="btn btn-light"><i class="note-icon-eraser"></i></button>
         <button style="width: 40px;" onclick="changeTextInput('italic')" type="button" class="btn btn-light"><i class="note-icon-italic"></i></button>
         <button style="width: 40px;" onclick="changeTextInput('line-through')" type="button" class="btn btn-light"><i class="note-icon-strikethrough"></i></button>
     </div>
-    <div class="row">
+    <div class="row" style="width: 420px; float: left;">
         <div class="form-group">
             <label>Nombre del Parámetro:</label>
             <input id="nuevo_param" style="text-transform:lowercase; width: 400px;" class="form-control" type="text" maxlength="240" name="param1" placeholder="Nombre del parámetro"  value ="" onkeydown="return /[0-9,a-z, ]/i.test(event.key)" oninput="searchFieldsAndShow(this.value, {{@json_encode($campos)}})">
@@ -21,14 +21,9 @@
             <button id="closeModal" type="button" class="btn btn-success">Guardar</button>
             <button style="margin-left: 70px;" id="closeModal2" type="button" class="btn btn-danger">Cerrar</button>
         </div>
- 
-         
     </div>
 
-    <div style="margin-left:400px; margin-top: -180px;">
-            
-            <div id="camposLlenar"></div>
-            
+    <div id="camposLlenar" style="width:210px; height:350px;margin-left:410px; margin-top: -40px; overflow: hidden; overflow-y: scroll;">            
     </div> 
 
 </dialog>
@@ -82,11 +77,14 @@
                 const modal = document.getElementById("modal"); 
                 document.getElementById("nuevo_param").value = "";
                 document.getElementById("nuevo_param").innerHTML = "";
+                document.getElementById("camposLlenar").innerHTML = "";
                 changeTextInput("eraser");
                 modal.showModal();
 
                 $("#closeModal").unbind().click(function() {
-                    var valor_parametro = document.getElementById("nuevo_param").value;
+                    var valor_parametro = document.getElementById("nuevo_param").value.toLowerCase();
+
+            console.log(valor_parametro);
                     var outerhtml = document.getElementById("nuevo_param").outerHTML;
                     modal.close();
 
@@ -192,9 +190,9 @@
                 element.value += valor_parametro;
 
                 $("#tabla_0").append(this.getRowStringHtmlFieldTemplate(valor_parametro));
-                this.replaceText();
             }
         }
+        this.replaceText();
     }
 
 </script>

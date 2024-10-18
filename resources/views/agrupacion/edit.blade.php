@@ -75,7 +75,7 @@
 			        data: {'nombre' : grupo,'_token':"{{ csrf_token() }}"},
 			        success: function(data){	
 			        		console.log("GRUPO ID="+data);
-			        		var cadHtml = `<li id="${data}" onclick="getFieldsByNav(this.id)" class="nav-item"><a id="${grupo}" class="nav-link" href="#">${grupo}</a></li><button id="button_${data}" class="btn btn-link" style="width:40px;" onclick="deleteGroup(${data})"><i class="far fa-trash-alt"></i></button>`;
+			        		var cadHtml = `<li id="${data}" onclick="getFieldsByNav(this.id)" class="nav-item"><a id="${grupo}" class="nav-link" href="#" aria-current="page">${grupo}</a></li><button id="button_${data}" class="btn btn-link" style="width:40px;" onclick="deleteGroup(${data})"><i class="far fa-trash-alt"></i></button>`;
 									document.getElementById("navs").innerHTML += cadHtml;	 
 									document.getElementById("grupo_id").value = data;
 									document.getElementById("grupo").value = "";

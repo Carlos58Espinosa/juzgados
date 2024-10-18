@@ -204,8 +204,6 @@ class CasosController extends Controller
 
         $this->saveDataBankByTemplateIdAndCaseId($campos, $arr_request, $arr_request['plantilla_id'], $caso->id, $orden, $band_delete);
 
- //CasosPlantillas::create(["texto" => $request->texto, "plantillaId" => $request->plantilla_id, "casoId" => $caso->id]);
-
         CasosPlantillas::updateOrCreate(["plantillaId" => $arr_request['plantilla_id'], "casoId" => $caso->id],
             ["texto" => $arr_request['texto'], "plantillaId" => $arr_request['plantilla_id'], "casoId" => $caso->id]);
 
@@ -255,50 +253,7 @@ class CasosController extends Controller
         return $pdf->stream();
     } 
 
-    /*********************************************************************************/
-
-
-
-
-
-
-
-
-    
-
-    /************************** Se usa en la Edición  ************************************/
- /*   public function getDataBankByCaseIdAndTemplateId($casoId, $configuracionId, $plantillaId){
-        $query = "select *, (select valor from casos_valores where casoId = ".$casoId." and campo = t1.campo and plantillaId = t1.plantillaId) as valor_plantilla,
-            (select valor from casos_valores where casoId = ".$casoId." and campo = t1.campo and orden <=t1.orden and valor is not null and valor != '' order by orden desc limit 1) as valor_ultimo
-                from (
-                select cpc.campo, cpc.plantillaId, cp.orden
-                from configuracion_plantillas cp, casos_plantillas_campos cpc
-                where cp.configuracionId = ".$configuracionId." and cp.plantillaId = ".$plantillaId." and cpc.casoId = ".$casoId." and cpc.plantillaId = cp.plantillaId
-                union
-                select pc.campo, pc.plantillaId, cp.orden
-                from configuracion_plantillas cp, plantillas_campos pc
-                where cp.configuracionId = ".$configuracionId." and cp.plantillaId = ".$plantillaId." and cp.plantillaId = pc.plantillaId and  pc.plantillaId not in (select plantillaId from casos_plantillas_campos where casoId = ".$casoId.")
-                )  as t1 order by t1.orden, t1.campo;";
-        return DB::select($query);
-    }*/
-
-
-    /*public function getFieldsValuesTextByTemplateIdAndCaseId($params){
-        $res = [];
-
-        $caso_plantilla = CasosPlantillas::where('casoId', $params['casoId'])->where('plantillaId', $params['plantillaId'])->first();
-        if($caso_plantilla != null)
-            $res['texto'] = $caso_plantilla->texto;
-        else{
-            $plantilla = Plantilla::findOrFail($params['plantillaId']);
-            $res['texto'] = $plantilla->texto;
-        }
-
-        $res['campos'] = $this->getDataBankByCaseIdAndTemplateId($params['casoId'], $params['configuracionId'], $params['plantillaId']);
-        return $res;
-    }*/
-
-    
+    /*********************************************************************************/    
 
     /***
       Se usa al actualizar una plantilla
