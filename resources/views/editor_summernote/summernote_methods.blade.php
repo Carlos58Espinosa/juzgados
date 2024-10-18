@@ -84,7 +84,6 @@
                 $("#closeModal").unbind().click(function() {
                     var valor_parametro = document.getElementById("nuevo_param").value.toLowerCase();
 
-            console.log(valor_parametro);
                     var outerhtml = document.getElementById("nuevo_param").outerHTML;
                     modal.close();
 
