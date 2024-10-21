@@ -5,16 +5,16 @@
 
 <dialog id="modal" style="padding:30px; width:700px; height: 400px;position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">
     <div class="row" style="width:420px;">
-        <button style="width: 40px;" onclick="changeTextInput('bold')" type="button" class="btn btn-light"><i class="note-icon-bold"></i></button>
-        <button style="width: 40px;" onclick="changeTextInput('underline')" type="button" class="btn btn-light"><i class="note-icon-underline"></i></button>
+        <button id="boton_bold" style="width: 40px;" onclick="changeTextInput('bold')" type="button" class="btn btn-light"><i class="note-icon-bold"></i></button>
+        <button id="boton_underline" style="width: 40px;" onclick="changeTextInput('underline')" type="button" class="btn btn-light"><i class="note-icon-underline"></i></button>
         <button style="width: 40px;" onclick="changeTextInput('eraser')" type="button" class="btn btn-light"><i class="note-icon-eraser"></i></button>
-        <button style="width: 40px;" onclick="changeTextInput('italic')" type="button" class="btn btn-light"><i class="note-icon-italic"></i></button>
-        <button style="width: 40px;" onclick="changeTextInput('line-through')" type="button" class="btn btn-light"><i class="note-icon-strikethrough"></i></button>
+        <button id="boton_italic" style="width: 40px;" onclick="changeTextInput('italic')" type="button" class="btn btn-light"><i class="note-icon-italic"></i></button>
+        <button id="boton_line" style="width: 40px;" onclick="changeTextInput('line-through')" type="button" class="btn btn-light"><i class="note-icon-strikethrough"></i></button>
     </div>
-    <div class="row" style="width: 420px; float: left;">
+    <div class="row" style="width: 420px; float: left; margin-top: 5px;">
         <div class="form-group">
             <label>Nombre del Parámetro:</label>
-            <input id="nuevo_param" style="text-transform:lowercase; width: 400px;" class="form-control" type="text" maxlength="240" name="param1" placeholder="Nombre del parámetro"  value ="" onkeydown="return /[0-9,a-z, ]/i.test(event.key)" oninput="searchFieldsAndShow(this.value, {{@json_encode($campos)}})">
+            <input id="nuevo_param" style="text-transform:lowercase; width: 400px;" class="form-control" type="text" maxlength="240" name="param1" placeholder="Nombre del parámetro"  value ="" onkeydown="return /[0-9,a-z, ]/i.test(event.key)" oninput="searchFieldsAndShow(this.value, {{@json_encode($campos)}})" autofocus>
 
             <br>            
 
@@ -44,7 +44,7 @@
               ['para', ['ul', 'ol', 'paragraph']],
               ['misc', ['undo', 'redo']],
               ['height', ['height']],
-              ['mybutton', ['addParam']]
+              ['mybutton', ['addParam']],
             ],
             lineHeights: ['1.0', '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7'],
             buttons: {
@@ -52,61 +52,9 @@
             }
           }
         );
-
     });
 
-    /**** Limpia el VALOR PARAMETRO de saltos de linea, tabuladores ****/
-    function cleanParameterValue(valor_parametro) {
-        valor_parametro = valor_parametro.replace('\n','');
-        valor_parametro = valor_parametro.replace('\t','');
-        valor_parametro = valor_parametro.replace('<br>','');
-        return valor_parametro;
-    }
-
-    /*************** Botón de Agregar Parámetro *********/
-    var addParamButton = function (context) {
-        var ui = $.summernote.ui;
-
-        // create button
-        var button = ui.button({
-          contents: '<i class="far fa-edit"/> Agregar Parámetro',
-          tooltip: 'Agregar Parámetro',
-          click: function () {
-                $('#summernote').summernote('editor.saveRange'); 
-
-                const modal = document.getElementById("modal"); 
-                document.getElementById("nuevo_param").value = "";
-                document.getElementById("nuevo_param").innerHTML = "";
-                document.getElementById("camposLlenar").innerHTML = "";
-                changeTextInput("eraser");
-                modal.showModal();
-
-                $("#closeModal").unbind().click(function() {
-                    var valor_parametro = document.getElementById("nuevo_param").value.toLowerCase();
-
-                    var outerhtml = document.getElementById("nuevo_param").outerHTML;
-                    modal.close();
-
-                    if(valor_parametro !== ""){
-                        valor_parametro = cleanParameterValue(valor_parametro);
-                        addParamOnSummernote(valor_parametro, outerhtml);
-
-                        //Solo para formulario de CASOS
-                        if(document.getElementById("nuevos_campos_cad"))
-                            addRowInTableCases(valor_parametro);
-                    }
-                });
-
-                $("#closeModal2").unbind().click(function() {  
-                    modal.close();
-                    $('#summernote').summernote('editor.restoreRange');
-                    $('#summernote').summernote('editor.focus');
-                });          
-            }
-        });
-        return button.render();   // return button as jquery object
-    }
-
+    /**************************  Estilo TEXTO PARAMETRO  *****************************/
     function changeTextInput(option){
         var element = document.getElementById('nuevo_param').style;
 
@@ -126,23 +74,122 @@
             case 'italic':
                 element.fontStyle == option ? element.fontStyle = "normal" : element.fontStyle = option;
             break;
-        }                
+        }    
+        borderSelectedButton(element);      
     }
 
-    function addParamOnSummernote(valor_parametro, outerhtml){
+    /*****************  Marca las OPCIONES seleccionadas en el nuevo PARAMETRO  *********************/
+    function borderSelectedButton(element){
+        var boton_bold = document.getElementById("boton_bold");
+        var boton_underline = document.getElementById("boton_underline");
+        var boton_line = document.getElementById("boton_line");
+        var boton_italic = document.getElementById("boton_italic");
+
+        element.fontWeight == "bold" ? boton_bold.style.border = "2px solid black" : boton_bold.style.border = "none";
+        element.textDecoration == "underline" ? boton_underline.style.border = "2px solid black" : boton_underline.style.border = "none";
+        element.textDecoration == "line-through" ? boton_line.style.border = "2px solid black" : boton_line.style.border = "none";
+        element.fontStyle == "italic" ? boton_italic.style.border = "2px solid black" : boton_italic.style.border = "none";
+    }
+
+    /*************** Botón de Agregar Parámetro *********/
+    var addParamButton = function (context) {
+        var ui = $.summernote.ui;
+
+        // create button
+        var button = ui.button({
+          contents: '<i class="far fa-edit"/> Agregar Parámetro',
+          tooltip: 'Agregar Parámetro',
+          click: function () {
+                $('#summernote').summernote('editor.saveRange'); 
+
+                const modal = document.getElementById("modal"); 
+                var elemento_param = document.getElementById("nuevo_param");
+                elemento_param.value = "";
+                elemento_param.innerHTML = "";
+                document.getElementById("camposLlenar").innerHTML = "";
+                changeTextInput("eraser");
+                modal.showModal();
+                configurationModal();                    
+            }
+        });
+        return button.render();   // return button as jquery object
+    }
+
+    /************  Configuración MODAL Nuevo Parámetro  ****************/
+    function configurationModal(){
+        $("#closeModal").unbind().click(function() {
+            var elemento_param = document.getElementById("nuevo_param");
+            var valor_parametro = elemento_param.value.toLowerCase();
+            modal.close();
+
+            if(valor_parametro !== ""){
+                valor_parametro = cleanParameterValue(valor_parametro);
+                addParamOnSummernote(valor_parametro, elemento_param);
+
+                //Solo para formulario de CASOS
+                if(document.getElementById("nuevos_campos_cad"))
+                    addRowInTableCases(valor_parametro);
+            }
+        });
+
+        $("#closeModal2").unbind().click(function() {  
+            modal.close();
+            $('#summernote').summernote('editor.restoreRange');
+            $('#summernote').summernote('editor.focus');
+        });      
+    }
+
+
+    /**** Limpia el VALOR PARAMETRO de saltos de linea, tabuladores ****/
+    function cleanParameterValue(valor_parametro) {
+        valor_parametro = valor_parametro.replace('\n','');
+        valor_parametro = valor_parametro.replace('\t','');
+        valor_parametro = valor_parametro.replace('<br>','');
+        return valor_parametro;
+    }
+    
+
+    /****************  Agregar PARAMETRO BOTON  *********************/
+    function addParamOnSummernote(valor_parametro, elemento_param){
         $('#summernote').summernote('editor.restoreRange');
         $('#summernote').summernote('editor.focus');
 
         var span_txt = '<span hidden="">|</span>';
-
         valor_parametro = span_txt + valor_parametro + span_txt;
 
-        (outerhtml.includes("font-weight: bold")) ? valor_parametro = '<b>' + valor_parametro + '</b>' : valor_parametro = valor_parametro;
-        (outerhtml.includes("text-decoration: underline")) ? valor_parametro = '<u>' + valor_parametro + '</u>' : valor_parametro = valor_parametro;
-        (outerhtml.includes("font-style: italic")) ? valor_parametro = '<i>' + valor_parametro + '</i>' : valor_parametro = valor_parametro;
-        (outerhtml.includes("text-decoration: line-through")) ? valor_parametro = '<s>' + valor_parametro + '</s>' : valor_parametro = valor_parametro;
+        elemento_param.style.fontWeight == 'bold' ? valor_parametro = '<b>' + valor_parametro + '</b>' : valor_parametro = valor_parametro;
 
-        $('#summernote').summernote('pasteHTML', '<button type="button" class="button_summernote" contenteditable="false">' + valor_parametro + '</button>');
+        elemento_param.style.textDecoration == 'underline' ? valor_parametro = '<u>' + valor_parametro + '</u>' : valor_parametro = valor_parametro;
+
+        elemento_param.style.textDecoration == 'line-through' ? valor_parametro = '<s>' + valor_parametro + '</s>' : valor_parametro = valor_parametro;
+
+        elemento_param.style.fontStyle == 'italic' ? valor_parametro = '<i>' + valor_parametro + '</i>' : valor_parametro = valor_parametro;
+
+        var botonHtml = `<button type="button" class="button_summernote" contenteditable="false" onclick="editButton(this)">${valor_parametro}</button>`;
+
+        $('#summernote').summernote('pasteHTML', botonHtml);
+    }
+
+    /*******************  Editar BOTON PARAMETRO  **************************/
+    function editButton(element){
+        var span_txt = '<span hidden="">|</span>';        
+        const modal = document.getElementById("modal"); 
+        var elemento_param = document.getElementById("nuevo_param");
+        elemento_param.value = element.innerText;
+        elemento_param.innerHTML = element.innerHTML.replaceAll(span_txt, '');
+        document.getElementById("camposLlenar").innerHTML = "";
+
+        if(element.innerHTML.includes("<b>"))
+            elemento_param.style.fontWeight = 'bold';
+        if(element.innerHTML.includes("<u>"))
+            elemento_param.style.textDecoration = 'underline';
+        if(element.innerHTML.includes("<s>"))
+            elemento_param.style.textDecoration = 'line-through';
+        if(element.innerHTML.includes("<i>"))
+            elemento_param.style.fontStyle = 'italic';
+        borderSelectedButton(elemento_param.style);
+        modal.showModal();
+        configurationModal(); 
     }
 
     function searchFieldsAndShow(cadena_buscar, campos){
@@ -175,7 +222,7 @@
         document.getElementById("nuevo_param").value = campo;
     }
 
-    /******* Agrega un campo nuevo a la Tabla ***********/
+    /******* Agrega un campo nuevo a la Tabla de CASOS ***********/
     function addRowInTableCases(valor_parametro){
         //console.log("Entre a:addNewFieldInCases");
         var span_txt = '<span hidden="">|</span>';

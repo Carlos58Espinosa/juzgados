@@ -9,8 +9,8 @@
       <div class="container-fluid">
         <div class="card" id="card-section">
 
-          <div>
-            <a href="{{session('urlBack')}}" class="btn btn-info" style="width: 40px; margin-bottom: 10px;float: left"><i class="fas fa-long-arrow-alt-left"></i></a>
+          <div class="input-group mb-2">
+            <a href="{{action('PlantillasController@create')}}" class="btn btn-info" style="width: 40px; margin-bottom: 10px;"><i class="fas fa-plus"></i></a>
           </div>
 
           <form class="" action="{{action('PlantillasController@store')}}" method="post" accept-charset="UTF-8" enctype="multipart/form-data">

@@ -5,6 +5,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -59,10 +60,8 @@
 		.button_summernote {
 			border:1px solid #0dcaf0;
 			border-radius: 5px;
-			/*cursor: not-allowed !important;*/
 			padding: 2px;
 			display: inline-block;
-			/*pointer-events:none !important;*/
 		}
 
 		.card{
@@ -103,7 +102,7 @@
 	<script src="https://unpkg.com/qrious@4.0.2/dist/qrious.js"></script>
 	<!---------------------------------------------------------------------------------------------->
 	
-
+	
 </head>
 
 <body class="animsition home">
@@ -191,7 +190,8 @@
 
  	</div>
 
-<!-- Bootstrap JS -->
+
+ 	<!-- Bootstrap JS -->
 	<script src="{{ asset('adminjs/toastr.js') }}"></script>
 	<script src="{{ asset('adminjs/cropper.js') }}"></script>
 	<script src="{{ asset('adminjs/datatables.js') }}"></script>
@@ -216,7 +216,6 @@
 	<!-- Sweet Alert -->
 	<!-- javscripts -->
 	<script src="{{ asset('adminjs/adminscripts.js') }}"></script>
-
 
 	<script >
 		$("[data-toggle=tooltip]").tooltip();

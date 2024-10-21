@@ -106,7 +106,9 @@
             console.log("Enetreree");
             console.log(data['grupos_campos'][0]['id']);
             console.log(document.getElementById('a_'+data['grupos_campos'][0]['id']));
-            $('#a_'+data['grupos_campos'][0]['id']).focus();
+            document.getElementById('a_'+data['grupos_campos'][0]['id']).style.cursor = "default"; 
+
+            $('#a'+data['grupos_campos'][0]['id']).focus();
         }
 
         $('#texto_final').summernote('code', data['texto']);
@@ -117,10 +119,10 @@
     function getStringHtmlFieldTemplate(arr){ 
         var html1 = '<ul class="nav nav-tabs">', html2 = '<div>';
         var cad_hidden = '';
-        var element_id = '';
+        var element_id = 'aria-current="page"';
 
         for(let a of arr){
-            html1 += `<li class="nav-item" onclick="showTable(${a["id"]})"><a id="a_${a["id"]}" class="nav-link" href="#" aria-current="page">${a["grupo"]}</a></li>`;
+            html1 += `<li class="nav-item" onclick="showTable(${a["id"]})"><a id="a_${a["id"]}" class="nav-link" href="#" ${element_id}>${a["grupo"]}</a></li>`;
 
             html2 += `<div id="${a["id"]}" ${cad_hidden}><table id="tabla_${a["id"]}" class="table table-info" style="margin-left: 5px; width:600px; position: absolute;"><tr><th>Nombre del Parámetro</th><th style="text-align:center">Valor</th></tr>`;
             for(let campo of a["campos"]){
@@ -137,6 +139,7 @@
             }
             html2 += "</table></div>";
             cad_hidden = "hidden";
+            element_id = '';
         }
         html1 +=  '</ul>';
         html2 += "</div>";

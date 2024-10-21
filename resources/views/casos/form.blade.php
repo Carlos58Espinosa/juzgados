@@ -1,5 +1,9 @@
 <!---------------------- Banco de Datos --------------->
 <div class="offcanvas offcanvas-end" id="demo" style="margin-top:120px; width: 650px; height: 300px; overflow: hidden; overflow-y: scroll;">
+
+  <div align="right">
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+  </div>
         
   <input type="hidden" name="nuevos_campos_cad" id="nuevos_campos_cad" value="">
   <input type ="hidden" id="grupo_id" name="grupo_id">
