@@ -18,8 +18,8 @@
 
             <br>            
 
-            <button id="closeModal" type="button" class="btn btn-success">Guardar</button>
-            <button style="margin-left: 70px;" id="closeModal2" type="button" class="btn btn-danger">Cerrar</button>
+            <button id="saveModal" type="button" class="btn btn-success">Guardar</button>
+            <button style="margin-left: 70px;" id="closeModal" type="button" class="btn btn-danger">Cerrar</button>
         </div>
     </div>
 
@@ -38,6 +38,7 @@
             disableDragAndDrop:true,
             height: 500,
             width: 600,
+            focus: true,
             toolbar: [
               ['style', ['style']],
               ['font', ['bold', 'underline', 'clear', 'italic', 'strikethrough']],
@@ -45,6 +46,7 @@
               ['misc', ['undo', 'redo']],
               ['height', ['height']],
               ['mybutton', ['addParam']],
+              ['view', ['codeview']],
             ],
             lineHeights: ['1.0', '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7'],
             buttons: {
@@ -109,52 +111,50 @@
                 document.getElementById("camposLlenar").innerHTML = "";
                 changeTextInput("eraser");
                 modal.showModal();
-                configurationModal();                    
+                configurationModal('create', null);
             }
         });
         return button.render();   // return button as jquery object
     }
 
     /************  Configuración MODAL Nuevo Parámetro  ****************/
-    function configurationModal(){
-        $("#closeModal").unbind().click(function() {
+    function configurationModal(option, element){
+        $("#saveModal").unbind().click(function() {
             var elemento_param = document.getElementById("nuevo_param");
             var valor_parametro = elemento_param.value.toLowerCase();
             modal.close();
 
             if(valor_parametro !== ""){
-                valor_parametro = cleanParameterValue(valor_parametro);
-                addParamOnSummernote(valor_parametro, elemento_param);
+                valor_parametro = cleanParameterValue(valor_parametro, elemento_param);
+                switch(option){
+                    case "create":
+                            addParamOnSummernote(valor_parametro);
+                        break;
+                    case "edit":
+                        element.innerHTML = valor_parametro;
+                        break;
+                }                
 
                 //Solo para formulario de CASOS
                 if(document.getElementById("nuevos_campos_cad"))
                     addRowInTableCases(valor_parametro);
             }
-        });
-
-        $("#closeModal2").unbind().click(function() {  
+        }); 
+        $("#closeModal").unbind().click(function() {  
             modal.close();
             $('#summernote').summernote('editor.restoreRange');
             $('#summernote').summernote('editor.focus');
-        });      
+        });     
     }
 
 
-    /**** Limpia el VALOR PARAMETRO de saltos de linea, tabuladores ****/
-    function cleanParameterValue(valor_parametro) {
+    /**** Limpia el VALOR PARAMETRO de saltos de linea, tabuladores y AGREGA el estilo ****/
+    function cleanParameterValue(valor_parametro, elemento_param) {
+        var span_txt = '<span hidden="">|</span>';
         valor_parametro = valor_parametro.replace('\n','');
         valor_parametro = valor_parametro.replace('\t','');
         valor_parametro = valor_parametro.replace('<br>','');
-        return valor_parametro;
-    }
-    
 
-    /****************  Agregar PARAMETRO BOTON  *********************/
-    function addParamOnSummernote(valor_parametro, elemento_param){
-        $('#summernote').summernote('editor.restoreRange');
-        $('#summernote').summernote('editor.focus');
-
-        var span_txt = '<span hidden="">|</span>';
         valor_parametro = span_txt + valor_parametro + span_txt;
 
         elemento_param.style.fontWeight == 'bold' ? valor_parametro = '<b>' + valor_parametro + '</b>' : valor_parametro = valor_parametro;
@@ -164,6 +164,14 @@
         elemento_param.style.textDecoration == 'line-through' ? valor_parametro = '<s>' + valor_parametro + '</s>' : valor_parametro = valor_parametro;
 
         elemento_param.style.fontStyle == 'italic' ? valor_parametro = '<i>' + valor_parametro + '</i>' : valor_parametro = valor_parametro;
+        return valor_parametro;
+    }
+    
+
+    /****************  Agregar PARAMETRO BOTON  *********************/
+    function addParamOnSummernote(valor_parametro){
+        $('#summernote').summernote('editor.restoreRange');
+        $('#summernote').summernote('editor.focus');        
 
         var botonHtml = `<button type="button" class="button_summernote" contenteditable="false" onclick="editButton(this)">${valor_parametro}</button>`;
 
@@ -172,12 +180,20 @@
 
     /*******************  Editar BOTON PARAMETRO  **************************/
     function editButton(element){
+        $('#summernote').summernote('editor.saveRange'); 
         var span_txt = '<span hidden="">|</span>';        
         const modal = document.getElementById("modal"); 
-        var elemento_param = document.getElementById("nuevo_param");
-        elemento_param.value = element.innerText;
-        elemento_param.innerHTML = element.innerHTML.replaceAll(span_txt, '');
         document.getElementById("camposLlenar").innerHTML = "";
+        var elemento_param = document.getElementById("nuevo_param");
+        elemento_param.value = element.innerText.replaceAll(span_txt, '');
+
+        //elemento_param.outerHtml = element.outerHTML.replaceAll(span_txt, '');
+        //elemento_param.innerText = element.innerText.replaceAll(span_txt, '');
+        //elemento_param.innerHTML = element.innerHTML.replaceAll(span_txt, '');
+
+        elemento_param.style.fontWeight = 'normal';
+        elemento_param.style.textDecoration = 'none';
+        elemento_param.style.fontStyle = 'normal';
 
         if(element.innerHTML.includes("<b>"))
             elemento_param.style.fontWeight = 'bold';
@@ -187,9 +203,10 @@
             elemento_param.style.textDecoration = 'line-through';
         if(element.innerHTML.includes("<i>"))
             elemento_param.style.fontStyle = 'italic';
+
         borderSelectedButton(elemento_param.style);
-        modal.showModal();
-        configurationModal(); 
+        modal.showModal();        
+        configurationModal('edit', element);
     }
 
     function searchFieldsAndShow(cadena_buscar, campos){
