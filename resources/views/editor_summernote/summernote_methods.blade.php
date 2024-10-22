@@ -46,7 +46,7 @@
               ['misc', ['undo', 'redo']],
               ['height', ['height']],
               ['mybutton', ['addParam']],
-              //['view', ['codeview']],
+              ['view', ['codeview']],
             ],
             lineHeights: ['1.0', '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7'],
             buttons: {
@@ -118,7 +118,7 @@
     }
 
     /************  Configuración MODAL Nuevo Parámetro  ****************/
-    function configurationModal(option, element){
+    function configurationModal(option, button){
         $("#saveModal").unbind().click(function() {
             var elemento_param = document.getElementById("nuevo_param");
             var valor_parametro = elemento_param.value.toLowerCase();
@@ -128,16 +128,17 @@
                 valor_parametro = cleanParameterValue(valor_parametro, elemento_param);
                 switch(option){
                     case "create":
-                            addParamOnSummernote(valor_parametro);
-                        break;
+                        addParamOnSummernote(valor_parametro);
+                    break;
                     case "edit":
-                        element.innerHTML = valor_parametro;
-                        break;
+                        button.innerHTML = valor_parametro;
+                        $('#summernote').summernote('code', $('#summernote').summernote('code'));
+                    break;
                 }                
 
                 //Solo para formulario de CASOS
                 if(document.getElementById("nuevos_campos_cad"))
-                    addRowInTableCases(valor_parametro);
+                    addRowInTableCases(elemento_param.value.toLowerCase());
             }
         }); 
         $("#closeModal").unbind().click(function() {  
@@ -179,30 +180,30 @@
     }
 
     /*******************  Editar BOTON PARAMETRO  **************************/
-    function editButton(element){
+    function editButton(button){
         $('#summernote').summernote('editor.saveRange'); 
         var span_txt = '<span hidden="">|</span>';        
         const modal = document.getElementById("modal"); 
         document.getElementById("camposLlenar").innerHTML = "";
         var elemento_param = document.getElementById("nuevo_param");
-        elemento_param.value = element.innerText.replaceAll(span_txt, '');
+        elemento_param.value = button.innerText.replaceAll(span_txt, '');
 
         elemento_param.style.fontWeight = 'normal';
         elemento_param.style.textDecoration = 'none';
         elemento_param.style.fontStyle = 'normal';
 
-        if(element.innerHTML.includes("<b>"))
+        if(button.innerHTML.includes("<b>"))
             elemento_param.style.fontWeight = 'bold';
-        if(element.innerHTML.includes("<u>"))
+        if(button.innerHTML.includes("<u>"))
             elemento_param.style.textDecoration = 'underline';
-        if(element.innerHTML.includes("<s>"))
+        if(button.innerHTML.includes("<s>"))
             elemento_param.style.textDecoration = 'line-through';
-        if(element.innerHTML.includes("<i>"))
+        if(button.innerHTML.includes("<i>"))
             elemento_param.style.fontStyle = 'italic';
 
         borderSelectedButton(elemento_param.style);
         modal.showModal();        
-        configurationModal('edit', element);
+        configurationModal('edit', button);
     }
 
     function searchFieldsAndShow(cadena_buscar, campos){
@@ -251,6 +252,7 @@
                 $("#tabla_0").append(this.getRowStringHtmlFieldTemplate(valor_parametro));
             }
         }
+        //$('#texto_final').summernote('code', document.getElementById("summernote").value);
         this.replaceText();
     }
 

@@ -130,6 +130,8 @@ class PlantillasController extends Controller
      */
     public function update(Request $request, $id)
     {
+        //echo htmlspecialchars($request->texto);
+        //return 1;
         $this->validate($request, [
             'nombre' => 'required|unique:plantillas,nombre,'.$id,            
             'texto' => 'required'

@@ -103,9 +103,6 @@
         var contenedorDiv = document.getElementById('div_campos_plantilla');
         contenedorDiv.innerHTML = this.getStringHtmlFieldTemplate(data['grupos_campos']);
         if(data['grupos_campos'].length > 0){
-            console.log("Enetreree");
-            console.log(data['grupos_campos'][0]['id']);
-            console.log(document.getElementById('a_'+data['grupos_campos'][0]['id']));
             document.getElementById('a_'+data['grupos_campos'][0]['id']).style.cursor = "default"; 
 
             $('#a'+data['grupos_campos'][0]['id']).focus();
