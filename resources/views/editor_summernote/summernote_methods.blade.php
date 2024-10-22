@@ -46,7 +46,7 @@
               ['misc', ['undo', 'redo']],
               ['height', ['height']],
               ['mybutton', ['addParam']],
-              ['view', ['codeview']],
+              //['view', ['codeview']],
             ],
             lineHeights: ['1.0', '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7'],
             buttons: {
@@ -186,10 +186,6 @@
         document.getElementById("camposLlenar").innerHTML = "";
         var elemento_param = document.getElementById("nuevo_param");
         elemento_param.value = element.innerText.replaceAll(span_txt, '');
-
-        //elemento_param.outerHtml = element.outerHTML.replaceAll(span_txt, '');
-        //elemento_param.innerText = element.innerText.replaceAll(span_txt, '');
-        //elemento_param.innerHTML = element.innerHTML.replaceAll(span_txt, '');
 
         elemento_param.style.fontWeight = 'normal';
         elemento_param.style.textDecoration = 'none';
