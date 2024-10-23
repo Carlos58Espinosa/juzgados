@@ -110,6 +110,15 @@
 
         $('#texto_final').summernote('code', data['texto']);
         $('#summernote').summernote('code', data['texto']);
+
+        disableButtonsOnPreView();        
+    }
+
+    function disableButtonsOnPreView(){
+        var content = document.getElementById("div_texto_final");
+        var buttons = content.getElementsByTagName("button");
+        for(let button of buttons)
+            button.disabled= true;
     }
 
     /****  Regresa el STRING HTML para la tabla de CAMPOS  *****/
@@ -183,6 +192,8 @@
                 textoAux = textoAux.replaceAll(campo, input.value);
         }
         $('#texto_final').summernote('code', textoAux);
+
+        disableButtonsOnPreView();
     }  
 
 

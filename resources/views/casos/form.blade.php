@@ -24,7 +24,7 @@
 <div id="div_textos_summernote" class="row" style="margin-top: 0px;" hidden>
 
     <div class="col-12 col-sm-6 col-md-6">
-      <div class="form-group">
+      <div id="div_texto_final" class="form-group">
         <label for="">Vista Previa: </label>
         <br>
         <textarea style="height: 480px; width:300px" required name="texto_final" id="texto_final"></textarea>
