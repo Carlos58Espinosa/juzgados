@@ -7,6 +7,7 @@ use App\Models\Plantilla;
 use App\Models\PlantillaCampo;
 use App\Models\Grupo;
 use App\Models\CasosPlantillas;
+use App\User;
 use Validator;
 
 class PlantillasController extends Controller
@@ -25,7 +26,13 @@ class PlantillasController extends Controller
                 $res = $this->getFieldsAndTemplateByTemplateId($request->all());
                 break;           
             default:
-                $plantillas = DB::table('plantillas')->orderBy('id', 'desc')->get();
+                $tipo_usuario = \Auth::user()->tipo;
+                $usuario_ctrl = new UsuariosController();
+                $color = $usuario_ctrl->getColorByUser();
+                $arrUsuariosIds = $this->getArrayUserIds();                
+                $plantillas = Plantilla::with(['usuario' => function ($query) {
+                    $query->select('id', 'tipo');
+                }])->whereIn('usuarioId', $arrUsuariosIds)->orderBy('updated_at', 'desc')->get();
                 /*$notification = array(
                           'message' => 'Successful!!',
                           'alert-type' => 'success'
@@ -35,7 +42,7 @@ class PlantillasController extends Controller
                 session()->flash("title", "alerta"); */  
                 //print_r($plantillas);
                 //return true;
-                $res = view('plantillas.index',compact('plantillas'));
+                $res = view('plantillas.index',compact('plantillas', 'color', 'tipo_usuario'));
                 break;
         }
         return $res;
@@ -64,20 +71,18 @@ class PlantillasController extends Controller
      */
     public function store(Request $request)
     {   
-        $this->validate($request, [
-            'nombre' => 'required|unique:plantillas,nombre,',                       
-            'texto' => 'required',
-        ], ['nombre.unique' => 'El nombre debe de ser único.']);
-
         if( url()->previous() != url()->current() ){
             session()->forget('urlBack');
             session(['urlBack' => url()->previous()]);
         }
 
+        $this->validate($request, [
+            'nombre' => 'required|unique:plantillas,nombre,',                       
+            'texto' => 'required',
+        ], ['nombre.unique' => 'El nombre debe de ser único.']);
+
         $transaction = DB::transaction(function() use($request){
-            $campos = $this->getTemplateFields($request->texto);
-            $plantilla = Plantilla::create(['nombre'=> $request->nombre, 'texto'=> $request->texto]);
-            $this->insertPlantillaCampos($campos, false, $plantilla->id);
+            $this->saveRegister($request);
             
             $notification = array(
                   'message' => 'Registro Guardado.',
@@ -223,9 +228,9 @@ class PlantillasController extends Controller
     public function viewPdf(Request $request) {        
         $plantilla = Plantilla::findOrFail($request->id);
         $estado = "slp";
-        $res = str_replace('<button type="button" class="button_summernote" contenteditable="false">', '<span class="span_param">', $plantilla->texto);
+        $res = str_replace('<button type="button" class="button_summernote" contenteditable="false" onclick="editButton(this)">', '<span class="span_param">', $plantilla->texto);
         $res = str_replace('</button>', '</span>', $res);
-        $res = str_replace('<span hidden="">|</span>', '', $res);       
+        $res = str_replace('<span hidden="">|</span>', '', $res);   
         $view = view('pdfs.archivo', compact('res', 'estado'));
         $view = preg_replace('/>\s+</', '><', $view);
         $pdf = \PDF::loadHTML($view);
@@ -292,5 +297,29 @@ class PlantillasController extends Controller
                 array_push($res["grupos_campos"], $raux);
             }
         }
+    }
+
+    public function clone(Request $request){
+        date_default_timezone_set('America/Mexico_City');
+        $plantilla = Plantilla::findOrFail($request->id);
+        $this->saveRegister(new Request(['nombre' => $plantilla->nombre. ' ' .date("H:i:s"), 'texto' => $plantilla->texto]));        
+        return response()->json(200);
+    }
+
+    public function getArrayUserIds(){
+        $arrUsuariosIds = [];
+        $usuario = \Auth::user();
+        array_push($arrUsuariosIds, $usuario->id);
+        $usuarios = User::where('tipo', 'Administrador')->get();
+        foreach($usuarios as $usuario_iter)
+            array_push($arrUsuariosIds, $usuario_iter->id);
+        return $arrUsuariosIds;
+    }
+
+    public function saveRegister(Request $request){
+        $usuario = \Auth::user();
+        $campos = $this->getTemplateFields($request->texto);
+        $plantilla = Plantilla::create(['nombre'=> $request->nombre, 'texto'=> $request->texto, 'usuarioId' => $usuario->id]);
+        $this->insertPlantillaCampos($campos, false, $plantilla->id);
     }
 }

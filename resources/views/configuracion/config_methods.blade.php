@@ -10,6 +10,10 @@
       }
   });
 
+  function getHStringtmlLi(id, value){
+      return '<li id="'+ id +'" class="list-group-item list-group-item-info sortable-itemc ui-state-default"><i class="fas fa-arrows-alt-v flecha_tipo_procedimiento"></i>   ' + value + '</li>';
+  }
+
   function rebuildListGroup(arrIds) {
       var cad = '';
       var plantillas = @json($plantillas);
@@ -17,9 +21,8 @@
 
       for (const iter of arrIds){
           var aux = plantillas_aux.filter(plantilla => String(plantilla['id']) == iter);
-          if(aux.length > 0){
-            cad += '<li id="'+aux[0]['id']+'" class="list-group-item list-group-item-info sortable-itemc ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>'+aux[0]['nombre']+'</li>';
-          }
+          if(aux.length > 0)
+              cad += getHStringtmlLi(aux[0]['id'], aux[0]['nombre']);
       }
       document.getElementById("list_templates").innerHTML += cad;
   }
@@ -46,8 +49,7 @@
 
     for (const iter of options_selected){
         if(document.getElementById(iter['value']) == null){
-            var cad = '<li id="'+iter['value']+'" class="list-group-item list-group-item-info sortable-itemc ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>'+iter['innerText']+'</li>';
-            document.getElementById("list_templates").innerHTML += cad;
+            document.getElementById("list_templates").innerHTML += getHStringtmlLi(iter['value'], iter['innerText']);
             arrIds.push(iter['value']);
             band = true;
         } 

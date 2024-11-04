@@ -2,58 +2,56 @@
 
 @section('content') 
 
-<div class="main-content">
-  <div class="section__content section__content--p30">
-    <div class="container-fluid">
-      <div class="card" id="card-section"> 
-      @csrf 
+@csrf 
 
-      	<div class="container">
-      			<input type ="hidden" id="grupo_id" name="grupo_id">
-
-						<div class="col-12 col-sm-6 col-md-4">
-							<div class="form-group">
-								<label for="">Agregar Grupo:</label> 
-							 	<input style="text-transform: none; float: left;" type="text" class="form-control" id="grupo" name="grupo" onkeydown="return /[0-9,a-z, ]/i.test(event.key)">
-							 	<a onclick="addGroup()" class="btn btn-info" style="width: 40px; margin-left:400px; margin-top: -60px;"><i class="fas fa-plus"></i></a> 
-							</div>
-						</div>
-
-				    <div style="margin-left: 230px;" class="col-12 col-sm-6 col-md-4">
-				        <div class="form-group">
-
-				            <label for="">Claves:</label>
-				            <select class="form-control selectpicker" data-style="form-control" data-live-search="true" title="-- Selecciona Clave --" multiple="multiple" name="campos_ids[]" id="campos_ids_aux">
-					              @foreach($campos as $campo)
-					                <option value="{{$campo->campo}}">{{$campo->campo}}</option>
-					              @endforeach
-				            </select>
-				            <a onclick="addFields()" class="btn btn-info" style="width: 40px; margin-left:400px; margin-top: -60px;"><i class="fas fa-plus"></i></a>
-
-				        </div>
-				    </div>
-    		</div>
-
-				<ul class="nav nav-tabs" id="navs" role="tablist" >
-						@foreach($grupos as $grupo)
-								<li id="{{$grupo->id}}" onclick="getFieldsByNav(this.id, '{{$grupo->nombre}}')" class="nav-item">
-											<a id="{{$grupo->nombre}}" class="nav-link" href="#">{{$grupo->nombre}}</a>										
-								</li>
-								<button id="button_{{$grupo->id}}" class="btn btn-link" style="width:40px; margin: 0; padding: 0;" onclick="deleteGroup({{$grupo->id}})">
-										<i class="far fa-trash-alt"></i>
-								</button>
-						@endforeach
-				</ul>
-
-				<div class="container">
-						<table id="tabla_campos" class="table table-info">					
-						</table>
-				</div>
-
-      </div>
-    </div>
+	<div>
+      <a href="{{session('urlBack')}}" title="Regresar" class="btn boton_agregar"><i class="fas fa-long-arrow-alt-left"></i></a>
   </div>
-</div> 
+
+  <br>
+
+  <div class="row">
+
+		 	<input type ="hidden" id="grupo_id" name="grupo_id">
+
+			<div class="col-12 col-sm-6 col-md-4">
+				<div class="form-group">
+					<label for="">Agregar Grupo:</label> 
+				 	<input style="text-transform: none; float: left;" type="text" class="form-control" id="grupo" name="grupo" onkeydown="return /[0-9,a-z, ]/i.test(event.key)">
+				 	<a onclick="addGroup()" class="btn boton_agregar" style="margin-left:430px; margin-top: -60px;"><i class="fas fa-plus"></i></a>				 	 
+				</div>				
+			</div>
+
+		  <div style="margin-left: 230px;" class="col-12 col-sm-6 col-md-4">
+		      <div class="form-group">
+		          <label for="">Claves:</label>
+		          <select class="form-control selectpicker" data-style="form-control" data-live-search="true" title="-- Selecciona Clave --" multiple="multiple" name="campos_ids[]" id="campos_ids_aux">
+		              @foreach($campos as $campo)
+		                <option value="{{$campo->campo}}">{{$campo->campo}}</option>
+		              @endforeach
+		          </select>
+		          <a onclick="addFields()" class="btn boton_agregar" style="margin-left:430px; margin-top: -60px;"><i class="fas fa-plus"></i></a>
+		      </div>
+		  </div>
+  </div>
+
+	<ul class="nav nav-tabs" id="navs" role="tablist" >
+			@foreach($grupos as $grupo)
+					<li id="{{$grupo->id}}" class="nav-item" onclick="getFieldsByNav(this.id, '{{$grupo->nombre}}')">
+							<a id="{{$grupo->nombre}}" class="nav-link" href="#">{{$grupo->nombre}}</a>
+					</li>
+					 <button id="button_{{$grupo->id}}" class="btn" style="width:40px; margin: 0; padding: 0; color: lightcoral;" onclick="deleteGroup({{$grupo->id}})">
+							<i class="far fa-trash-alt"></i>
+					</button>
+			@endforeach
+	</ul>
+
+	<br>
+
+	<div class="container" style="margin-left:200px;">
+			<table id="tabla_campos" class="table" style="width:30%">					
+			</table>
+	</div>
 
 <script>
   $(document).ready(function() {
@@ -74,8 +72,7 @@
 			        cache: false,
 			        data: {'nombre' : grupo,'_token':"{{ csrf_token() }}"},
 			        success: function(data){	
-			        		console.log("GRUPO ID="+data);
-			        		var cadHtml = `<li id="${data}" onclick="getFieldsByNav(this.id)" class="nav-item"><a id="${grupo}" class="nav-link" href="#" aria-current="page">${grupo}</a></li><button id="button_${data}" class="btn btn-link" style="width:40px;" onclick="deleteGroup(${data})"><i class="far fa-trash-alt"></i></button>`;
+			        		var cadHtml = `<li id="${data}" onclick="getFieldsByNav(this.id)" class="nav-item"><a id="${grupo}" class="nav-link" href="#" aria-current="page">${grupo}</a></li><button id="button_${data}" class="btn" style="width:40px; color: lightcoral;" onclick="deleteGroup(${data})"><i class="far fa-trash-alt"></i></button>`;
 									document.getElementById("navs").innerHTML += cadHtml;	 
 									document.getElementById("grupo_id").value = data;
 									document.getElementById("grupo").value = "";
@@ -131,6 +128,8 @@
 	/**************************  Recupera los CAMPOS de un GRUPO  **************************************************/
 
 	function getFieldsByNav(id){
+			 $(".nav-tabs li").removeClass("active");
+        $("#" + id).addClass("active")
 			//console.log("ID="+id);
 			document.getElementById("grupo_id").value = id;
 			document.getElementById("tabla_campos").innerHTML = '';
@@ -155,7 +154,7 @@
 
 	function createTableFields(arr){
 			var cad = '';
-		  cad += '<tr class="table-info"><th scope="col">Campo</th><th scope="col">Acción</th></tr>';
+		  cad += '<tr><th scope="col">Campo</th><th scope="col">Acción</th></tr>';
 
 		  for(let a of arr)
 		  		cad += getHtmlStringField(a["campo"]);    
@@ -164,7 +163,8 @@
 	}
 
 	function getHtmlStringField(field) {
-  		var cadHtml = `<tr class="table-info"><td>${field}</td><td><button class="btn btn-link" style="width:40px;" onclick="deleteField('${field}')"><i class="far fa-trash-alt"></i></button></td></tr>`;
+  		var cadHtml = `<tr><td>${field}</td><td><button class="btn" style="width:40px;
+	color:lightcoral;" onclick="deleteField('${field}')"><i class="far fa-trash-alt"></i></button></td></tr>`;
   		return cadHtml;
   }
 	
@@ -205,7 +205,7 @@
 	function addRowsTableFields(arr){
 			var cad = '';
 			if(document.getElementById("tabla_campos").innerHTML == "")
-					cad += '<tr class="table-info"><th scope="col">Campo</th><th scope="col">Acción</th></tr>';
+					cad += '<tr><th>Campo</th><th>Acción</th></tr>';
 			
 		  for(let a of arr)
 		  		cad += getHtmlStringField(a);  

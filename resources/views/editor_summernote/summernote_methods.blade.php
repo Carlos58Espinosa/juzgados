@@ -1,9 +1,8 @@
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
-<script src="https://unpkg.com/pdf-lib"></script>
 <script src="{{ asset('js/sweetalert.js') }}"></script>
 
-<dialog id="modal" style="padding:30px; width:700px; height: 400px;position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">
+<dialog id="modal" style="padding:20px; width:700px; height: 400px;position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">
     <div class="row" style="width:420px;">
         <button id="boton_bold" style="width: 40px;" onclick="changeTextInput('bold')" type="button" class="btn btn-light"><i class="note-icon-bold"></i></button>
         <button id="boton_underline" style="width: 40px;" onclick="changeTextInput('underline')" type="button" class="btn btn-light"><i class="note-icon-underline"></i></button>
@@ -11,6 +10,7 @@
         <button id="boton_italic" style="width: 40px;" onclick="changeTextInput('italic')" type="button" class="btn btn-light"><i class="note-icon-italic"></i></button>
         <button id="boton_line" style="width: 40px;" onclick="changeTextInput('line-through')" type="button" class="btn btn-light"><i class="note-icon-strikethrough"></i></button>
     </div>
+
     <div class="row" style="width: 420px; float: left; margin-top: 5px;">
         <div class="form-group">
             <label>Nombre del Parámetro:</label>
@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <div id="camposLlenar" style="width:210px; height:350px;margin-left:410px; margin-top: -40px; overflow: hidden; overflow-y: scroll;">            
+    <div id="camposLlenar" style="width:230px; height:350px;margin-left:410px; margin-top: -40px; overflow: hidden; overflow-y: scroll; border-radius: 10px;">            
     </div> 
 
 </dialog>
@@ -36,7 +36,7 @@
         $('#summernote').summernote(
           {
             disableDragAndDrop:true,
-            height: 500,
+            height: 450,
             width: 600,
             focus: true,
             toolbar: [
@@ -45,12 +45,13 @@
               ['para', ['ul', 'ol', 'paragraph']],
               ['misc', ['undo', 'redo']],
               ['height', ['height']],
-              ['mybutton', ['addParam']],
-              //['view', ['codeview']],
+              ['mybutton', ['addParam','lowerCase']],
+              ['view', ['codeview']],
             ],
             lineHeights: ['1.0', '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7'],
             buttons: {
-              addParam: addParamButton
+                addParam: addParamButton,
+                lowerCase: lowerCaseButton
             }
           }
         );
@@ -117,6 +118,26 @@
         return button.render();   // return button as jquery object
     }
 
+    /*********** Botón de Texto a Mayusculas *************/
+    var lowerCaseButton = function (context) {
+        var ui = $.summernote.ui;
+
+        // create button
+        var button = ui.button({
+          contents: '<i class="fab fa-etsy"/> Mayusculas',
+          tooltip: 'Convertir a Mayusculas',
+          click: function () {
+                var textSelection = window.getSelection().toString().toUpperCase();
+                if(textSelection != ""){
+                    $('#summernote').summernote('editor.restoreRange');
+                    $('#summernote').summernote('editor.focus');
+                    $('#summernote').summernote('pasteHTML', textSelection);
+                }
+            }
+        });
+        return button.render();   // return button as jquery object
+    }
+
     /************  Configuración MODAL Nuevo Parámetro  ****************/
     function configurationModal(option, button){
         $("#saveModal").unbind().click(function() {
@@ -152,9 +173,9 @@
     /**** Limpia el VALOR PARAMETRO de saltos de linea, tabuladores y AGREGA el estilo ****/
     function cleanParameterValue(valor_parametro, elemento_param) {
         var span_txt = '<span hidden="">|</span>';
-        valor_parametro = valor_parametro.replace('\n','');
-        valor_parametro = valor_parametro.replace('\t','');
-        valor_parametro = valor_parametro.replace('<br>','');
+        valor_parametro = valor_parametro.replaceAll('\n','');
+        valor_parametro = valor_parametro.replaceAll('\t','');
+        valor_parametro = valor_parametro.replaceAll('<br>','');
 
         valor_parametro = span_txt + valor_parametro + span_txt;
 
@@ -207,25 +228,30 @@
     }
 
     function searchFieldsAndShow(cadena_buscar, campos){
+        cadena_buscar = cadena_buscar.toLowerCase();
+        cadena_buscar = cadena_buscar.replaceAll('á','a').replaceAll('é','e').replaceAll('í','i').replaceAll('ó','o').replaceAll('ú','u');
+
+        document.getElementById('nuevo_param').value = cadena_buscar;
+
         document.getElementById("camposLlenar").innerHTML = ""; 
         if(cadena_buscar !== ""){
             var campos_encontrados = campos.filter((element) => element.campo.includes(cadena_buscar));
-            var cadHtml = '<table id="tabla_campos" class="table-info">';
+            var cadHtml = '<table id="tabla_campos" class="table"><thead></thead><tbody>';
 
             for (var c of campos_encontrados)
                 cadHtml += this.getStringHtmlField(c.campo);
 
-            cadHtml += "</table>";
+            cadHtml += "</tbody></table>";
             document.getElementById("camposLlenar").innerHTML = cadHtml;
         }
     }
 
     /****  Regresa la cadena de Html  *****/
     function getStringHtmlField(campo){
-        var html = '<tr class="table table-info" id="'+campo+'">';
-        html += '<td class="table-info">'+campo;
-        html += `<button type="button" style="align:left" class="btn btn-link" onclick="copyText('${campo}')">`;
-        html += '<i class="far fa-copy"></i></button>';
+        var html = '<tr id="'+campo+'">';
+        html += '<td>'+campo+'</td>';
+        html += `<td><div class="div_btn_acciones"><button type="button" class="btn" onclick="copyText('${campo}')">`;
+        html += '<i class="far fa-copy"></i></button></div>';
         html += '</td>';
         html += '</tr>';
         return html;

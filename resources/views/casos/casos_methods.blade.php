@@ -1,8 +1,11 @@
 <script>
 
     $(document).ready(function() {      
-        document.getElementById('check_edit_template').checked = false;
-        document.getElementById("div_textos_summernote").hidden = true; 
+        //document.getElementById('check_edit_template').checked = false;
+        //document.getElementById("div_textos_summernote").hidden = true; 
+        document.getElementById("carouselExampleCaptions").hidden = true;
+        if(document.getElementById("div_plantillas"))
+            document.getElementById("div_plantillas").hidden = true;
         document.getElementById("nuevos_campos_cad").value = "";
         initSummernotes();
     });
@@ -16,7 +19,8 @@
         $('#texto_final').summernote(
           {
             disableDragAndDrop:true,
-            height: 400,
+            height: 500,
+            width: 600,
             toolbar: [
             ],
           }
@@ -31,8 +35,9 @@
           var configId = document.getElementById("select_config").value;
 
           document.getElementById("div_plantillas").hidden = false;
-          document.getElementById("div_textos_summernote").hidden = true;
+          //document.getElementById("div_textos_summernote").hidden = true;
           document.getElementById("nuevos_campos_cad").value = "";
+          document.getElementById("carouselExampleCaptions").hidden = true;
 
           $.ajax({
             dataType: 'json',
@@ -54,9 +59,9 @@
           //console.log("Entre a:fillSelectTemplates");
           $("#select_template").empty();
           for(template of templates){        
-            var cad = template.plantilla.nombre;
-            var id = template.plantilla.id;
-            $("#select_template").append('<option value="'+id+'">'+cad+'</option>');
+                var cad = template.plantilla.nombre;
+                var id = template.plantilla.id;
+                $("#select_template").append('<option value="'+id+'">'+cad+'</option>');
           }
           $("#select_template").selectpicker("refresh");
     }
@@ -68,6 +73,7 @@
           var elementConfig = document.getElementById("configuracion_id");
           var elementCaso = document.getElementById("caso_id");
           document.getElementById("nuevos_campos_cad").value = "";
+          document.getElementById("carouselExampleCaptions").hidden = true;
           var configId, casoId;
 
           (elementConfig != null) ? configId = elementConfig.value : configId = 0;
@@ -97,8 +103,10 @@
     /***** Muestra los CAMPOS, VALORES y TEXTO de la PLANTILLA *****/
     function showFieldsAndTemplate(data, type){
         //console.log(data);
-        hiddenSummernote();
-        document.getElementById("div_textos_summernote").hidden = false;
+        //hiddenSummernote();
+        document.getElementById("carouselExampleCaptions").hidden = false;
+
+        //document.getElementById("div_textos_summernote").hidden = false;
 
         var contenedorDiv = document.getElementById('div_campos_plantilla');
         contenedorDiv.innerHTML = this.getStringHtmlFieldTemplate(data['grupos_campos']);
@@ -111,26 +119,31 @@
         $('#texto_final').summernote('code', data['texto']);
         $('#summernote').summernote('code', data['texto']);
 
-        disableButtonsOnPreView();        
+        //disableButtonsOnPreView();        
     }
 
-    function disableButtonsOnPreView(){
+    /*function disableButtonsOnPreView(){
         var content = document.getElementById("div_texto_final");
         var buttons = content.getElementsByTagName("button");
         for(let button of buttons)
             button.disabled= true;
-    }
+    }*/
 
     /****  Regresa el STRING HTML para la tabla de CAMPOS  *****/
     function getStringHtmlFieldTemplate(arr){ 
-        var html1 = '<ul class="nav nav-tabs">', html2 = '<div>';
+        var html1 = `<ul class="nav nav-tabs">`, html2 = '<div>';
         var cad_hidden = '';
         var element_id = 'aria-current="page"';
+        var cad_active = 'active';
 
         for(let a of arr){
-            html1 += `<li class="nav-item" onclick="showTable(${a["id"]})"><a id="a_${a["id"]}" class="nav-link" href="#" ${element_id}>${a["grupo"]}</a></li>`;
+            html1 += `<li class="nav-item" onclick="showTable(${a["id"]})"><a id="a_${a["id"]}" class="nav-link ${cad_active}" href="#">${a["grupo"]}</a></li>`;
+            /*html1 += `<li class="nav-item" onclick="showTable(${a["id"]})"><a id="a_${a["id"]}" class="nav-link" href="#" ${element_id}>${a["grupo"]}</a></li>`;*/
 
-            html2 += `<div id="${a["id"]}" ${cad_hidden}><table id="tabla_${a["id"]}" class="table table-info" style="margin-left: 5px; width:600px; position: absolute;"><tr><th>Nombre del Parámetro</th><th style="text-align:center">Valor</th></tr>`;
+            /*html2 += `<div id="${a["id"]}" ${cad_hidden}><table id="tabla_${a["id"]}" class="table table-info" style="margin-left: 5px; width:600px; position: absolute; background:black;"><tr><th>Nombre del Parámetro</th><th style="text-align:center">Valor</th></tr>`;*/
+
+            html1 += `<table class="tabla_expedientes" id="tabla_${a["id"]}" ${cad_hidden}><thead><tr><th width="200px;">Nombre del Parámetro</th><th style="text-align:center; width="400px;">Valor</th></tr></thead><tbody style="overflow: auto;">`;
+
             for(let campo of a["campos"]){
                 var valor = '';
 
@@ -141,22 +154,23 @@
                         valor = campo['valor_ultimo'];
                 }
 
-                html2 += getRowStringHtmlFieldTemplate(campo['campo'], valor);
+                html1 += getRowStringHtmlFieldTemplate(campo['campo'], valor);
             }
-            html2 += "</table></div>";
+            html1 += `</tbody></table>`;
+            //html2 += "</table></div>";
             cad_hidden = "hidden";
             element_id = '';
+            cad_active = "";
+            html1 += "";
         }
-        html1 +=  '</ul>';
-        html2 += "</div>";
-
-        return html1 + html2;
+        //html2 += "</div>";
+        return html1; //+ html2;
     }
 
     function getRowStringHtmlFieldTemplate(campo, valor){
         var html = `<tr id="${campo}">`;
-        html += `<td>${campo}</td>`;
-        html += `<td><input autocomplete="on" onCopy="return false;" style="text-transform:none; width:400px;float:left;" type="text" class="form-control" name="${campo}"  oninput="replaceText()" `;
+        html += `<td width="200px;">${campo}</td>`;
+        html += `<td style="padding-right: 5px;"><input autocomplete="on" onCopy="return false;" style="text-transform:none; width:400px;float:left;" type="text" class="form-control" name="${campo}"  oninput="replaceText()" `;
         if(valor != null)
             html += ` value="${valor}" `;
         html += ' required></td></tr>';
@@ -165,19 +179,23 @@
     }
 
     function showTable(id){
-        var element = document.getElementById("grupo_id");
+        $(".nav-tabs li a").removeClass("active");
+        $("#a_" + id).addClass("active")
+        $('ul table').attr("hidden","true");
+        /*var element = document.getElementById("grupo_id");
         if(element.value != "")
             document.getElementById(element.value).hidden = true;
         element.value = id;
-        document.getElementById(id).hidden = false;
+        document.getElementById(id).hidden = false;*/
+        document.getElementById("tabla_"+id).hidden = false;
     }
 
-    function hiddenSummernote(){
+   /** function hiddenSummernote(){
         if (document.getElementById('check_edit_template').checked)
           document.getElementById("div_summernote").hidden = false;
         else
           document.getElementById("div_summernote").hidden = true;
-    }
+    }*/
 
     function replaceText(){
         var textoAux = document.getElementById("summernote").value;
@@ -193,9 +211,32 @@
         }
         $('#texto_final').summernote('code', textoAux);
 
-        disableButtonsOnPreView();
+        //disableButtonsOnPreView();
     }  
 
+    function disableCarousel(){
+        console.log("disableCarousel");
+        var carrusel1 = document.getElementById("carrusel1");
+        var carrusel2 = document.getElementById("carrusel2");
+        if(carrusel1.classList.contains("active")){
+            //carrusel2.hidden = false;
+            carrusel2.style.visibility = "visible";
+            carrusel1.style.visibility = "collapse";
+            //carrusel1.hidden = true;
+            //carrusel2.classList.add("active");
+            //carrusel1.classList.remove("active");
+            console.log("Entre 1");
+        }
+        if(carrusel2.classList.contains("active")){
+            /*carrusel1.hidden = false;
+            carrusel2.hidden = true;*/
+            carrusel1.style.visibility = "visible";
+            carrusel2.style.visibility = "collapse";
+            //carrusel1.classList.add("active");
+            //carrusel2.classList.remove("active");
+            console.log("Entre 2");
+        }
+    }
 
 
 

@@ -4,54 +4,31 @@
 
 @include('editor_summernote.summernote_methods')
 
-<div class="main-content">
-    <div class="section__content section__content--p30">
-      <div class="container-fluid">
-        <div class="card" id="card-section">
-
-          <div class="input-group mb-2">
-            <a href="{{action('PlantillasController@create')}}" class="btn btn-info" style="width: 40px; margin-bottom: 10px;"><i class="fas fa-plus"></i></a>
-          </div>
-
-          <form class="" action="{{action('PlantillasController@store')}}" method="post" accept-charset="UTF-8" enctype="multipart/form-data">
-            @csrf
-
-            <div class="row">
-              <div class="col-12 col-sm-6 col-md-4">
-                <div class="form-group">
-                  <label for="">Nombre: <span style="color:red">*</span></label>
-                  <input style="text-transform: none;" type="text" class="form-control @error('nombre') is-invalid @enderror input100" required name="nombre" value="{{old('nombre')}}" id="nombre">
-                  @error('nombre')
-                    <span class="invalid-feedback" role="alert">
-                      <strong>{{ $message }}</strong>
-                    </span>
-                  @enderror
-                </div>
-              </div>
-
-            </div>
-
-            <div class="row">
-                <div class="form-group">                 
-
-                  <label for="">Texto / Contenido de la Plantilla: <span style="color:red">*</span></label>
-                  <div id ="div_summernote" class="form-group">  
-                      <textarea required name="texto" id="summernote" value="{{old('texto')}}"></textarea>
-                  </div>
-                  
-              </div>
-
-              <div class="col-12">
-                  <div class="form-group">
-                    <button type="submit" class="btn btn-success">Guardar</button>
-                  </div>
-              </div>
-
-            </div>
-
-          </form>
-        </div>
+  <form action="{{action('PlantillasController@store')}}" method="post" accept-charset="UTF-8" enctype="multipart/form-data">
+  @csrf
+      <div>
+          <a href="{{session('urlBack')}}" title="Regresar" class="btn boton_agregar"><i class="fas fa-long-arrow-alt-left"></i></a>
+          <button type="submit" class="btn boton_guardar" title="Guardar"><i class="fa fa-save" alt="Guardar"></i></button>
       </div>
-    </div>
-  </div>
-  @stop
+
+      <div align="center">
+
+          <label for="">Nombre: <span style="color:red">*</span></label>
+          <input type="text" class="form-control @error('nombre') is-invalid @enderror input_nombre" required name="nombre" value="{{old('nombre')}}" id="nombre">
+          @error('nombre')
+            <span class="invalid-feedback" role="alert">
+              <strong>{{ $message }}</strong>
+            </span>
+          @enderror
+
+          <br>
+
+          <label  for="">Texto / Contenido de la Plantilla: <span style="color:red">*</span></label>  
+      </div>
+
+      <div style="margin-left: 360px;"> 
+          <textarea name="texto" id="summernote" value="{{old('texto')}}" required></textarea>
+      </div>
+      
+  </form>
+@stop

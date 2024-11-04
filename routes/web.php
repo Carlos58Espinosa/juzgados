@@ -13,21 +13,29 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', function () { return view('login'); });
+Route::post('login', 'AuthController@login');
+Route::post('logout', 'AuthController@logout');
+
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/principal', function () { return view('layout');});
+    Route::resource("plantillas",'PlantillasController');
+    Route::post("plantillas_pdf","PlantillasController@viewPdf");
+    Route::post("plantillas_clonar","PlantillasController@clone");
+    Route::resource("configuracion",'ConfiguracionController');
+    Route::post("configuracion_clonar","ConfiguracionController@clone");
+    Route::resource("casos",'CasosController');
+    Route::post("casos_pdf", "CasosController@viewCasosPdf");
+    Route::post("casos_campos_sensibles","CasosController@getSensitiveData");
+    Route::post("casos_guardar_campos_sensibles","CasosController@saveSensitiveData");
+    Route::post("casos_update/{id}","CasosController@update");
+    Route::resource("agrupacion",'AgrupacionesController');
+    Route::post("agrupacion_eliminacion","AgrupacionesController@deleteGroupsAndFields");
+    Route::post("agrupacion_guardar_grupo","AgrupacionesController@addGroup");
+    Route::resource('usuarios', 'UsuariosController');
+    Route::post('usuarios_color_config', 'UsuariosController@changeColorConfig');
 });
 
 
-Route::resource("plantillas",'PlantillasController');
-Route::post("plantillas_pdf","PlantillasController@viewPdf");
-Route::resource("configuracion",'ConfiguracionController');
-Route::resource("casos",'CasosController');
-Route::post("casos_pdf", "CasosController@viewCasosPdf");
-Route::post("casos_campos_sensibles","CasosController@getSensitiveData");
-Route::post("casos_guardar_campos_sensibles","CasosController@saveSensitiveData");
-Route::post("casos_update/{id}","CasosController@update");
-Route::resource("agrupacion",'AgrupacionesController');
-Route::post("agrupacion_eliminacion","AgrupacionesController@deleteGroupsAndFields");
-Route::post("agrupacion_guardar_grupo","AgrupacionesController@addGroup");
 
 

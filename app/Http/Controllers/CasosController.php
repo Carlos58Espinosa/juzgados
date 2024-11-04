@@ -26,14 +26,17 @@ class CasosController extends Controller
             /*case "fields_values_template_text":
                 $res = $this->getFieldsValuesTextByTemplateIdAndCaseId($request->all());
             break;*/
-            default:
+            default:                
+                $usuario = \Auth::user();
+                $usuario_ctrl = new UsuariosController();
+                $color = $usuario_ctrl->getColorByUser();
                 $casos = Caso::with(['configuracion' => function ($query) {
                     $query->select('id', 'nombre');
                 }, 
                 'etapa_plantilla' => function ($query) {
                     $query->select('id', 'nombre');
-                }])->orderBy('id', 'desc')->get();
-                $res = view('casos.index',compact('casos'));   
+                }])->where('usuarioId', $usuario->id)->orderBy('id', 'desc')->get();
+                $res = view('casos.index',compact('casos', 'color'));   
             break;
         }
         return $res;               
@@ -65,7 +68,8 @@ class CasosController extends Controller
     public function store(Request $request)
     {
         $transaction = DB::transaction(function() use($request){
-            $caso = Caso::create(["nombre_cliente" => $request->nombre_cliente, "configuracionId" => $request->configuracion_id, "etapaPlantillaId" => $request->plantilla_id]);
+            $usuario = \Auth::user();
+            $caso = Caso::create(["nombre_cliente" => $request->nombre_cliente, "configuracionId" => $request->configuracion_id, "etapaPlantillaId" => $request->plantilla_id, 'usuarioId' => $usuario->id]);
 
             $this->generalSave($request->all(), $caso, false);
 
@@ -116,11 +120,15 @@ class CasosController extends Controller
         $caso = Caso::with(['configuracion' => function ($query) {
             $query->select('id', 'nombre');
         }, 'plantillas'])->findOrFail($id);
-
-        $plantillas = ConfiguracionPlantilla::with(['plantilla' => function ($query) {
+        /*$plantillas = ConfiguracionPlantilla::with(['plantilla' => function ($query) {
             $query->select('id', 'nombre');
-        }])->where('configuracionId', $caso->configuracionId)->select('id', 'plantillaId', 'orden')->orderBy('orden')->get();
-        //return $plantillas;
+        }])->where('configuracionId', $caso->configuracionId)->select('id', 'plantillaId', 'orden')->orderBy('orden')->get();*/
+        $plantillas = DB::select("select * from (
+        select p.id, p.nombre, c.orden from configuracion_plantillas c, plantillas p
+        where c.configuracionId = 39 and c.plantillaId = p.id 
+        union
+        select p.id, p.nombre, 1000 orden from casos_plantillas c, plantillas p 
+        where c.casoId = 124 and c.plantillaId = p.id order by orden ) as t1 order by t1.orden;");
         return view('casos.edit', compact('caso', 'plantillas'));
     }
 

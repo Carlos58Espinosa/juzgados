@@ -23,14 +23,20 @@ class ConfiguracionController extends Controller
                 $res = ConfiguracionPlantilla::with(['plantilla' => function ($query) {
                     $query->select('id', 'nombre');
                 }])->where('configuracionId', $request->configId)->orderBy('orden')->get();
-                break;
-            
+                break;            
             default:
-                $configuraciones = DB::table('configuracion')->orderBy('id', 'desc')->get();
-                $res = view('configuracion.index',compact('configuraciones'));
+                $tipo_usuario = \Auth::user()->tipo;
+                $usuario_ctrl = new UsuariosController();
+                $color = $usuario_ctrl->getColorByUser();
+                $plantillas_ctrl =  new PlantillasController();
+                $arrUsuariosIds = $plantillas_ctrl->getArrayUserIds();
+
+                $configuraciones = Configuracion::with(['usuario' => function ($query) {
+                    $query->select('id', 'tipo');
+                }])->whereIn('usuarioId', $arrUsuariosIds)->orderBy('updated_at', 'desc')->get();
+                $res = view('configuracion.index',compact('configuraciones', 'color', 'tipo_usuario'));
                 break;
-        }
-        
+        }        
         return $res;        
     }
 
@@ -64,7 +70,8 @@ class ConfiguracionController extends Controller
         try{
             $transaction = DB::transaction(function() use($request){
                 $arrIds = explode(',',$request->old_ids[0]);
-                $config = Configuracion::create(['nombre'=> $request->nombre]);
+                $usuario = \Auth::user();
+                $config = Configuracion::create(['nombre'=> $request->nombre, 'usuarioId' => $usuario->id]);
                 $this->saveConfiguracionPlantillas($config, $arrIds);
 
                 $notification = array(
@@ -103,7 +110,7 @@ class ConfiguracionController extends Controller
         }
         $config = Configuracion::findOrFail($id);
         $config_plantillas = ConfiguracionPlantilla::with(['plantilla' => function ($query) {
-            $query->select('id', 'nombre');
+            $query->select('id', 'nombre', 'texto');
         }])->where('configuracionId', $id)->orderBy('orden')->get();
         return view('configuracion.show', compact('config','config_plantillas'));
     }
@@ -203,5 +210,17 @@ class ConfiguracionController extends Controller
             ConfiguracionPlantilla::create(['plantillaId'=> $plantillaId, "orden" => $orden, "configuracionId" =>$config->id]);
             $orden += 1;
         }
+    }
+
+     public function clone(Request $request){
+        date_default_timezone_set('America/Mexico_City');
+        $usuario = \Auth::user();
+        $config_admin = Configuracion::findOrFail($request->id);
+        $config = Configuracion::create(['nombre'=> $config_admin->nombre . ' ' .date("H:i:s"), 'usuarioId' => $usuario->id]);
+        $config_plantillas = ConfiguracionPlantilla::where('configuracionId', $request->id)->orderBy('orden')->get();
+        foreach($config_plantillas as $config_iter){
+            ConfiguracionPlantilla::create(['plantillaId'=> $config_iter->plantillaId, "orden" => $config_iter->orden, "configuracionId" =>$config->id]);
+        }
+        return response()->json(200);
     }
 }

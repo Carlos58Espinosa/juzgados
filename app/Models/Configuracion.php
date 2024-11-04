@@ -8,4 +8,8 @@ class Configuracion extends Model
 {
     protected $table = 'configuracion';
     protected $guarded = ['id', 'created_at', 'updated_at'];
+
+    public function usuario(){
+          return $this->hasOne('App\User', 'id', 'usuarioId');
+    }
 }

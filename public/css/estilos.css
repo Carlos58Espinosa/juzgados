@@ -1,0 +1,254 @@
+/***** Body *****/
+body {
+	 height: 700px !important;
+}
+
+/*** Botones SUMMERNOTE ***/
+.button_summernote {
+	border:1px solid #0dcaf0;
+	border-radius: 5px;
+	padding: 2px;
+	display: inline-block;
+}
+
+/*** Input de BUSQUEDA ***/
+.input_search{
+	width: 600px;
+	height: 35px;
+	border-radius: 20px;
+	margin-left: 250px;
+	text-align: center;
+	background:#e6e6e6;
+	background-image: url("../images/search.png");
+	background-size: 20px;
+	background-repeat: no-repeat;
+	background-position: left;
+	background-position-x: 4px;
+}
+
+/*** Tablas GENERALES ***/
+table {
+	border-collapse:separate;
+	border-radius:10px;
+	border:solid #e6e6e6 1px;
+	border-spacing: 0px;
+}
+
+td {
+	  border:solid #e6e6e6 1px;
+		padding-left: 5px;
+		padding-top: 5px;
+		padding-bottom: 5px;
+}
+
+th {
+		padding-top: 5px;
+		padding-bottom: 5px;
+}
+
+th:first-of-type {
+  border-top-left-radius: 10px;
+}
+th:last-of-type {
+  border-top-right-radius: 10px;
+}
+tr:last-of-type td:first-of-type {
+  border-bottom-left-radius: 10px;
+}
+tr:last-of-type td:last-of-type {
+  border-bottom-right-radius: 10px;
+}
+
+
+/*** CONTENIDO ***/
+#main-content{			 
+	padding: 20px;
+	margin-left: 170px;
+	margin-top: 75px;
+	height: 100%;
+}
+
+/*** MENUS ***/
+.menu-sidebar__content, .header-desktop, .menu-sidebar .logo {
+	/*background: lightblue;*/
+	background: #405189;
+	color: white;
+}
+
+#menu_list li a {
+	color: #a9b7e6;
+}
+
+#menu_list li a:hover{color:white;}
+
+#menu_list li a:active {background:white;}
+
+/*#menu_list li a:visited {
+
+color:red;
+
+}*/
+
+
+/*** LOGO Menú ***/
+.logo_turi {
+	width: 300px;
+	height: 70px;
+}
+
+/*** Botones de ACCIONES Tabla INDEX ***/
+.div_btn_acciones{
+	display: flex;
+}
+.div_btn_acciones i {
+	/*color: #2b9ddb;*/
+	/*color: #26cddd;*/
+	/*color: #f672a7;*/
+	color:lightcoral;
+}
+
+.div_btn_acciones a:hover {
+	border: 1px solid lightcoral;
+}
+
+.div_btn_acciones button:hover {
+	border: 1px solid lightcoral;
+}
+
+/*** Botón AGREGAR ***/
+.boton_agregar {
+	width: 40px;
+	color: white;
+	/*background: #2b9ddb;*/
+	/*background: #26cddd;*/
+	/*background: #f672a7;*/
+	background: lightcoral;
+}
+
+.boton_agregar:hover {
+	border: 1px solid lightcoral;
+	/*color: #2b9ddb;*/
+	/*color: #26cddd;*/
+	/*color: #f672a7;*/
+	color: lightcoral;
+}
+
+/******** Botón GUARDAR *********/
+.boton_guardar {
+		width: 40px;
+		/*color: white;*/
+		/*background: #099885;*/
+		background: #099885;
+		color: #e6f7f5;
+		margin-left: 65%;
+}
+
+.boton_guardar:hover {
+		color: #099885;
+		background: #e6f7f5;
+}
+
+/**** Modo DIA - NOCHE *****/
+.modo_dia {
+		background: #FFF !important;
+}
+
+.modo_dia td {
+		background: white;
+}
+
+.modo_dia th {
+		background: #d9dce7;
+		text-align: center;
+}
+
+.modo_noche {
+		/*background: #DCDADA !important;*/
+		/*background: #F2F2F2;*/
+		/*background: #D8D8D8;*/
+		background: white;
+		opacity: 0.8;
+}
+
+.modo_noche td {
+		background: #d9dce7 !important;
+
+}
+
+.modo_noche th {
+		background: white;
+		text-align: center;
+}
+
+/**** PLANTILLAS y CONFIGURACION input nombre ****/
+.input_nombre {
+		text-transform: none; 
+		width: 600px;
+}
+
+/** icono FLECHA Tipo de Procedimientos ***/
+.flecha_tipo_procedimiento {
+		color:lightcoral; 
+		width: 40px;
+		background: transparent;
+}
+
+/** Tabla de PARAMETROS en EXPEDIENTES **/
+.tabla_expedientes {
+		position: absolute; 
+		margin-top:50px;	
+		height: 500px; 
+		overflow-y: scroll;
+		display: inline-block;	
+}
+
+/** TABS **/
+
+.nav-tabs li a{
+		color: black !important;
+}
+
+.nav-tabs li a:hover{
+		color: lightcoral !important;
+}
+
+
+.boton_carrusel {
+		border-radius: 15px;
+	  background:lightcoral; 
+	  width: 30px;
+}
+
+#carouselExampleCaptions {
+		padding-right: 40px;
+		padding-left: 40px;
+}
+
+#carouselExampleCaptions label {
+		color: lightcoral;
+}
+
+
+		
+
+		/*
+.card{
+			background: #D0DFE7;
+		}
+		#sub-header ul li:hover,
+		body.home li.home,
+		body.contact li.contact { background-color: #fff;}
+
+		#sub-header ul li:hover a,
+		body.home li.home a,
+		body.contact li.contact a { color: #fff; }
+
+		.navbar-sidebar .navbar__list li.active > a {
+			color: green;
+		}
+		.navbar-sidebar .navbar__list li a:hover {
+			color: #FFF;
+		}
+		.container-fluid{
+			background: #D0DFE7;
+		}*/

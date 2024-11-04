@@ -1,53 +1,43 @@
-<!---------------------- Banco de Datos --------------->
-<div class="offcanvas offcanvas-end" id="demo" style="margin-top:120px; width: 650px; height: 300px; overflow: hidden; overflow-y: scroll;">
+<div id="carouselExampleCaptions" class="carousel slide">
+    
+    <div class="carousel-inner">
+        <div id="carrusel1" class="carousel-item active" style="display: inline-flex;">     
 
-  <div align="right">
-      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
-  </div>
-        
-  <input type="hidden" name="nuevos_campos_cad" id="nuevos_campos_cad" value="">
-  <input type ="hidden" id="grupo_id" name="grupo_id">
+            <div>
 
-  <div id="div_campos_plantilla"></div>
+                <input type="hidden" name="nuevos_campos_cad" id="nuevos_campos_cad" value="">
+                <label style="margin-left: 200px;">Vista Previa</label>
 
-</div>
+                <br>
 
-<div class="container-fluid mt-3">
-  <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#demo"><i class="far fa-keyboard"></i>           Banco de Datos</button>
-</div>
+                <textarea name="texto_final" id="texto_final" required></textarea>
 
-<!-- --------------------------------------------------------------- -->   
+            </div>
+
+            <div id="div_campos_plantilla" style="background: white; height:500px; width:630px; margin-left: 10px;"></div>
             
-<!---------------------- Contenedor de: Texto de Plantillas (SummerNote) ------------------>
-<br>
+        </div>
 
-<div id="div_textos_summernote" class="row" style="margin-top: 0px;" hidden>
+        <div id="carrusel2" class="carousel-item" style="height: 500px;">
+          <div style="margin-left:300px;" id ="div_summernote" class="form-group">
 
-    <div class="col-12 col-sm-6 col-md-6">
-      <div id="div_texto_final" class="form-group">
-        <label for="">Vista Previa: </label>
-        <br>
-        <textarea style="height: 480px; width:300px" required name="texto_final" id="texto_final"></textarea>
-      </div>
+              <label style="margin-left: 200px;">Edición de Plantilla </label>
+
+              <br>
+              
+              <textarea name="texto" id="summernote" required></textarea> 
+
+          </div>
+        </div>
+
     </div>
 
-    <div class="col-12 col-sm-6 col-md-6">
-      <label for=""> Editar Plantilla: <input style="margin-top:20px; margin-left:10px; transform: scale(1.5);" type="checkbox" class="check-active" id="check_edit_template" onclick="hiddenSummernote()"></label>
-      <div id ="div_summernote" class="form-group">                    
-        <textarea required name="texto" id="summernote"></textarea>       
-      </div>
-    </div>  
+    <button class="carousel-control-prev boton_carrusel" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev" onclick="disableCarousel()">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>     
+    </button>
 
-    <br>
-    <br> 
-    <br>        
-
-    <div class="row">
-      <div class="form-group">
-        <button type="submit" class="btn btn-success">Guardar</button>
-      </div>
-    </div>        
+    <button class="carousel-control-next boton_carrusel" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next" onclick="disableCarousel()">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    </button>
 
 </div>
-<!------------------------------------------------------------------->
-  
