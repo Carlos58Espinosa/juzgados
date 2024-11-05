@@ -5,7 +5,7 @@
 @include('general.general_methods')
 
   <div>
-    <a href="{{action('ConfiguracionController@create')}}" class="btn boton_agregar"><i class="fas fa-plus"></i></a>
+    <a href="{{action('ConfiguracionController@create')}}" class="btn boton_agregar" title="Agregar Registro"><i class="fas fa-plus"></i></a>
     <input type="text" class="input_search" name="busqueda_texto" placeholder="Busqueda de Tipo de Procedimientos" oninput="search(this.value)">               
   </div>
 
@@ -36,11 +36,11 @@
 
                   @if($config->usuario->tipo != 'Administrador' || $tipo_usuario == 'Administrador')
                   <div>
-                    <a href="{{action('ConfiguracionController@edit',$config->id)}}" class="btn btn-link" style="width:40px; margin: 0"><i class="far fa-edit"></i></a>
+                    <a href="{{action('ConfiguracionController@edit',$config->id)}}" class="btn" title="Editar Registro"><i class="far fa-edit"></i></a>
                   </div>
 
                   <div>
-                    <button class="delete-alert btn btn-link" data-reload="1" data-table="#table_index" data-message1="No podrás recuperar el registro." data-message2="¡Borrado!" data-message3="El registro ha sido borrado." data-method="DELETE" data-action="{{action('ConfiguracionController@destroy',$config->id)}}"><i class="far fa-trash-alt"></i></button>
+                    <button class="delete-alert btn" data-reload="1" data-table="#table_index" data-message1="No podrás recuperar el registro." data-message2="¡Borrado!" data-message3="El registro ha sido borrado." data-method="DELETE" data-action="{{action('ConfiguracionController@destroy',$config->id)}}" title="Eliminar Registro"><i class="far fa-trash-alt"></i></button>
                   </div>
                   @endif
               </div>

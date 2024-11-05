@@ -30,7 +30,7 @@
           <thead>
              <tr>
                 <th>Nombre de la Plantilla</th>
-                <th></th>
+                <th>Acciones</th>
               </tr>
           </thead>
           <tbody>
@@ -44,7 +44,7 @@
                     @csrf
                       <input type="hidden" name="plantilla_id" value="{{$p->plantillaId}}">
                       <input type="hidden" name="caso_id" value="{{$p->casoId}}">
-                      <button class="btn" style="width:40px; margin: 0"><i class="far fa-file-pdf"></i></button>
+                      <button class="btn" title="Ver PDF"><i class="far fa-file-pdf"></i></button>
                     </form>
                   </div>
 

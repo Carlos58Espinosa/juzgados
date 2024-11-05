@@ -5,7 +5,7 @@
 @include('general.general_methods')
 
 <div>
-    <a href="{{action('UsuariosController@create')}}" class="btn boton_agregar" style="width: 40px;"><i class="fas fa-plus"></i></a>
+    <a href="{{action('UsuariosController@create')}}" class="btn boton_agregar" title="Agregar Registro"><i class="fas fa-plus"></i></a>
     <input type="text" class="input_search" name="busqueda_texto" placeholder="Busqueda de Usuario" oninput="search(this.value)">            
 </div>
 

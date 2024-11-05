@@ -5,7 +5,7 @@
 @include('general.general_methods')
 
   <div>
-      <a href="{{action('PlantillasController@create')}}" class="btn boton_agregar"><i class="fas fa-plus"></i></a>
+      <a href="{{action('PlantillasController@create')}}" class="btn boton_agregar" title="Agregar Registro"><i class="fas fa-plus"></i></a>
       <input type="text" class="input_search" name="busqueda_texto" placeholder="Busqueda de Plantillas" oninput="search(this.value)">
   </div>
 

@@ -18,7 +18,7 @@
 				<div class="form-group">
 					<label for="">Agregar Grupo:</label> 
 				 	<input style="text-transform: none; float: left;" type="text" class="form-control" id="grupo" name="grupo" onkeydown="return /[0-9,a-z, ]/i.test(event.key)">
-				 	<a onclick="addGroup()" class="btn boton_guardar" style="margin-left:430px; margin-top: -60px;"><i class="fas fa-plus"></i></a>				 	 
+				 	<a onclick="addGroup()" class="btn boton_guardar" title="Agregar Grupo" style="margin-left:430px; margin-top: -60px;"><i class="fas fa-plus"></i></a>				 	 
 				</div>				
 			</div>
 
@@ -30,7 +30,7 @@
 		                <option value="{{$campo->campo}}">{{$campo->campo}}</option>
 		              @endforeach
 		          </select>
-		          <a onclick="addFields()" class="btn boton_guardar" style="margin-left:430px; margin-top: -60px;"><i class="fas fa-plus"></i></a>
+		          <a onclick="addFields()" class="btn boton_guardar" title="Agregar Parámetros al Grupo" style="margin-left:430px; margin-top: -60px;"><i class="fas fa-plus"></i></a>
 		      </div>
 		  </div>
   </div>
@@ -40,7 +40,7 @@
 					<li id="{{$grupo->id}}" class="nav-item" onclick="getFieldsByNav(this.id, '{{$grupo->nombre}}')">
 							<a id="{{$grupo->nombre}}" class="nav-link" href="#">{{$grupo->nombre}}</a>
 					</li>
-					 <button id="button_{{$grupo->id}}" class="btn" style="width:40px; margin: 0; padding: 0; color: lightcoral;" onclick="deleteGroup({{$grupo->id}})">
+					 <button id="button_{{$grupo->id}}" class="btn" title="Eliminar Grupo" style="width:40px; margin: 0; padding: 0; color: lightcoral;" onclick="deleteGroup({{$grupo->id}})">
 							<i class="far fa-trash-alt"></i>
 					</button>
 			@endforeach
@@ -73,7 +73,7 @@
 			        cache: false,
 			        data: {'nombre' : grupo,'_token':"{{ csrf_token() }}"},
 			        success: function(data){	
-			        		var cadHtml = `<li id="${data}" onclick="getFieldsByNav(this.id)" class="nav-item"><a id="${grupo}" class="nav-link" href="#" aria-current="page">${grupo}</a></li><button id="button_${data}" class="btn" style="width:40px; color: lightcoral;" onclick="deleteGroup(${data})"><i class="far fa-trash-alt"></i></button>`;
+			        		var cadHtml = `<li id="${data}" onclick="getFieldsByNav(this.id)" class="nav-item"><a id="${grupo}" class="nav-link" href="#" aria-current="page" title="Eliminar Grupo">${grupo}</a></li><button id="button_${data}" class="btn" style="width:40px; color: lightcoral;" onclick="deleteGroup(${data})"><i class="far fa-trash-alt"></i></button>`;
 									document.getElementById("navs").innerHTML += cadHtml;	 
 									document.getElementById("grupo_id").value = data;
 									document.getElementById("grupo").value = "";
@@ -168,7 +168,7 @@
 
 	function getHtmlStringField(field) {
   		var cadHtml = `<tr><td>${field}</td><td><button class="btn" style="width:40px;
-	color:lightcoral;" onclick="deleteField('${field}')"><i class="far fa-trash-alt"></i></button></td></tr>`;
+	color:lightcoral;" onclick="deleteField('${field}')" title="Eliminar Parámetro"><i class="far fa-trash-alt"></i></button></td></tr>`;
   		return cadHtml;
   }
 	
