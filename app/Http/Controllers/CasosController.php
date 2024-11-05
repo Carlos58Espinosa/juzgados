@@ -125,10 +125,10 @@ class CasosController extends Controller
         }])->where('configuracionId', $caso->configuracionId)->select('id', 'plantillaId', 'orden')->orderBy('orden')->get();*/
         $plantillas = DB::select("select * from (
         select p.id, p.nombre, c.orden from configuracion_plantillas c, plantillas p
-        where c.configuracionId = 39 and c.plantillaId = p.id 
+        where c.configuracionId = ".$caso->configuracionId." and c.plantillaId = p.id 
         union
         select p.id, p.nombre, 1000 orden from casos_plantillas c, plantillas p 
-        where c.casoId = 124 and c.plantillaId = p.id order by orden ) as t1 order by t1.orden;");
+        where c.casoId = ".$caso->id." and c.plantillaId = p.id order by orden ) as t1 order by t1.orden;");
         return view('casos.edit', compact('caso', 'plantillas'));
     }
 
