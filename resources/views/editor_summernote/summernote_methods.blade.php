@@ -23,7 +23,8 @@
         </div>
     </div>
 
-    <div id="camposLlenar" style="width:230px; height:350px;margin-left:410px; margin-top: -40px; overflow: hidden; overflow-y: scroll; border-radius: 10px;">            
+    <div id="camposLlenar" style="width:230px; height:350px;margin-left:410px; margin-top: -40px; overflow: hidden; overflow-y: scroll; border-radius: 10px;">    
+
     </div> 
 
 </dialog>
@@ -45,8 +46,9 @@
               ['para', ['ul', 'ol', 'paragraph']],
               ['misc', ['undo', 'redo']],
               ['height', ['height']],
-              ['mybutton', ['addParam','lowerCase']],
-              ['view', ['codeview']],
+              ['mybutton', ['addParam']],
+              ['mybutton2', ['lowerCase']],
+              //['view', ['codeview']],
             ],
             lineHeights: ['1.0', '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7'],
             buttons: {

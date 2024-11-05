@@ -18,7 +18,7 @@
 				<div class="form-group">
 					<label for="">Agregar Grupo:</label> 
 				 	<input style="text-transform: none; float: left;" type="text" class="form-control" id="grupo" name="grupo" onkeydown="return /[0-9,a-z, ]/i.test(event.key)">
-				 	<a onclick="addGroup()" class="btn boton_agregar" style="margin-left:430px; margin-top: -60px;"><i class="fas fa-plus"></i></a>				 	 
+				 	<a onclick="addGroup()" class="btn boton_guardar" style="margin-left:430px; margin-top: -60px;"><i class="fas fa-plus"></i></a>				 	 
 				</div>				
 			</div>
 
@@ -30,7 +30,7 @@
 		                <option value="{{$campo->campo}}">{{$campo->campo}}</option>
 		              @endforeach
 		          </select>
-		          <a onclick="addFields()" class="btn boton_agregar" style="margin-left:430px; margin-top: -60px;"><i class="fas fa-plus"></i></a>
+		          <a onclick="addFields()" class="btn boton_guardar" style="margin-left:430px; margin-top: -60px;"><i class="fas fa-plus"></i></a>
 		      </div>
 		  </div>
   </div>
@@ -48,13 +48,14 @@
 
 	<br>
 
-	<div class="container" style="margin-left:200px;">
-			<table id="tabla_campos" class="table" style="width:30%">					
+	<div style="margin-left:200px; width: 50%;">
+			<table id="tabla_campos" class="table" style="width:50%;" hidden>		
 			</table>
 	</div>
 
 <script>
   $(document).ready(function() {
+  		selectedMenu("menu_agrupacion"); 
   		document.getElementById("grupo").value = "";
   		document.getElementById("grupo_id").value = "";
   });
@@ -128,6 +129,7 @@
 	/**************************  Recupera los CAMPOS de un GRUPO  **************************************************/
 
 	function getFieldsByNav(id){
+			document.getElementById("tabla_campos").hidden = true;
 			 $(".nav-tabs li").removeClass("active");
         $("#" + id).addClass("active")
 			//console.log("ID="+id);
@@ -143,8 +145,10 @@
         cache: false,
         data: {'option' : "fields_by_group", 'grupo_id' : id,'_token':"{{ csrf_token() }}"},
         success: function(data){		 
-        		if(data.length > 0)       	
-        			createTableFields(data);
+        		if(data.length > 0){  
+        				document.getElementById("tabla_campos").hidden = false;     	
+        				createTableFields(data);
+        		}
         },
         error: function(){
           toastr.error('Hubo un problema por favor intentalo de nuevo mas tarde.', '', {timeOut: 3000});
@@ -154,7 +158,7 @@
 
 	function createTableFields(arr){
 			var cad = '';
-		  cad += '<tr><th scope="col">Campo</th><th scope="col">Acción</th></tr>';
+		  cad += '<tr><th width="300px">Campo</th><th  width="100px">Acción</th></tr>';
 
 		  for(let a of arr)
 		  		cad += getHtmlStringField(a["campo"]);    

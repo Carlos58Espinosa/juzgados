@@ -65,6 +65,7 @@
 
 <script>
   $(document).ready(function() {
+      selectedMenu("menu_plantillas"); 
       console.log("COLOR Plantillas:"+@json($color));
       document.getElementById("type_config").value = @json($color);
       loadColor('index');

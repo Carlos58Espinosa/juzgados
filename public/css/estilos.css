@@ -42,10 +42,10 @@ td {
 }
 
 th {
+		border:solid #e6e6e6 1px;
 		padding-top: 5px;
 		padding-bottom: 5px;
 }
-
 th:first-of-type {
   border-top-left-radius: 10px;
 }
@@ -81,13 +81,7 @@ tr:last-of-type td:last-of-type {
 
 #menu_list li a:hover{color:white;}
 
-#menu_list li a:active {background:white;}
-
-/*#menu_list li a:visited {
-
-color:red;
-
-}*/
+#menu_list li : visited {color:white;}
 
 
 /*** LOGO Menú ***/
@@ -108,29 +102,29 @@ color:red;
 }
 
 .div_btn_acciones a:hover {
-	border: 1px solid lightcoral;
+		border: 1px solid lightcoral;
 }
 
 .div_btn_acciones button:hover {
-	border: 1px solid lightcoral;
+		border: 1px solid lightcoral;
 }
 
 /*** Botón AGREGAR ***/
 .boton_agregar {
-	width: 40px;
-	color: white;
-	/*background: #2b9ddb;*/
-	/*background: #26cddd;*/
-	/*background: #f672a7;*/
-	background: lightcoral;
+		width: 40px;
+		color: white;
+		/*background: #2b9ddb;*/
+		/*background: #26cddd;*/
+		/*background: #f672a7;*/
+		background: lightcoral;
 }
 
 .boton_agregar:hover {
-	border: 1px solid lightcoral;
-	/*color: #2b9ddb;*/
-	/*color: #26cddd;*/
-	/*color: #f672a7;*/
-	color: lightcoral;
+		border: 1px solid lightcoral;
+		/*color: #2b9ddb;*/
+		/*color: #26cddd;*/
+		/*color: #f672a7;*/
+		color: lightcoral;
 }
 
 /******** Botón GUARDAR *********/
@@ -203,7 +197,6 @@ color:red;
 }
 
 /** TABS **/
-
 .nav-tabs li a{
 		color: black !important;
 }
@@ -212,7 +205,7 @@ color:red;
 		color: lightcoral !important;
 }
 
-
+/** CARRUSEL EXPEDIENTES **/
 .boton_carrusel {
 		border-radius: 15px;
 	  background:lightcoral; 

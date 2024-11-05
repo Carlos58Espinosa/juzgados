@@ -50,6 +50,7 @@
 </head>
 
 <body>
+	@include('general.general_methods')
 	<input type="hidden" name="_token" value="{{ csrf_token() }}" id="token">
 
 	<!-- MENU SIDEBAR-->
@@ -63,19 +64,19 @@
 	        <nav class="navbar-sidebar" id="sub-header2">
 	            <ul id="menu_list" class="list-unstyled navbar__list">
 	            	<li>
-						<a href="{{action('ConfiguracionController@index')}}"><i class="fas fa-cogs"></i>  Tipo de Procedimientos</a>
+						<a id="menu_procedimientos" href="{{action('ConfiguracionController@index')}}"><i class="fas fa-cogs"></i>  Tipo de Procedimientos</a>
 					</li>
 					<li>
-						<a href="{{action('PlantillasController@index')}}"><i class="far fa-file-alt"></i> Plantillas</a>
+						<a id="menu_plantillas" href="{{action('PlantillasController@index')}}"><i class="far fa-file-alt"></i> Plantillas</a>
 					</li>							
 					<li>
-						<a href="{{action('CasosController@index')}}"><i class="fas fa-gavel"></i> Expedientes</a>
+						<a id="menu_expedientes" href="{{action('CasosController@index')}}"><i class="fas fa-gavel"></i> Expedientes</a>
 					</li>
 					<li>
-						<a href="{{action('AgrupacionesController@index')}}"><i class="fas fa-gavel"></i> Agrupación de Valores</a>
+						<a id="menu_agrupacion" href="{{action('AgrupacionesController@index')}}"><i class="fas fa-gavel"></i> Agrupación de Valores</a>
 					</li>
 					<li>
-						<a href="{{action('UsuariosController@index')}}"><i class="fas fa-gavel"></i> Usuarios</a>
+						<a id="menu_usuarios" href="{{action('UsuariosController@index')}}"><i class="fas fa-gavel"></i> Usuarios</a>
 					</li>
 					<li>
             			<form id="form_logout" action="{{action('AuthController@logout')}}" method="post" accept-charset="UTF-8" enctype="multipart/form-data">

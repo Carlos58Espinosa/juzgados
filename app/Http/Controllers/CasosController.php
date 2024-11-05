@@ -236,7 +236,7 @@ class CasosController extends Controller
         ->where("plantillaId", $request->plantilla_id)->first();
 
         $res = $plantilla->texto;
-        $res = str_replace('<button type="button" class="button_summernote" contenteditable="false">', '', $plantilla->texto);
+        $res = str_replace('<button type="button" class="button_summernote" contenteditable="false" onclick="editButton(this)">', '', $plantilla->texto);
         $res = str_replace('</button>', '', $res);
         $aux = '<span hidden="">|</span>';
 

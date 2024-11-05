@@ -8,37 +8,25 @@
 
   <br>
 
-  <div style="margin-left:200px;" class="row">
+  <div align="center">
 
-    <div class="col-12 col-sm-6 col-md-4">
-      <div class="form-group">
-          <label for="">Nombre: </label>
-          <p>{{$caso->nombre_cliente}}</p>                
-      </div>
-    </div>
+      <label for="">Nombre: </label>
+      <p>{{$caso->nombre_cliente}}</p>     
+          
+      <label for="">Última Actualización:</label>
+      <p>{{date("d/m/Y", strtotime($caso->updated_at))}}</p>
 
-    <div class="col-12 col-sm-6 col-md-4">
-      <div class="form-group">
-          <label for="">Última Actualización:</label>
-          <p>{{date("d/m/Y", strtotime($caso->updated_at))}}</p>
-      </div>
-    </div>
+      <br>
 
-  </div>
-
-  <br>
-
-  <div class="row" align="center">
-         
       <label>Plantillas Contestadas :</label>
 
   </div>
 
   <br>
 
-  <div class="row" align="center">
+  <div  align="center">
 
-      <table id="table_index" class="table" style="width: 50%; font-size:16px; margin-left: 400px;">
+      <table id="table_index" class="table" style="width: 50%; font-size:16px;">
           <thead>
              <tr>
                 <th>Nombre de la Plantilla</th>

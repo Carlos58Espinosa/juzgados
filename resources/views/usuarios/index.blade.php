@@ -17,6 +17,7 @@
         <th>Nombre</th>
         <th>Email</th>
         <th>Última Actualización</th>
+        <th width="100px">Activado</th>
         <th>Acciones</th>
       </tr>
     </thead>
@@ -26,6 +27,11 @@
           <td>{{$usuario->nombre}}</td>
           <td>{{$usuario->email}}</td>
           <td>{{date("d/m/Y", strtotime($usuario->updated_at))}}</td>
+          @if($usuario->activo == 1)
+            <td align="center"><input type="checkbox" class="form-check-input" checked disabled></td>
+          @else
+            <td align="center"><input type="checkbox" class="form-check-input" disabled></td>
+          @endif
           <td>
             <div class="div_btn_acciones">
 
@@ -52,6 +58,7 @@
 
 <script>
   $(document).ready(function() {
+      selectedMenu("menu_usuarios"); 
       document.getElementById("type_config").value = @json($color);
       loadColor('index');
   });

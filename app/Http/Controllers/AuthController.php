@@ -13,15 +13,23 @@ class AuthController extends Controller
             'password'=>'required'
         ]);
 
+        $notification = array(
+          'message' => 'Usuario o contraseña incorrectos.',
+          'alert-type' => 'error'
+        );
+
+        $mensaje = "";
+
         $usuario = User::where('email', $request->email)->first();
         if($usuario != null){
-            if($usuario->activo == 0){
-                $notification = array(
-                  'message' => 'Usuario desactivado.',
-                  'alert-type' => 'success'
-                );
-                return redirect('/')->with($notification);
-            }
+            if($usuario->activo == 0)
+                $mensaje = 'Usuario desactivado.';
+        }else
+            $mensaje = "Usuario no encontrado.";
+
+        if($mensaje != "") { 
+            $notification['message'] = $mensaje;      
+            return redirect('/')->with($notification);
         }
 
         if(\Auth::attempt($request->only('email', 'password'))){
@@ -29,7 +37,7 @@ class AuthController extends Controller
             $user->createToken('myApp')->plainTextToken;
             return redirect('/principal');
         }else
-            return redirect('/');
+            return redirect('/')->with($notification);
     }
 
     public function logout(Request $request){

@@ -52,6 +52,7 @@
 
 <script>
   $(document).ready(function() {
+      selectedMenu("menu_procedimientos");      
       document.getElementById("type_config").value = @json($color);
       loadColor('index');
   });

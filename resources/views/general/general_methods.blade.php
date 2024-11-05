@@ -1,4 +1,9 @@
 <script>
+
+function selectedMenu(id){
+    document.getElementById(id).style.color = "white";
+}
+
 function search(valor){
     var table = document.getElementById("table_index");
     var trs = table.getElementsByTagName("tr");
