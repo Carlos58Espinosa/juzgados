@@ -160,8 +160,13 @@ tr:last-of-type td:last-of-type {
 		/*background: #DCDADA !important;*/
 		/*background: #F2F2F2;*/
 		/*background: #D8D8D8;*/
-		background: white;
-		opacity: 0.8;
+		/*background: white;*/
+		/*background: #4c4e6c;*/
+		/*opacity: 0.8;*/
+
+		background: #59658c;
+		opacity: 0.9;
+
 }
 
 .modo_noche td {
@@ -172,6 +177,10 @@ tr:last-of-type td:last-of-type {
 .modo_noche th {
 		background: white;
 		text-align: center;
+}
+
+.modo_noche label {
+		color: lightcoral;
 }
 
 /**** PLANTILLAS y CONFIGURACION input nombre ****/

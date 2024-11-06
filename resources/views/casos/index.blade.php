@@ -61,9 +61,6 @@
 <script>
   $(document).ready(function() {
       selectedMenu("menu_expedientes"); 
-      console.log("COLOR Plantillas:"+@json($color));
-      document.getElementById("type_config").value = @json($color);
-      loadColor('index');
   });
 </script>
 @stop

@@ -33,6 +33,9 @@ class AuthController extends Controller
         }
 
         if(\Auth::attempt($request->only('email', 'password'))){
+            $usuario_ctrl = new UsuariosController();
+            $color = $usuario_ctrl->getColorByUser();
+            \Session::put('color', $color);
             $user = \Auth::user();
             $user->createToken('myApp')->plainTextToken;
             return redirect('/principal');

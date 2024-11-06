@@ -97,7 +97,6 @@
     <header class="header-desktop d-none d-lg-block">
     	
     	<div style="height: inherit; width:200px; margin-left: 700px;">
-    		<input type="hidden" id="type_config" style="color:black;"> 
     		<!--<a onclick="changeColorConfiguration(0)" class="btn boton_agregar" style="width: 40px; margin-right: 10px;"><i class="fas fa-sun"></i></a> 
     		<a onclick="changeColorConfiguration(1)" class="btn boton_agregar" style="width: 40px; margin-right: 600px;"><i class="fas fa-moon"></i></a> -->  
     		<a href="#" class="btn" style="background: #405189;color:lightcoral; width: 40px; margin-top: 20px; float: left;"><i class="fas fa-moon"></i></a>
@@ -147,6 +146,9 @@
 
     <!-- MAIN CONTENT-->
     <div id="main-content">      	
+    	<input type="hidden" id="modo_color" value="{{session('color')}}">
+    	@include('general.general_methods')
+
         @yield('content')
     </div>
 	<!-- END MAIN CONTENT-->
@@ -184,6 +186,12 @@
 				break;
 			}
 		@endif
+	</script>
+
+	<script>
+	  $(document).ready(function() {
+	      loadColor('index');
+	  });
 	</script>
 	
 </body>

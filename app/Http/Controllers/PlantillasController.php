@@ -26,9 +26,7 @@ class PlantillasController extends Controller
                 $res = $this->getFieldsAndTemplateByTemplateId($request->all());
                 break;           
             default:
-                $tipo_usuario = \Auth::user()->tipo;
-                $usuario_ctrl = new UsuariosController();
-                $color = $usuario_ctrl->getColorByUser();
+                $tipo_usuario = \Auth::user()->tipo;                
                 $arrUsuariosIds = $this->getArrayUserIds();                
                 $plantillas = Plantilla::with(['usuario' => function ($query) {
                     $query->select('id', 'tipo');
@@ -42,7 +40,7 @@ class PlantillasController extends Controller
                 session()->flash("title", "alerta"); */  
                 //print_r($plantillas);
                 //return true;
-                $res = view('plantillas.index',compact('plantillas', 'color', 'tipo_usuario'));
+                $res = view('plantillas.index',compact('plantillas','tipo_usuario'));
                 break;
         }
         return $res;

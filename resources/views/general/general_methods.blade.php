@@ -23,7 +23,6 @@ function search(valor){
 }
 
 function changeColorConfiguration(valor) {
-    console.log("changeColorConfiguration");
     valor = 0;
     if(document.getElementById("switch_night_day").checked)
         valor = 1;
@@ -34,7 +33,8 @@ function changeColorConfiguration(valor) {
           cache: false,
           data: {'valor':valor,'_token':"{{ csrf_token() }}"},
           success: function(data){  
-              document.getElementById("type_config").value = data;
+            console.log(data);
+              document.getElementById("modo_color").value = data;
               loadColor('index');
           },
           error: function(){
@@ -57,21 +57,24 @@ function changeColorConfiguration(valor) {
 }*/
 
 function loadColor(option_form){
-    console.log("loadColor");
-    var element_type_config = document.getElementById("type_config");
+    var element_modo_color = document.getElementById("modo_color");
+    console.log(element_modo_color);
+    console.log(element_modo_color.value);
     var element = document.getElementById("main-content");
     var table = document.getElementById("table_index");
-    var rows = table.getElementsByTagName("td");
+    if(table)
+      var rows = table.getElementsByTagName("td");
     var switch_mode = document.getElementById("switch_night_day");
     var color_modo = "modo_noche";
 
-    if(element_type_config.value == 0){
+    if(element_modo_color.value == 0){
         color_modo = "modo_dia";
         switch_mode.checked = false;
     }else
         switch_mode.checked = true;
     element.className = color_modo;
-    table.className = color_modo;
+    if(table)
+      table.className = color_modo;
     document.body.className = color_modo;
 
 

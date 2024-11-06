@@ -13,7 +13,7 @@
 
   <div align="center">
 
-      <label for="">Nombre: <span style="color:red">*</span></label>
+      <label for="">Nombre:</label>
       <input style="text-transform: none; width: 600px;" type="text" class="form-control @error('nombre') is-invalid @enderror" required name="nombre" value="{{$plantilla->nombre}}" id="nombre" disabled>
       @error('nombre')
         <span class="invalid-feedback" role="alert">
@@ -23,7 +23,7 @@
 
       <br>
 
-      <label>Texto / Contenido de la Plantilla: <span style="color:red">*</span></label>
+      <label>Texto / Contenido de la Plantilla:</label>
 
   </div>
 

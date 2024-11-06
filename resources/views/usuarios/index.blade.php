@@ -59,8 +59,6 @@
 <script>
   $(document).ready(function() {
       selectedMenu("menu_usuarios"); 
-      document.getElementById("type_config").value = @json($color);
-      loadColor('index');
   });
 </script>
 
