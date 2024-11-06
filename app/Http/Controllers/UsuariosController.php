@@ -174,7 +174,8 @@ class UsuariosController extends Controller
             $query = "insert into color_config values(default, ".$request->valor.", ".$usuario->id.");";
             DB::select($query);
         }
-        \Session::put('color', $request->valor);
+        $_SESSION['color'] = $request->valor;
+        //\Session::put('color', $request->valor);
         return $request->valor;
     }
 
