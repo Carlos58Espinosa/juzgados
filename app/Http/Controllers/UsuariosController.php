@@ -165,7 +165,7 @@ class UsuariosController extends Controller
     }
 
     public function changeColorConfig(Request $request){
-        $usuario = \Auth::user();
+        /*$usuario = \Auth::user();
         $color_config = DB::table("color_config")->where('usuarioId', $usuario->id)->first();
         if($color_config != null){
             if($color_config->color != $request->valor)
@@ -173,10 +173,11 @@ class UsuariosController extends Controller
         } else {
             $query = "insert into color_config values(default, ".$request->valor.", ".$usuario->id.");";
             DB::select($query);
-        }
+        }*/
         $_SESSION['color'] = $request->valor;
         //\Session::put('color', $request->valor);
-        return $request->valor;
+        //return $request->valor;
+        return response()->json(200);
     }
 
     public function getColorByUser(){

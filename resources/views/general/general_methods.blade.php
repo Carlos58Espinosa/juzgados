@@ -32,9 +32,11 @@ function changeColorConfiguration(valor) {
           url: "{{action('UsuariosController@changeColorConfig')}}",
           cache: false,
           data: {'valor':valor,'_token':"{{ csrf_token() }}"},
-          success: function(data){  
-            console.log(data);
-              document.getElementById("modo_color").value = data;
+          success: function(data){
+          console.log('exito');  
+              document.getElementById("modo_color").value = valor;
+              console.log(document.getElementById("modo_color").value);
+              console.log('exito');
               loadColor('index');
           },
           error: function(){
