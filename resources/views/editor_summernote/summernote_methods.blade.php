@@ -42,6 +42,8 @@
             focus: true,
             toolbar: [
               ['style', ['style']],
+              ['fontname', ['fontname']],
+              ['fontsize', ['fontsize']],
               ['font', ['bold', 'underline', 'clear', 'italic', 'strikethrough']],
               ['para', ['ul', 'ol', 'paragraph']],
               ['misc', ['undo', 'redo']],
@@ -57,6 +59,11 @@
             }
           }
         );
+
+        $('#summernote').summernote({
+            fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Tahoma', 'Times New Roman', 'Verdana', 'Roboto'],
+            fontSizes: ['8', '9', '10', '11', '12', '14', '18', '24', '36', '48' , '64', '82', '150']
+        });
     });
 
     /**************************  Estilo TEXTO PARAMETRO  *****************************/
