@@ -126,8 +126,8 @@
 
         // create button
         var button = ui.button({
-          contents: '<i class="fab fa-etsy"/> Mayusculas',
-          tooltip: 'Convertir a Mayusculas',
+          contents: '<i class="fab fa-etsy"/> Mayúsculas',
+          tooltip: 'Convertir a Mayúsculas',
           click: function () {
                 var textSelection = window.getSelection().toString().toUpperCase();
                 if(textSelection != ""){

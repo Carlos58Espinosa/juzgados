@@ -16,12 +16,13 @@ class AgrupacionesController extends Controller
     public function index(Request $request)
     {
         $res = [];
+        $usuario = \Auth::user();
         switch($request->option){
             case 'fields_by_group':
                 $res = DB::select("select campo from grupos_campos where grupoId = ".$request->grupo_id." order by campo;");
             break;
             default:
-                $grupos = Grupo::all();
+                $grupos = Grupo::where('usuarioId', $usuario->id)->get();
                 $campos = $this->getAllFieldsWithoutGroup();
                 $res = view('agrupacion.edit', compact('campos', 'grupos'));
             break;
@@ -131,8 +132,19 @@ class AgrupacionesController extends Controller
 
     public function addGroup(Request $request){
         return DB::transaction(function() use($request){
-            $grupo = Grupo::create(['nombre' => $request->nombre]);
+            $usuario = \Auth::user();
+            $grupo = Grupo::create(['nombre' => $request->nombre, 'usuarioId' => $usuario->id]);
             return $grupo->id;
         });
+    }
+
+    public function addGroupsForNewUser($nuevoUsuarioId, $administradorId){
+        $grupos = Grupo::with('campos')->where('usuarioId', $administradorId)->get();
+
+        foreach($grupos as $grupo){
+            $nuevoGrupo = Grupo::create(['nombre' => $grupo['nombre'], 'usuarioId' => $nuevoUsuarioId]);
+            foreach($grupo->campos as $campo)
+                GrupoCampo::create(['grupoId' => $nuevoGrupo->id, 'campo' => $campo->campo]);
+        }
     }
 }

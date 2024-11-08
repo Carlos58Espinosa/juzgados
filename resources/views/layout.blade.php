@@ -103,7 +103,6 @@
 			<div class="form-check form-switch" style="width: 40px; margin-left: 40px; height:inherit;">
 			  	<input onchange="changeColorConfiguration(1)" class="form-check-input" type="checkbox" role="switch" id="switch_night_day" style="margin-top: 30px; background-color: lightcoral; fill: lightcoral;">
 			</div>
-
 		
     	</div>
         <!--<div class="section__content section__content--p30">
@@ -145,12 +144,15 @@
 	<!-- HEADER DESKTOP-->
 
     <!-- MAIN CONTENT-->
-    <div id="main-content">      	
+    <!-- <div id="main-content"> -->     	
     	<input type="hidden" id="modo_color" value="{{session('color')}}">
+    	<main id="main-content">
     	@include('general.general_methods')
 
         @yield('content')
-    </div>
+    </main>
+    <!-- </div> -->
+     @livewireScripts
 	<!-- END MAIN CONTENT-->
 
 

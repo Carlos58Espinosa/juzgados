@@ -11,7 +11,7 @@
   });
 
   function getHStringtmlLi(id, value){
-      return '<li id="'+ id +'" class="list-group-item list-group-item-info sortable-itemc ui-state-default"><i class="fas fa-arrows-alt-v flecha_tipo_procedimiento"></i>   ' + value + '</li>';
+      return '<li id="'+ id +'" class="list-group-item list-group-item-info sortable-itemc ui-state-default"><i title="Ordenar" class="fas fa-arrows-alt-v flecha_tipo_procedimiento"></i>   ' + value + '</li>';
   }
 
   function rebuildListGroup(arrIds) {

@@ -38,9 +38,9 @@
                 </div>
 
                 <div>
-                  <form method="POST" action="{{action('PlantillasController@viewPdf')}}" target="_blank">
+                  <form method="GET" action="{{action('PlantillasController@viewPdf')}}" target="_blank">
                   @csrf
-                    <input type="hidden" name="id" value="{{$plantilla->id}}">
+                    <input type="hidden" name="id" value="{{openssl_encrypt($plantilla->id, 'AES-128-CTR', 'GeeksforGeeks', 0, '1234567891011121')}}">
                     <button class="btn" title="Ver PDF"><i class="far fa-file-pdf"></i></button>
                   </form>
                 </div>

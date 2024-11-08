@@ -64,11 +64,15 @@ class UsuariosController extends Controller
         $transaction = DB::transaction(function() use($request){
             $arr = $request->except('_token');
             $arr['password'] = Hash::make($request->password);
-            if($arr['tipo'] == 'Empleado'){
-                $usuario = \Auth::user();
+            $usuario = \Auth::user();
+            if($arr['tipo'] == 'Empleado')                
                 $arr['usuarioId'] = $usuario->id;
-            }
-            User::create($arr);
+
+            $usuarioNuevo = User::create($arr);
+
+            $agrupaciones_ctrl = new AgrupacionesController();
+            $agrupaciones_ctrl->addGroupsForNewUser($usuarioNuevo->id, $usuario->id);
+            
             $notification = array(
                   'message' => 'Registro Guardado.',
                   'alert-type' => 'success'
@@ -184,7 +188,8 @@ class UsuariosController extends Controller
         $usuario = \Auth::user();
         $color = 0;
         $color_config = DB::table("color_config")->where('usuarioId',$usuario->id)->first();
-        $color = $color_config->color;
+        if($color_config != null)
+            $color = $color_config->color;
         return $color;
     }
 
@@ -194,5 +199,14 @@ class UsuariosController extends Controller
         if($usuario->tipo == 'Administrador')
             $tipos = ['Administrador', 'Cliente', 'Empleado'];
         return $tipos;
+    }
+
+    public function activateUser(Request $request){
+        $usuario = User::findOrFail($request->id);
+        if($usuario->activo == 0){
+            $usuario->activo = 1;
+            $usuario->save();
+        }
+        return response()->json(200);
     }
 }

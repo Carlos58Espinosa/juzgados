@@ -35,8 +35,6 @@ function changeColorConfiguration(valor) {
           success: function(data){
           console.log('exito');  
               document.getElementById("modo_color").value = valor;
-              console.log(document.getElementById("modo_color").value);
-              console.log('exito');
               loadColor('index');
           },
           error: function(){
@@ -44,19 +42,6 @@ function changeColorConfiguration(valor) {
           }
     }); 
 }
-
-/*function changeColor(option_form){
-    switch(option_form){
-      case 'index':
-        var element_type_config = document.getElementById("type_config");
-        if(element_type_config.value == "1")
-          element_type_config.value = "0";
-        else 
-          element_type_config.value = "1";
-      break;
-    }
-    loadColor(option_form);
-}*/
 
 function loadColor(option_form){
     var element_modo_color = document.getElementById("modo_color");
@@ -78,53 +63,6 @@ function loadColor(option_form){
     if(table)
       table.className = color_modo;
     document.body.className = color_modo;
-
-
-
-    //for(let rw of rows){
-        /*rw.classList.remove("modo_dia");
-        rw.classList.remove("modo_noche");
-        rw.classList.add(color_modo);*/
-
-      //  console.log(rw);
-        //classList.toggle('marked')
-    //}
-
-
-  //color = '#ECEFF1';
-        //color = '#BFCBDC';
-        //color = '#aeb6bf';
-        //color = '#d6dbdf';
-/*
-  var color = '#DCDADA';
-  //switch(option_form){
-  //  case 'index':
-      var element_type_config = document.getElementById("type_config");
-      var element = document.getElementById("main-content");
-      console.log("Color:"+element_type_config.value);
-      if(element_type_config.value == 0)
-        color = '#FFF';
-        
-
-      element.style.background = color;
-      document.body.style.background = color;
-      //element.style.color = "white";
-      var table = document.getElementById("table_index");
-      var rows = table.getElementsByTagName("td");   
-
-      for(i = 0; i < rows.length; i++) {
-        rows[i].style.background = color;
-        //rows[i].style.color = "white";
-      }
-    //break;
-  //}
-*/ 
-  /*var element = document.body;
-    element.classList.toggle("dark-mode");
-
-    document.getElementById("table_index").setAttribute("bgcolor","#FF0000");
-  rows[i].className = "even"; 
-*/
 }
 
 function clone(id, url_clone){
@@ -136,14 +74,33 @@ function clone(id, url_clone){
           cache: false,
           data: {'id' : id,'_token':"{{ csrf_token() }}"},
           success: function(data){  
-              $(table).load(" "+table); 
+              $(table).load(" "+table+" > *"); 
           },
           error: function(){
             toastr.error('Hubo un problema por favor intentalo de nuevo mas tarde.', '', {timeOut: 3000});
           }
     });
     loadColor(); 
-  }
+}
+
+function activate_user(id){
+    var table = '#table_index';
+    $.ajax({
+          dataType: 'json',
+          type:'POST',
+          url: "{{action('UsuariosController@activateUser')}}",
+          cache: false,
+          data: {'id' : id,'_token':"{{ csrf_token() }}"},
+          success: function(data){  
+              //$(table).load(" "+table); 
+              $(table).load(" "+table+" > *");
+              toastr.success('Usuario Activado.', '', {timeOut: 3000});
+          },
+          error: function(){
+            toastr.error('Hubo un problema por favor intentalo de nuevo mas tarde.', '', {timeOut: 3000});
+          }
+    });
+}
 
 $('body').on('click','.delete-alert',function(event){
       var url = $(this).attr('data-action');
@@ -178,8 +135,8 @@ $('body').on('click','.delete-alert',function(event){
                 "_method": method
             },
             success: function(data) {
-              console.log('success');
-              $(table).load(" "+table);
+              //console.log('success');
+              $(table).load(" "+table+" > *");
               Swal.fire(
                message2,
                message3,

@@ -230,10 +230,12 @@ class CasosController extends Controller
     }
 
     public function viewCasosPdf(Request $request) {
-        $banco_datos = $this->getDataBankByCasoIdByTemplateId($request->caso_id, $request->plantilla_id);
+        $plantilla_id = openssl_decrypt($request->plantilla_id, 'AES-128-CTR', 'GeeksforGeeks', 0, '1234567891011121');
+        $caso_id = openssl_decrypt($request->caso_id, 'AES-128-CTR', 'GeeksforGeeks', 0, '1234567891011121');
+        $banco_datos = $this->getDataBankByCasoIdByTemplateId($caso_id, $plantilla_id);
 
-        $plantilla = CasosPlantillas::where("casoId", $request->caso_id)
-        ->where("plantillaId", $request->plantilla_id)->first();
+        $plantilla = CasosPlantillas::where("casoId", $caso_id)
+        ->where("plantillaId", $plantilla_id)->first();
 
         $res = $plantilla->texto;
         $res = str_replace('<button type="button" class="button_summernote" contenteditable="false" onclick="editButton(this)">', '', $plantilla->texto);

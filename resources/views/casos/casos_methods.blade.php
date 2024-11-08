@@ -1,8 +1,6 @@
 <script>
 
-    $(document).ready(function() {      
-        //document.getElementById('check_edit_template').checked = false;
-        //document.getElementById("div_textos_summernote").hidden = true; 
+    $(document).ready(function() {       
         document.getElementById("carouselExampleCaptions").hidden = true;
         if(document.getElementById("div_plantillas"))
             document.getElementById("div_plantillas").hidden = true;
@@ -13,7 +11,7 @@
     function initSummernotes(){
         $('#summernote').on('summernote.change', function(we, contents, $editable) {
           //console.log('summernote.change', contents, $editable);
-          replaceText();
+            replaceTextEditTemplate();
         });
 
         $('#texto_final').summernote(
@@ -35,7 +33,6 @@
           var configId = document.getElementById("select_config").value;
 
           document.getElementById("div_plantillas").hidden = false;
-          //document.getElementById("div_textos_summernote").hidden = true;
           document.getElementById("nuevos_campos_cad").value = "";
           document.getElementById("carouselExampleCaptions").hidden = true;
 
@@ -79,9 +76,6 @@
           (elementConfig != null) ? configId = elementConfig.value : configId = 0;
           (elementConfig != null) ? casoId = elementCaso.value : casoId = 0;
 
-          //console.log("CASO ID"+casoId);
-          //console.log("CONFIG ID"+configId);
-
           var url = "{{action('PlantillasController@index')}}";
 
           $.ajax({
@@ -103,10 +97,7 @@
     /***** Muestra los CAMPOS, VALORES y TEXTO de la PLANTILLA *****/
     function showFieldsAndTemplate(data, type){
         //console.log(data);
-        //hiddenSummernote();
         document.getElementById("carouselExampleCaptions").hidden = false;
-
-        //document.getElementById("div_textos_summernote").hidden = false;
 
         var contenedorDiv = document.getElementById('div_campos_plantilla');
         contenedorDiv.innerHTML = this.getStringHtmlFieldTemplate(data['grupos_campos']);
@@ -118,16 +109,7 @@
 
         $('#texto_final').summernote('code', data['texto']);
         $('#summernote').summernote('code', data['texto']);
-
-        //disableButtonsOnPreView();        
     }
-
-    /*function disableButtonsOnPreView(){
-        var content = document.getElementById("div_texto_final");
-        var buttons = content.getElementsByTagName("button");
-        for(let button of buttons)
-            button.disabled= true;
-    }*/
 
     /****  Regresa el STRING HTML para la tabla de CAMPOS  *****/
     function getStringHtmlFieldTemplate(arr){ 
@@ -157,20 +139,18 @@
                 html1 += getRowStringHtmlFieldTemplate(campo['campo'], valor);
             }
             html1 += `</tbody></table>`;
-            //html2 += "</table></div>";
             cad_hidden = "hidden";
             element_id = '';
             cad_active = "";
             html1 += "";
         }
-        //html2 += "</div>";
-        return html1; //+ html2;
+        return html1;
     }
 
     function getRowStringHtmlFieldTemplate(campo, valor){
         var html = `<tr id="${campo}">`;
         html += `<td width="200px;">${campo}</td>`;
-        html += `<td style="padding-right: 5px;"><input autocomplete="on" onCopy="return false;" style="text-transform:none; width:400px;float:left;" type="text" class="form-control" name="${campo}"  oninput="replaceText()" `;
+        html += `<td style="padding-right: 5px;"><input autocomplete="on" onCopy="return false;" style="text-transform:none; width:400px;float:left;" type="text" class="form-control" name="${campo}" oninput="replaceText()" `;
         if(valor != null)
             html += ` value="${valor}" `;
         html += ' required></td></tr>';
@@ -182,20 +162,14 @@
         $(".nav-tabs li a").removeClass("active");
         $("#a_" + id).addClass("active")
         $('ul table').attr("hidden","true");
-        /*var element = document.getElementById("grupo_id");
-        if(element.value != "")
-            document.getElementById(element.value).hidden = true;
-        element.value = id;
-        document.getElementById(id).hidden = false;*/
         document.getElementById("tabla_"+id).hidden = false;
     }
 
-   /** function hiddenSummernote(){
-        if (document.getElementById('check_edit_template').checked)
-          document.getElementById("div_summernote").hidden = false;
-        else
-          document.getElementById("div_summernote").hidden = true;
-    }*/
+    function replaceTextEditTemplate() {
+        var textoAux = document.getElementById("summernote").value;
+        $('#texto_final').summernote('code', textoAux);
+        replaceText();
+    }
 
     function replaceText(){
         var textoAux = document.getElementById("summernote").value;
@@ -209,39 +183,23 @@
             if(input.value != "")
                 textoAux = textoAux.replaceAll(campo, input.value);
         }
+        var textoAux = textoAux.replaceAll('<button', '<button disabled ');
         $('#texto_final').summernote('code', textoAux);
-
-        //disableButtonsOnPreView();
     }  
 
     function disableCarousel(){
-        console.log("disableCarousel");
         var carrusel1 = document.getElementById("carrusel1");
         var carrusel2 = document.getElementById("carrusel2");
         if(carrusel1.classList.contains("active")){
-            //carrusel2.hidden = false;
             carrusel2.style.visibility = "visible";
             carrusel1.style.visibility = "collapse";
-            //carrusel1.hidden = true;
-            //carrusel2.classList.add("active");
-            //carrusel1.classList.remove("active");
-            console.log("Entre 1");
         }
         if(carrusel2.classList.contains("active")){
-            /*carrusel1.hidden = false;
-            carrusel2.hidden = true;*/
             carrusel1.style.visibility = "visible";
             carrusel2.style.visibility = "collapse";
-            //carrusel1.classList.add("active");
-            //carrusel2.classList.remove("active");
-            console.log("Entre 2");
         }
+        replaceTextEditTemplate();
     }
-
-
-
-
-
 
 
 

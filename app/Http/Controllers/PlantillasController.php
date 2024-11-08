@@ -223,12 +223,13 @@ class PlantillasController extends Controller
             PlantillaCampo::create(['campo' => $campo, "plantillaId" => $plantillaId]);
     }
 
-    public function viewPdf(Request $request) {        
-        $plantilla = Plantilla::findOrFail($request->id);
+    public function viewPdf(Request $request) { 
+        $id = openssl_decrypt($request->id, 'AES-128-CTR', 'GeeksforGeeks', 0, '1234567891011121');
+        $plantilla = Plantilla::findOrFail($id);
         $estado = "slp";
         $res = str_replace('<button type="button" class="button_summernote" contenteditable="false" onclick="editButton(this)">', '<span class="span_param">', $plantilla->texto);
         $res = str_replace('</button>', '</span>', $res);
-        $res = str_replace('<span hidden="">|</span>', '', $res);   
+        $res = str_replace('<span hidden="">|</span>', '', $res);    
         $view = view('pdfs.archivo', compact('res', 'estado'));
         $view = preg_replace('/>\s+</', '><', $view);
         $pdf = \PDF::loadHTML($view);

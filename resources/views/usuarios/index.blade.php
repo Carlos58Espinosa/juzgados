@@ -44,7 +44,11 @@
               </div>
               @if($usuario->id != $id)
               <div>
-                <button class="delete-alert btn" data-reload="1" data-table="#table_index" data-message1="No podrás recuperar el registro." data-message2="¡Borrado!" data-message3="El registro ha sido borrado." data-method="DELETE" data-action="{{action('UsuariosController@destroy',$usuario->id)}}" title="Eliminar Registro"><i class="far fa-trash-alt"></i></button>
+                <button class="delete-alert btn" data-reload="1" data-table="#table_index" data-message1="No podrás recuperar el registro." data-message2="¡Borrado!" data-message3="El registro ha sido borrado." data-method="DELETE" data-action="{{action('UsuariosController@destroy',$usuario->id)}}" title="Desactivar Usuario"><i class="far fa-trash-alt"></i></button>
+              </div>
+
+              <div>                 
+                <button class="btn" title="Activar Usuario" onclick="activate_user({{$usuario->id}})"><i class="fa fa-check"></i></button>                 
               </div>
               @endif
 
@@ -54,7 +58,6 @@
         @endforeach
     </tbody>
 </table>
-     
 
 <script>
   $(document).ready(function() {

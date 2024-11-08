@@ -40,10 +40,10 @@
                 <td>
 
                   <div class="div_btn_acciones">
-                    <form method="POST" action="{{action('CasosController@viewCasosPdf')}}" target="_blank">
+                    <form method="GET" action="{{action('CasosController@viewCasosPdf')}}" target="_blank">
                     @csrf
-                      <input type="hidden" name="plantilla_id" value="{{$p->plantillaId}}">
-                      <input type="hidden" name="caso_id" value="{{$p->casoId}}">
+                      <input type="hidden" name="plantilla_id" value="{{openssl_encrypt($p->plantillaId, 'AES-128-CTR', 'GeeksforGeeks', 0, '1234567891011121')}}">
+                      <input type="hidden" name="caso_id" value="{{openssl_encrypt($p->casoId, 'AES-128-CTR', 'GeeksforGeeks', 0, '1234567891011121')}}">
                       <button class="btn" title="Ver PDF"><i class="far fa-file-pdf"></i></button>
                     </form>
                   </div>
