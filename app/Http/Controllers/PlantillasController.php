@@ -238,6 +238,7 @@ class PlantillasController extends Controller
 
     /***** Función usada en el CREATE de CASOS, se usa para traer los datos de una plantilla ****/
     public function getFieldsAndTemplateByTemplateId($arr){
+        $usuario = \Auth::user();
         $res["grupos_campos"] = [];
         $qry2 = ""; $casoId = $arr['casoId']; $configId = $arr['configId'];
 
@@ -247,10 +248,10 @@ class PlantillasController extends Controller
         }
 
         $qry = "select g.id, g.nombre, gc.campo ". $qry2 . " from grupos_campos gc, grupos g
-                where gc.grupoId = g.id and gc.campo in (select campo from plantillas_campos where plantillaId = ".$arr['plantillaId'].") order by g.nombre, gc.campo;";                 
+                where g.usuarioId = ".$usuario->id." and gc.grupoId = g.id and gc.campo in (select campo from plantillas_campos where plantillaId = ".$arr['plantillaId'].") order by g.nombre, gc.campo;";                 
         $this->getArrayGroupFields($qry, $res, '');       
 
-        $qry = "select 0 as id, 'Otros' as nombre, gc.campo ". $qry2 . " from plantillas_campos gc where plantillaId = ".$arr['plantillaId']." and campo not in (select campo from grupos_campos)";
+        $qry = "select 0 as id, 'Otros' as nombre, gc.campo ". $qry2 . " from plantillas_campos gc where plantillaId = ".$arr['plantillaId']." and campo not in (select gca.campo from grupos_campos gca, grupos ga where ga.id = gca.grupoId and ga.usuarioId = ".$usuario->id.")";
         $this->getArrayGroupFields($qry, $res, 'Otros');
 
         $caso_plantilla = CasosPlantillas::where('casoId', $casoId)->where('plantillaId', $arr['plantillaId'])->first();
