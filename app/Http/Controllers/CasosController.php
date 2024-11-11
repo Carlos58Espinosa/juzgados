@@ -128,7 +128,7 @@ class CasosController extends Controller
         where c.configuracionId = ".$caso->configuracionId." and c.plantillaId = p.id 
         union
         select p.id, p.nombre, 1000 orden from casos_plantillas c, plantillas p 
-        where c.casoId = ".$caso->id." and c.plantillaId = p.id order by orden ) as t1 order by t1.orden;");
+        where c.casoId = ".$caso->id." and c.plantillaId = p.id and p.id not in (select plantillaId from configuracion_plantillas where configuracionId = ".$caso->configuracionId.")) as t1 order by t1.orden;");
         return view('casos.edit', compact('caso', 'plantillas'));
     }
 
