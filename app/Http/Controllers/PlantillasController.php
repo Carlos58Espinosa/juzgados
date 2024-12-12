@@ -69,6 +69,7 @@ class PlantillasController extends Controller
      */
     public function store(Request $request)
     {   
+        return $this->getTemplateFields($request->texto);
         if( url()->previous() != url()->current() ){
             session()->forget('urlBack');
             session(['urlBack' => url()->previous()]);
@@ -78,6 +79,7 @@ class PlantillasController extends Controller
             'nombre' => 'required|unique:plantillas,nombre,',                       
             'texto' => 'required',
         ], ['nombre.unique' => 'El nombre debe de ser único.']);
+
 
         $transaction = DB::transaction(function() use($request){
             $this->saveRegister($request);
@@ -195,6 +197,22 @@ class PlantillasController extends Controller
         });     
     }
 
+    public function getContents($str, $startDelimiter, $endDelimiter) {
+        $contents = array();
+        $startDelimiterLength = strlen($startDelimiter);
+        $endDelimiterLength = strlen($endDelimiter);
+        $startFrom = $contentStart = $contentEnd = 0;
+        while (false !== ($contentStart = strpos($str, $startDelimiter, $startFrom))) {
+            $contentStart += $startDelimiterLength;
+            $contentEnd = strpos($str, $endDelimiter, $contentStart);
+            if (false === $contentEnd) 
+              break;
+            $contents[] = substr($str, $contentStart, $contentEnd - $contentStart);
+            $startFrom = $contentEnd + $endDelimiterLength;
+        }
+        return $contents;
+    }
+
     public function getAllFields(){
         $qry = "select campo from plantillas_campos
                 group by campo
@@ -206,6 +224,25 @@ class PlantillasController extends Controller
 
     public function getTemplateFields($texto){
         $campos_plantilla = [];
+        $startDelimiter = '<button type="button" class="button_summernote" contenteditable="false" onclick="editButton(this)">';
+        $endDelimiter = '</button>';
+
+        $arr = $this->getContents($texto, $startDelimiter, $endDelimiter);
+
+        foreach($arr as $a){
+            if(!str_contains($a, '<') || !str_contains($a, '>'))
+                array_push($campos_plantilla, $a);
+            else{
+                $aux = $this->getContents($a, '>', '<');
+                array_filter($aux, function($iter) use(&$campos_plantilla){
+                    if($iter != "" && $iter != '|')
+                        array_push($campos_plantilla, $iter);
+                });
+            }
+        }
+        return array_unique($campos_plantilla);
+
+        /*$campos_plantilla = [];
         $span_txt = '<span hidden="">|</span>';
         $arr = explode($span_txt, $texto);
 
@@ -213,7 +250,7 @@ class PlantillasController extends Controller
             if(!str_contains($iter, '<') || !str_contains($iter, '>'))
                 array_push($campos_plantilla, $iter);
         });
-        return array_unique($campos_plantilla);
+        return array_unique($campos_plantilla);*/
     }
 
     public function insertPlantillaCampos($campos, $band_delete, $plantillaId){
@@ -226,13 +263,16 @@ class PlantillasController extends Controller
     public function viewPdf(Request $request) { 
         $id = openssl_decrypt($request->id, 'AES-128-CTR', 'GeeksforGeeks', 0, '1234567891011121');
         $plantilla = Plantilla::findOrFail($id);
-        $estado = "slp";
         $res = str_replace('<button type="button" class="button_summernote" contenteditable="false" onclick="editButton(this)">', '<span class="span_param">', $plantilla->texto);
         $res = str_replace('</button>', '</span>', $res);
-        $res = str_replace('<span hidden="">|</span>', '', $res);    
-        $view = view('pdfs.archivo', compact('res', 'estado'));
+
+        $caso = (object)['margenArrAba' => 10 ,'margenDerIzq' => 100];
+        $GLOBALS['y_paginado'] = 60;
+
+        $view = view('pdfs.sin_logos', compact('res', 'caso'));
         $view = preg_replace('/>\s+</', '><', $view);
         $pdf = \PDF::loadHTML($view);
+        $pdf->getDomPDF()->set_option("enable_php", true);
         return $pdf->stream();
     }
 

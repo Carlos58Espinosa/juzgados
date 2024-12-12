@@ -178,10 +178,11 @@
 
         for(let input of inputs){
             //console.log("INPUTNAME:"+input.name);
-            var campo = '<span hidden="">|</span>' + input.name + '<span hidden="">|</span>';
+            var campo = '>' + input.name + '</';
+            var valor_final = '>' + input.value + '</';
 
             if(input.value != "")
-                textoAux = textoAux.replaceAll(campo, input.value);
+                textoAux = textoAux.replaceAll(campo, valor_final);
         }
         var textoAux = textoAux.replaceAll('<button', '<button disabled ');
         $('#texto_final').summernote('code', textoAux);
@@ -200,7 +201,6 @@
         }
         replaceTextEditTemplate();
     }
-
 
 
 

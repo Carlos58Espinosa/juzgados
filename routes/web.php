@@ -35,6 +35,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::resource('usuarios', 'UsuariosController');
     Route::post('activate_user', 'UsuariosController@activateUser');
     Route::post('usuarios_color_config', 'UsuariosController@changeColorConfig');
+    Route::post('casos/obtener_formato', 'CasosController@getFormat');
+    Route::post('casos/guardar_logo', 'CasosController@saveLogo');
+    Route::post('casos/guardar_formato', 'CasosController@saveFormat');
 });
 
 

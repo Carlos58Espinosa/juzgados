@@ -2,14 +2,52 @@
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
 <script src="{{ asset('js/sweetalert.js') }}"></script>
 
-<dialog id="modal" style="padding:20px; width:700px; height: 400px;position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">
-    <div class="row" style="width:420px;">
-        <button id="boton_bold" style="width: 40px;" onclick="changeTextInput('bold')" type="button" class="btn btn-light"><i class="note-icon-bold"></i></button>
-        <button id="boton_underline" style="width: 40px;" onclick="changeTextInput('underline')" type="button" class="btn btn-light"><i class="note-icon-underline"></i></button>
-        <button style="width: 40px;" onclick="changeTextInput('eraser')" type="button" class="btn btn-light"><i class="note-icon-eraser"></i></button>
-        <button id="boton_italic" style="width: 40px;" onclick="changeTextInput('italic')" type="button" class="btn btn-light"><i class="note-icon-italic"></i></button>
-        <button id="boton_line" style="width: 40px;" onclick="changeTextInput('line-through')" type="button" class="btn btn-light"><i class="note-icon-strikethrough"></i></button>
+<dialog id="modal" class="dialogo">
+
+    <div class="row" style="width:400px;">
+        <label style="width: 200px;">Tipo de Letra:</label>
+        <label style="width: 200px; float: left;">Tamaño de Letra:</label>
     </div>
+
+    <div class="row" style="width:400px;">
+        <div style="width:200px;" class="form-group">
+            <select id="select_tipo_letra" class="form-control selectpicker @error('select_tipo_letra') is-invalid @enderror" title="-- Selecciona Tipo --" data-live-search="true">               
+                <option style="font-family: Arial;" value="Arial">Arial</option>
+                <option style="font-family: Comic Sans MS;" value="Comic Sans MS">Comic Sans MS</option>
+                <option style="font-family: Courier New;" value="Courier New">Courier New</option>
+                <option style="font-family: Helvetica;" value="Helvetica">Helvetica</option>
+                <option style="font-family: Tahoma;" value="Tahoma">Tahoma</option>
+                <option style="font-family: Times New Roman;" value="Times New Roman">Times New Roman</option>
+                <option style="font-family: Verdana;" value="Verdana">Verdana</option>
+            </select>
+        </div>
+
+        <div style="width:200px;" class="form-group">
+            <select id="select_tam_letra" class="form-control selectpicker @error('select_tam_letra') is-invalid @enderror input100" title="-- Selecciona Tamaño --" data-live-search="true">    
+                <option value="8px">8</option>
+                <option value="9px">9</option>
+                <option value="10px">10</option>
+                <option value="11px">11</option>
+                <option value="12px">12</option>
+                <option value="14px">14</option>
+                <option value="18px">18</option>
+                <option value="24px">24</option>
+                <option value="36px">36</option>
+            </select>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row" style="width:420px;">
+        <button id="boton_bold" onclick="changeTextInput('bold')" type="button" class="btn btn-light dialogo_boton"><i class="note-icon-bold"></i></button>
+        <button id="boton_underline" onclick="changeTextInput('underline')" type="button" class="btn btn-light dialogo_boton"><i class="note-icon-underline"></i></button>
+        <button onclick="changeTextInput('eraser')" type="button" class="btn btn-light dialogo_boton"><i class="note-icon-eraser"></i></button>
+        <button id="boton_italic" onclick="changeTextInput('italic')" type="button" class="btn btn-light dialogo_boton"><i class="note-icon-italic"></i></button>
+        <button id="boton_line" onclick="changeTextInput('line-through')" type="button" class="btn btn-light dialogo_boton"><i class="note-icon-strikethrough"></i></button>
+    </div>
+
+    <br>
 
     <div class="row" style="width: 420px; float: left; margin-top: 5px;">
         <div class="form-group">
@@ -23,7 +61,7 @@
         </div>
     </div>
 
-    <div id="camposLlenar" style="width:230px; height:350px;margin-left:410px; margin-top: -40px; overflow: hidden; overflow-y: scroll; border-radius: 10px;">    
+    <div id="camposLlenar" style="width:230px; height:350px;margin-left:410px; margin-top: -110px; overflow: hidden; overflow-y: scroll; border-radius: 10px;">    
 
     </div> 
 
@@ -40,6 +78,7 @@
             height: 450,
             width: 600,
             focus: true,
+            fontNames: ['Arial', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Tahoma', 'Times New Roman', 'Verdana'],
             toolbar: [
               ['style', ['style']],
               ['fontname', ['fontname']],
@@ -50,7 +89,7 @@
               ['height', ['height']],
               ['mybutton', ['addParam']],
               ['mybutton2', ['lowerCase']],
-              //['view', ['codeview']],
+              ['view', ['codeview']],
             ],
             lineHeights: ['1.0', '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7'],
             buttons: {
@@ -59,11 +98,6 @@
             }
           }
         );
-
-        $('#summernote').summernote({
-            fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Tahoma', 'Times New Roman', 'Verdana', 'Roboto'],
-            fontSizes: ['8', '9', '10', '11', '12', '14', '18', '24', '36', '48' , '64', '82', '150']
-        });
     });
 
     /**************************  Estilo TEXTO PARAMETRO  *****************************/
@@ -181,12 +215,17 @@
 
     /**** Limpia el VALOR PARAMETRO de saltos de linea, tabuladores y AGREGA el estilo ****/
     function cleanParameterValue(valor_parametro, elemento_param) {
-        var span_txt = '<span hidden="">|</span>';
         valor_parametro = valor_parametro.replaceAll('\n','');
         valor_parametro = valor_parametro.replaceAll('\t','');
         valor_parametro = valor_parametro.replaceAll('<br>','');
 
-        valor_parametro = span_txt + valor_parametro + span_txt;
+        var str_style = '<span style="';
+        if(document.getElementById('select_tam_letra').value != '')
+            str_style += 'font-size:' + document.getElementById('select_tam_letra').value + ';';
+        if(document.getElementById('select_tipo_letra').value != '')
+            str_style += 'font-family:' + document.getElementById('select_tipo_letra').value + ';';
+        if(str_style != '<span style="')
+            valor_parametro = str_style + '">' + valor_parametro +'</span>';
 
         elemento_param.style.fontWeight == 'bold' ? valor_parametro = '<b>' + valor_parametro + '</b>' : valor_parametro = valor_parametro;
 
@@ -212,11 +251,30 @@
     /*******************  Editar BOTON PARAMETRO  **************************/
     function editButton(button){
         $('#summernote').summernote('editor.saveRange'); 
-        var span_txt = '<span hidden="">|</span>';        
         const modal = document.getElementById("modal"); 
         document.getElementById("camposLlenar").innerHTML = "";
         var elemento_param = document.getElementById("nuevo_param");
-        elemento_param.value = button.innerText.replaceAll(span_txt, '');
+        elemento_param.value = button.innerText;
+
+        if(button.innerHTML.includes("span")){
+            var arr = button.innerHTML.substring(
+                button.innerHTML.indexOf('"') + 1, 
+                button.innerHTML.lastIndexOf('"')
+            ).split(";");
+
+            for(let iter of arr){
+                var arr_aux = iter.split(":");
+                switch(arr_aux[0]){
+                    case 'font-family':
+                        document.getElementById('select_tipo_letra').value = arr_aux[1]; 
+                        break; 
+                    case 'font-size':
+                        document.getElementById('select_tam_letra').value = arr_aux[1]; 
+                        break; 
+                }
+                $('.selectpicker').selectpicker('refresh');
+            }            
+        }
 
         elemento_param.style.fontWeight = 'normal';
         elemento_param.style.textDecoration = 'none';
@@ -274,7 +332,6 @@
     /******* Agrega un campo nuevo a la Tabla de CASOS ***********/
     function addRowInTableCases(valor_parametro){
         //console.log("Entre a:addNewFieldInCases");
-        var span_txt = '<span hidden="">|</span>';
 
         if(!document.getElementById(valor_parametro)){
             var element = document.getElementById("nuevos_campos_cad");

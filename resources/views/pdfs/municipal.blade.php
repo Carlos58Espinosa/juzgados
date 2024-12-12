@@ -9,9 +9,7 @@
             border-radius: 5px;
             padding: 1px;
         }
-        body {
-            font-family:"Trebuchet MS", Helvetica, sans-serif;
-            font-size: 14px;            
+        body {          
         }
         table {
             width: 100%;
@@ -32,47 +30,30 @@
         .bold {
           font-weight: bold;
         }
-
     
         @page {
-            margin: 100px 100px;
+            margin: {{$caso->margenArrAba}}px {{$caso->margenDerIzq}}px;   
         }
 
         header {
-            position: fixed;
-            top: -60px;
-            height: 90px;
-            /*background-color: lightblue;*/
-            color: white;
-            text-align: center;
-            line-height: 35px;
+           align-content: center;
+           align-items: center;
         }
 
         footer {
-            position: fixed;
-            bottom: -60px;
-            height: 50px;
-            background-color: #752727;
-            color: white;
-            text-align: center;
-            line-height: 35px;
         }
        
   </style>
   </head>
     
     <body>
-        <header>
-            <div>  
-                <img align="left" src="../public/images/mexico.png"  style="margin-top:0px; padding: 0px; height: 90px; width: 130px; margin-left:0px;" />
-                <img align="right" src="../public/images/{{$estado}}.png"  style="margin-top:0px; padding: 0px; height: 90px; width: 220px; margin-left:400px;" />
+        <header> 
+            <div align="center" style="width: fit-content;">  
+                <img src="{{$logos[0]}}"  style="height: 90px; width: 130px;" />
             </div>  
         </header>
-         <!-- <footer>
-            Footer
-        </footer> -->
 
-        <main style="margin-top:50px;">
+        <main>
             <div>
                 {!!$res!!}
             </div>
@@ -81,5 +62,20 @@
       <!-- Scripts -->
       <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
       <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
-    </body>
+      <script type="text/php">
+        if (isset($pdf)) {
+            //$text = "page {PAGE_NUM} / {PAGE_COUNT}";
+            //$width = $fontMetrics->get_text_width($text, $font, $size) / 2;
+            //$x = ($pdf->get_width() - $width) / 2;
+            //$y = $pdf->get_height() - 35;
+
+            $text = "{PAGE_NUM}";
+            $size = 10;
+            $font = $fontMetrics->get_font("helvetica", "normal");
+            $x = $pdf->get_width() - $GLOBALS['y_paginado'];
+            $y = $pdf->get_height() - 30;
+            $pdf->page_text($x, $y, $text, $font, $size);
+        }
+      </script>
+    </body>   
 </html>

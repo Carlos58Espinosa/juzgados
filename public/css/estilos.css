@@ -230,6 +230,22 @@ tr:last-of-type td:last-of-type {
 		color: lightcoral;
 }
 
+.dialogo {
+	 padding:20px; 
+	 width:700px; 
+	 height: 400px;
+	 position: absolute; 
+	 left: 50%; 
+	 top: 50%; 
+	 transform: translate(-50%, -50%); 
+	 border:2px solid black; 
+	 border-radius:10px;
+}
+
+.dialogo_boton {
+		width: 40px;
+}
+
 
 		
 

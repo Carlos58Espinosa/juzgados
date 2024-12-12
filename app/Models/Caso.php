@@ -17,6 +17,10 @@ class Caso extends Model
         return $this->hasOne('App\Models\Plantilla', 'id', 'etapaPlantillaId');
     }
 
+    public function formato(){
+        return $this->hasOne('App\Models\FormatoCaso', 'id', 'formatoId');
+    }
+
     public function plantillas(){
         return $this->hasMany('App\Models\CasosPlantillas', 'casoId', 'id');
     }
