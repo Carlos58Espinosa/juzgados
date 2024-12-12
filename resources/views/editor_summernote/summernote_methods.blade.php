@@ -1,3 +1,22 @@
+<style>
+.dialogo {
+     padding:20px; 
+     width:700px; 
+     height: 400px;
+     position: absolute; 
+     left: 50%; 
+     top: 50%; 
+     transform: translate(-50%, -50%); 
+     border:2px solid black; 
+     border-radius:10px;
+}
+
+.dialogo_boton {
+        width: 40px;
+}
+
+</style>
+
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
 <script src="{{ asset('js/sweetalert.js') }}"></script>
