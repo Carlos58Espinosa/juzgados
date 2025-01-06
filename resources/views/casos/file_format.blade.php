@@ -86,7 +86,7 @@
             <br>
             <input type="number" name="margenArrAba" value="{{$caso->margenArrAba}}" required>
 
-            <input type ="text" id="old_ids" name="old_ids[]" value="{{$old_ids[0]}}">
+            <input type ="hidden" id="old_ids" name="old_ids[]" value="{{$old_ids[0]}}">
         </div>
 
     </div>
