@@ -268,8 +268,7 @@ class CasosController extends Controller
         $tamPapel = $caso->tamPapel == 'Carta' ? 'letter' : 'folio';
         $GLOBALS['y_paginado'] = $caso->paginado == 'Derecha' ? 60 : 300;
         $logos = ['','',''];
-        $formato = 'pdfs.sin_logos';
-        $compact = compact('res', 'caso');
+        $formato = 'pdfs.sin_logos';     
 
         if($caso->formato != null){
             switch($caso->formato->nombre_aux){
@@ -277,42 +276,35 @@ class CasosController extends Controller
                     $logos[0] = "../public/logos/federal.png";
                     $logos[1] = "../public/logos/federal.png";
                     $formato = 'pdfs.federal';
-                    $compact = compact('res', 'caso', 'logos');
                 break;
                 case 'estatal':
                     $logos[0] = "../public/logos/mexico.png";
                     $logos[1] = "../public/logos/slp.png";
                     $formato = 'pdfs.estatal';
-                    $compact = compact('res', 'caso', 'logos');
                 break;
                 case 'municipal':
                     $logos[0] = "../public/logos/municipal.png";
                     $formato = 'pdfs.municipal';
-                    $compact = compact('res', 'caso', 'logos');
                 break;
                 case 'federal_logos':
                     $caso_logos = CasoLogo::with(['logo'])->where('casoId', $caso_id)->get();
-                    for($i=0; $i < count($caso_logos); $i++)
-                        $logos[$i] = "../public/logos/".$caso_logos[$i]->logo->nombre; 
                     $formato = 'pdfs.federal';
-                    $compact = compact('res', 'caso', 'logos');
                 break;
                 case 'estatal_logos':
                     $caso_logos = CasoLogo::with(['logo'])->where('casoId', $caso_id)->get();
-                    for($i=0; $i < count($caso_logos); $i++)
-                        $logos[$i] = "../public/logos/".$caso_logos[$i]->logo->nombre; 
                     $formato = 'pdfs.estatal';
-                    $compact = compact('res', 'caso', 'logos');
                 break;
                 case 'municipal_logos':
                     $caso_logos = CasoLogo::with(['logo'])->where('casoId', $caso_id)->get();
-                    for($i=0; $i < count($caso_logos); $i++)
-                        $logos[$i] = "../public/logos/".$caso_logos[$i]->logo->nombre;
-                    $formato = 'pdfs.municipal';
-                    $compact = compact('res', 'caso', 'logos');
+                    $formato = 'pdfs.municipal';                    
                 break;
             }
+            for($i=0; $i < count($caso_logos); $i++){
+                if($caso_logos[$i]->logo != null)
+                    $logos[$i] = "../public/logos/".$caso_logos[$i]->logo->nombre_final; 
+            }
         }
+        $compact = compact('res', 'caso', 'logos');
 
         $view = view($formato, $compact);
         $view = preg_replace('/>\s+</', '><', $view);
@@ -439,15 +431,22 @@ class CasosController extends Controller
 
         $formatos = FormatoCaso::all();
         
-        $caso = Caso::with(['formato' => function ($query) {
+        /*$caso = Caso::with(['formato' => function ($query) {
             $query->select('id', 'nombre_aux');
-        }])->findOrFail($casoId);
-        $logos = Logo::where('usuarioId', $usuario->id)->get();
-        
-        $casoLogos = CasoLogo::where('casoId', $casoId)->orderBy('orden')->get();
-        
+        }])->findOrFail($casoId);*/
+        $caso = Caso::with(['formato'])->findOrFail($casoId);
+
+        $logos = [];
+
+        $logos_ctrl = new LogosController();
+
+        $casoLogos = $logos_ctrl->index(new Request(['option' => 'logos_caso', 'casoId' => $casoId]));
         foreach($casoLogos as $casoLogo)
-            array_push($logos_ids, $casoLogo->logoId);
+            array_push($logos_ids, $casoLogo->id);
+        $logos = array_merge($logos, $casoLogos);
+
+        $logosAux = $logos_ctrl->index(new Request(['option' => 'logos_without_caso', 'casoId' => $casoId, 'usuarioId' => $usuario->id]));
+        $logos = array_merge($logos, $logosAux);
 
         $old_ids[0] = implode(',', $logos_ids);
 
@@ -457,18 +456,6 @@ class CasosController extends Controller
 
         return view('casos.file_format', compact('formatos', 'casoId', "caso", 'logos', 'old_ids', 'logos_ids', 'tamPapeles', 'paginados'));
     }  
-
-    public function saveLogo(Request $request) {
-        $this->validate($request, [
-            'logo' => 'required|image|mimes:jpg,jpeg,png'
-        ]);
-        $usuario = \Auth::user();
-        $file = $request->file('logo');
-        $fileName = $usuario->id.'_'.$file->getClientOriginalName();
-        $logo = Logo::create(['nombre' => $fileName, 'usuarioId' => $usuario->id]);
-        \Storage::disk('logos')->put($fileName,  \File::get($file));
-        return $logo;
-    }
 
     public  function saveFormat(Request $request){
         Caso::where('id', $request->caso_id)->update(['formatoId' => $request->formato_id, 'margenArrAba' => $request->margenArrAba, 'margenDerIzq' => $request->margenDerIzq, 'tamPapel' => $request->tamPapel, 'paginado' => $request->paginado]);

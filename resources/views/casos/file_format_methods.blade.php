@@ -2,138 +2,166 @@
 <script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
 <script>
 
-$(document).ready(function() {
-    var formato = @json($formatos)[document.getElementById("select_format").selectedIndex+1];
-	imageView(formato);
-	var arrIds = [];
-    if($('#old_ids').val() != ""){
-        arrIds = $('#old_ids').val().split(',');
-        rebuildListGroup(arrIds);
-    }
+$(document).ready(function() {    
+    var caso = @json($caso);
+
+    formatoVistaPrevia(caso['formato']);
+    reordenamientoLogos(caso['formato']['numero_logos']);
 });
-
-function saveImage() {
-	var url_save_image = "{{action('CasosController@saveLogo')}}";
-	var file_data = $('#logo').prop('files')[0];
-	var caso_id = document.getElementById("caso_id").value;
-    var form_data = new FormData();
-    form_data.append('logo', file_data);
-    form_data.append('caso_id', caso_id);
-
-	$.ajax({
-	    url: url_save_image,
-	    method: 'post',
-	    data: form_data,
-	    contentType : false,
-	    processData : false,
-	    headers: {
-	        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-	    },
-	    success: function(response){
-	    	$('#logos_ids_aux').append('<option val="'+response.id+'">'+response.nombre+'</option>');
-	    	$('#logos_ids_aux').selectpicker('refresh');
-	    	toastr.success('Imagen subida correctamente.', '', {timeOut: 3000});
-	    }
-	});
-}
-
-function rebuildListGroup(arrIds) {
-      var cad = '';
-      var logos = @json($logos);
-      let logos_aux = logos.filter(logo => arrIds.indexOf(String(logo['id'])) > -1 );
-
-      for (const iter of arrIds){
-          var aux = logos_aux.filter(logo => String(logo['id']) == iter);
-          if(aux.length > 0)
-              cad += getHStringtmlLi(aux[0]['id'], aux[0]['nombre']);
-      }
-      document.getElementById("list_templates").innerHTML += cad;
-}
-
-function getHStringtmlLi(id, value){
-    return '<li id="'+ id +'" class="list-group-item list-group-item-info sortable-itemc ui-state-default"><i title="Ordenar" class="fas fa-arrows-alt-v flecha_tipo_procedimiento"></i>' + value + '</li>';
-}
-
-function seleccionLogos(){
-	var options_selected = $('#logos_ids_aux').find(':selected');
-    var arrIds = [];
-    var band = false;    
-
-    if($('#old_ids').val() != "")
-        arrIds = $('#old_ids').val().split(',');
-
-    for (const iter of options_selected){
-        if(document.getElementById(iter['value']) == null){
-            document.getElementById("list_templates").innerHTML += getHStringtmlLi(iter['value'], iter['innerText']);
-            arrIds.push(iter['value']);
-            band = true;
-        } 
-    }
-
-    if(!band){ //Deselecciono una opción    
-        var options_unselected = $("#logos_ids_aux").find('option').not(':selected');
-
-        for (const iter of options_unselected){
-            var indice = arrIds.indexOf(iter['value']);
-            if(indice > -1){
-                arrIds.splice(indice, 1);
-                document.getElementById(iter['value']).remove();
-            }
-        }
-    }
-    document.getElementById('old_ids').value = arrIds;
-
-	/*if ($("#logos_ids_aux option:selected").length > 2) {
-	}*/
-}
-
-function reorderArrayIds() {
-    var arrIds = [];
-    var items = document.getElementsByClassName("list-group-item");
-
-    for (var i = 0; i < items.length; i++)
-        arrIds.push(items[i]["id"]);
-    document.getElementById('old_ids').value = arrIds;
-}
-
 
 /**********   Muestra la vista previa de un formato ****************/
 function seleccionFormato(indice) {
     var formato = @json($formatos)[indice-1];
-    imageView(formato);
-    document.getElementById("list_templates").innerHTML = '';
-    document.getElementById('old_ids').value = '';
-    //$("#logos_ids_aux option:selected").removeAttr("selected");
-    $("#logos_ids_aux option").prop("selected", false);
-    $('#logos_ids_aux').selectpicker('refresh');
+    formatoVistaPrevia(formato);
+    reordenamientoLogos(formato['numero_logos']);
 }
 
-function imageView(formato){
+function formatoVistaPrevia(formato){
     var img = document.getElementById("imagen_previa");
-    img.hidden = true;
-    if(formato['imagen_previa'] != null && formato['imagen_previa'] != "") {
-        img.hidden = false;
-        img.src = "/images/"+formato['imagen_previa'];
-    }
-    $('#logos_ids_aux').data('max-options', formato['numero_logos']);
-    $('#logos_ids_aux').selectpicker('refresh');
-
     var div_logos = document.getElementById("div_logos");
-    div_logos.hidden = false;
-    if(formato['numero_logos'] == 0) 
-        div_logos.hidden = true;    
-
     var tabla_orden =  document.getElementById("tabla_orden");
+
+    img.hidden = true;
+    div_logos.hidden = true;
     tabla_orden.innerHTML = '';
-    for(var i = 1; i <= formato['numero_logos']; i++){
-        tabla_orden.innerHTML += '<tr><td style="border-collapse: collapse; border: none;">Logo '+i+'</th></tr>';
+
+    if(formato != null) {
+        if(formato['imagen_previa'] != null && formato['imagen_previa'] != "") {
+            img.hidden = false;
+            img.src = "/images/"+formato['imagen_previa'];
+        }
+        
+        if(formato['numero_logos'] > 0) 
+            div_logos.hidden = false;    
+
+        for(var i = 1; i <= formato['numero_logos']; i++){
+            tabla_orden.innerHTML += '<tr style="height:45px;"><td style="border-collapse: collapse; border: none;">Logo '+i+'</th></tr>';
+        }
     }
 }
 
-$(function() {
-    $( "#list_templates" ).sortable({
-        connectWith: ".connectedSortable"
-    }).disableSelection();
-});  
+
+function saveImage() {
+    var url_save_image = "{{action('LogosController@store')}}";
+    var file_data = $('#logo').prop('files')[0];
+    var caso_id = document.getElementById("caso_id").value;
+    var form_data = new FormData();
+    form_data.append('logo', file_data);
+    form_data.append('caso_id', caso_id);
+
+    $.ajax({
+        url: url_save_image,
+        method: 'POST',
+        data: form_data,
+        contentType : false,
+        processData : false,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response){            
+            var str_row = `<tr id="${response.id}" draggable="true" ondragstart="start()" ondragover="dragover()"><td width="40%"><i title="Ordenar" class="fas fa-arrows-alt-v flecha_tipo_procedimiento"></i>${response.nombre}</td><td width="10%"><button class="delete-alert-logo btn" data-reload="1" data-table="#tabla_logos" data-message1="No podrás recuperar el registro." data-message2="¡Borrado!" data-message3="El registro ha sido borrado." data-method="DELETE" data-message4="${response.id}" data-action="@{{action('LogosController@destroy',${response.id})}}" title="Eliminar Logo"><i class="far fa-trash-alt"></i></button></td></tr>`;
+            $('#tabla_logos').find('tbody').append(str_row);
+            toastr.success('Imagen subida correctamente.', '', {timeOut: 3000});
+        }
+    });
+}
+
+function reordenamientoLogos(numero_logos){
+    document.getElementById('old_ids').value = '';
+    if(numero_logos > 0){
+        var arrIds = [];
+        var rows = document.getElementById('tabla_logos').rows;
+        
+        for (var i = 0; i < rows.length; i++){
+            if(i < numero_logos)
+                arrIds.push(rows[i].id);
+        }
+        document.getElementById('old_ids').value = arrIds;
+    }
+}
+
+var row;
+
+function start(){
+  row = event.target;
+}
+
+function dragover(){
+  var e = event;
+  e.preventDefault();
+
+  let children= Array.from(e.target.parentNode.parentNode.children);
+  if(children.indexOf(e.target.parentNode)>children.indexOf(row))
+    e.target.parentNode.after(row);
+  else
+    e.target.parentNode.before(row);
+    
+    var formato = @json($formatos)[document.getElementById("select_format").selectedIndex-1];
+    console.log(formato);
+    reordenamientoLogos(formato['numero_logos']);
+}
+
+$('body').on('click','.delete-alert-logo',function(event){
+      var url = $(this).attr('data-action');
+      var table = $(this).attr('data-table');
+      var reload = $(this).attr('data-reload');
+
+      var method = $(this).attr('data-method');
+      var message1 = $(this).attr('data-message1');
+      var message2 = $(this).attr('data-message2');
+      var message3 = $(this).attr('data-message3');
+      var logoId = $(this).attr('data-message4');
+      var to = $("#token").val();
+
+      Swal.fire({
+        title: '{{__("¿Estás seguro de ELIMINAR?")}}',
+        text: message1,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '{{__("Sí")}}',
+        cancelButtonText: '{{__("No")}}'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "POST",
+            headers:{"X-CSRF-TOKEN": to},
+            url: url,
+            cache: false,
+            dataType: 'json',
+            data: {
+                "_token": to,
+                "_method": method
+            },
+            success: function(data) {
+              //console.log('success');
+             document.getElementById(logoId).remove();
+              Swal.fire(
+               message2,
+               message3,
+               'success'
+              );
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+
+              //$(table).load(" "+table);
+
+              if(jqXHR.status == 422){
+                $.parseJSON(jqXHR.responseText);
+              }
+              else{
+                message = '{{__("Oops! there was an error, please try again later.")}}';
+              }
+              Swal.fire(
+               'Error!',
+               message,
+               'error'
+              );
+            },
+          });
+        }
+      });
+    });
 
 </script>

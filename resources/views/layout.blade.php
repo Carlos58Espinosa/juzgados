@@ -151,8 +151,8 @@
 
         @yield('content')
     </main>
-    <!-- </div> -->
-     @livewireScripts
+    <!-- </div> @livewireScripts -->
+     
 	<!-- END MAIN CONTENT-->
 
 
