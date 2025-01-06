@@ -62,6 +62,8 @@ function saveImage() {
             var str_row = `<tr id="${response.id}" draggable="true" ondragstart="start()" ondragover="dragover()"><td width="40%"><i title="Ordenar" class="fas fa-arrows-alt-v flecha_tipo_procedimiento"></i>${response.nombre}</td><td width="10%"><button class="delete-alert-logo btn" data-reload="1" data-table="#tabla_logos" data-message1="No podrás recuperar el registro." data-message2="¡Borrado!" data-message3="El registro ha sido borrado." data-method="DELETE" data-message4="${response.id}" data-action="@{{action('LogosController@destroy',${response.id})}}" title="Eliminar Logo"><i class="far fa-trash-alt"></i></button></td></tr>`;
             $('#tabla_logos').find('tbody').append(str_row);
             toastr.success('Imagen subida correctamente.', '', {timeOut: 3000});
+            var formato = @json($formatos)[document.getElementById("select_format").selectedIndex-1];
+            reordenamientoLogos(formato['numero_logos']);
         }
     });
 }
@@ -97,7 +99,6 @@ function dragover(){
     e.target.parentNode.before(row);
     
     var formato = @json($formatos)[document.getElementById("select_format").selectedIndex-1];
-    console.log(formato);
     reordenamientoLogos(formato['numero_logos']);
 }
 
@@ -135,8 +136,9 @@ $('body').on('click','.delete-alert-logo',function(event){
                 "_method": method
             },
             success: function(data) {
-              //console.log('success');
-             document.getElementById(logoId).remove();
+              document.getElementById(logoId).remove();
+              var formato = @json($formatos)[document.getElementById("select_format").selectedIndex-1];
+              reordenamientoLogos(formato['numero_logos']);
               Swal.fire(
                message2,
                message3,
