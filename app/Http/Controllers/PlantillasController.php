@@ -69,7 +69,7 @@ class PlantillasController extends Controller
      */
     public function store(Request $request)
     {   
-        return $this->getTemplateFields($request->texto);
+        $this->getTemplateFields($request->texto);
         if( url()->previous() != url()->current() ){
             session()->forget('urlBack');
             session(['urlBack' => url()->previous()]);
@@ -256,8 +256,11 @@ class PlantillasController extends Controller
     public function insertPlantillaCampos($campos, $band_delete, $plantillaId){
         if($band_delete)
             PlantillaCampo::where("plantillaId", $plantillaId)->delete();
-        foreach ($campos as $campo) 
-            PlantillaCampo::create(['campo' => $campo, "plantillaId" => $plantillaId]);
+        $arr_registros = [];
+        foreach ($campos as $campo)
+            array_push($arr_registros, ['campo' => $campo, "plantillaId" => $plantillaId]);
+        if(count($arr_registros) > 0)
+            PlantillaCampo::insert($arr_registros);
     }
 
     public function viewPdf(Request $request) { 
@@ -276,67 +279,83 @@ class PlantillasController extends Controller
         return $pdf->stream();
     }
 
-    /***** Función usada en el CREATE de CASOS, se usa para traer los datos de una plantilla ****/
+    /***** Función usada en el CREATE de CASOS, se usa para traer los datos de una plantilla 
+     * CASO 1: No Existe el CASOID ni la PLANTILLAID (NUEVO TODO)
+     * CASO 2: Existe el CASOID No existe la PLANTILLAID (NUEVO PLANTILLA)
+     * CASO 3: Existe el CASOID y Sí existe la PLANTILLAID (EDICIÓN PLANTILLA)
+     * ****/
+
+    public function getFieldsAndTemplateByTemplateIdCase1($plantillaId, &$res, $usuarioId){
+        //Campos Agrupados
+        $aux = DB::table('grupos')->join('grupos_campos', 'grupos.id', '=', 'grupos_campos.grupoId')   
+            ->join('plantillas_campos', 'grupos_campos.campo', '=', 'plantillas_campos.campo')         
+            ->select('grupos.id','grupos.nombre as grupo','grupos_campos.campo', DB::raw('null as valor_plantilla'), DB::raw('null as valor_ultimo'))
+            ->where('grupos.usuarioId',$usuarioId)->where('plantillas_campos.plantillaId', $plantillaId)
+            ->get()->toArray();
+        $this->getArrayGroupFields($aux, $res);
+
+        $plantilla = Plantilla::findOrFail($plantillaId);
+        $res['texto'] = $plantilla->texto;
+
+        $qry = "select 0 as id, 'Otros' as grupo, gc.campo, null as valor_plantilla, null as valor_ultimo from plantillas_campos gc where plantillaId = ".$plantillaId." and campo not in (select gca.campo from grupos_campos gca, grupos ga where ga.id = gca.grupoId and ga.usuarioId = ".$usuarioId.")";
+        $aux = DB::select($qry);
+        $this->getArrayGroupFields($aux, $res);
+    }
+
+    public function getFieldsAndTemplateByTemplateIdCase3($plantillaId, &$res, $usuarioId, $casoId, $configId){
+        $qry2 = ",(select valor from casos_valores where casoId = ".$casoId." and campo = gc.campo 
+            and plantillaId = ".$plantillaId.") as valor_plantilla, (select valor from casos_valores where casoId = ".$casoId." and campo = gc.campo and orden <= (select orden from configuracion_plantillas where configuracionId=".$configId." and plantillaId = ".$plantillaId.") and valor is not null and valor != '' order by orden desc limit 1) as valor_ultimo";
+        $qry = "select g.id, g.nombre as grupo, gc.campo ".$qry2." from grupos_campos gc, grupos g where g.usuarioId = ".$usuarioId." and gc.grupoId = g.id and gc.campo in (select campo from casos_plantillas_campos where plantillaId = ".$plantillaId." and casoId=".$casoId.") order by g.nombre, gc.campo;";
+        $aux = DB::select($qry);
+        $this->getArrayGroupFields($aux, $res);        
+
+        $qry = "select 0 as id, 'Otros' as grupo, gc.campo ". $qry2 . " from casos_plantillas_campos gc where gc.plantillaId = ".$plantillaId." and gc.casoId=".$casoId." and campo not in (select gca.campo from grupos_campos gca, grupos ga where ga.id = gca.grupoId and ga.usuarioId = ".$usuarioId.")";
+        $aux = DB::select($qry);
+        $this->getArrayGroupFields($aux, $res);
+    }
+
     public function getFieldsAndTemplateByTemplateId($arr){
         $usuario = \Auth::user();
         $res["grupos_campos"] = [];
-        $qry2 = ""; $casoId = $arr['casoId']; $configId = $arr['configId'];
+        $casoId = $arr['casoId']; $configId = $arr['configId'];
 
-        if($casoId != 0) { 
-            $qry2 = ",(select valor from casos_valores where casoId = ".$casoId." and campo = gc.campo 
-            and plantillaId = ".$arr['plantillaId'].") as valor_plantilla, (select valor from casos_valores where casoId = ".$casoId." and campo = gc.campo and orden <= (select orden from configuracion_plantillas where configuracionId=".$configId." and plantillaId = ".$arr['plantillaId'].") and valor is not null and valor != '' order by orden desc limit 1) as valor_ultimo";
-        }
+        //Caso 1
+        if($casoId == 0)
+            $this->getFieldsAndTemplateByTemplateIdCase1($arr['plantillaId'], $res, $usuario->id);
+        else {
+            $caso_plantilla = CasosPlantillas::where('casoId', $casoId)->where('plantillaId', $arr['plantillaId'])->first();
 
-        $qry = "select g.id, g.nombre, gc.campo ". $qry2 . " from grupos_campos gc, grupos g
-                where g.usuarioId = ".$usuario->id." and gc.grupoId = g.id and gc.campo in (select campo from plantillas_campos where plantillaId = ".$arr['plantillaId'].") order by g.nombre, gc.campo;";                 
-        $this->getArrayGroupFields($qry, $res, '');       
-
-        $qry = "select 0 as id, 'Otros' as nombre, gc.campo ". $qry2 . " from plantillas_campos gc where plantillaId = ".$arr['plantillaId']." and campo not in (select gca.campo from grupos_campos gca, grupos ga where ga.id = gca.grupoId and ga.usuarioId = ".$usuario->id.")";
-        $this->getArrayGroupFields($qry, $res, 'Otros');
-
-        $caso_plantilla = CasosPlantillas::where('casoId', $casoId)->where('plantillaId', $arr['plantillaId'])->first();
-        if($caso_plantilla != null)
-            $res['texto'] = $caso_plantilla->texto;
-        else{
-            $plantilla = Plantilla::findOrFail($arr['plantillaId']);
-            $res['texto'] = $plantilla->texto;
-        }
-
-        return $res;
-    }
-
-    public function getArrayGroupFields($qry, &$res, $option){
-        $aux = DB::select($qry);
-
-        $cad = "";
-        if(count($aux) > 0){
-            $cad = $aux[0]->id;
-            $raux['id'] = $cad;
-            $raux['grupo'] = $aux[0]->nombre;
-            $raux["campos"] = [];  
-            foreach($aux as $a){
-                if($a->id != $cad){
-                    array_push($res["grupos_campos"], $raux);
-                    $cad = $a->id;
-                    $raux['id'] = $cad;
-                    $raux['grupo'] = $a->nombre;
-                    $raux["campos"] = [];
-                }
-                $row = ['campo' => $a->campo, 
-                'valor_plantilla' => (array_key_exists('valor_plantilla',$a)) ? $a->valor_plantilla : null, 
-                'valor_ultimo' => (array_key_exists('valor_ultimo',$a)) ? $a->valor_ultimo : null];
-                array_push($raux["campos"], $row);
-            } 
-            if($aux[count($aux)-1]->id == $cad)
-                array_push($res["grupos_campos"], $raux);         
-        }else{
-            if($option == "Otros"){
-                $raux['id'] = 0;
-                $raux['grupo'] = 'Otros';
-                $raux["campos"] = [];
-                array_push($res["grupos_campos"], $raux);
+            //Caso 2
+            if($caso_plantilla == null)
+                $this->getFieldsAndTemplateByTemplateIdCase1($arr['plantillaId'], $res, $usuario->id);
+            else{ //Caso 3
+                $res['texto'] = $caso_plantilla->texto;
+                $this->getFieldsAndTemplateByTemplateIdCase3($arr['plantillaId'], $res, $usuario->id, $casoId, $configId);
             }
         }
+        return $res;                        
+    }
+
+    public function getArrayGroupFields($aux, &$res){
+        if(count($aux) > 0){
+            $ids = array_unique(array_column($aux, 'id'));
+            foreach($ids as $id){
+                $raux['id'] = $id;                
+                $raux["campos"] = array_filter($aux, function ($value) use ($id){
+                    if ($value->id == $id) 
+                        return $value;
+                });
+                if($id == 0){
+                    $raux['grupo'] = 'Otros';
+                    array_push($res["grupos_campos"], $raux);    
+                }else{
+                    if(count($raux["campos"]) > 0){
+                        $raux['grupo'] = $raux["campos"][0]->grupo;
+                        array_push($res["grupos_campos"], $raux); 
+                    }
+                }                   
+            }
+        }       
     }
 
     public function clone(Request $request){

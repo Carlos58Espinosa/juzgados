@@ -9,6 +9,7 @@
      transform: translate(-50%, -50%); 
      border:2px solid black; 
      border-radius:10px;
+     background: white;
 }
 
 .dialogo_boton {
@@ -326,7 +327,6 @@
 
             for (var c of campos_encontrados)
                 cadHtml += this.getStringHtmlField(c.campo);
-
             cadHtml += "</tbody></table>";
             document.getElementById("camposLlenar").innerHTML = cadHtml;
         }
@@ -352,19 +352,45 @@
     function addRowInTableCases(valor_parametro){
         //console.log("Entre a:addNewFieldInCases");
 
-        if(!document.getElementById(valor_parametro)){
+        var elemento = document.getElementById(valor_parametro);
+
+        if(!elemento || elemento.localName == "tr"){
             var element = document.getElementById("nuevos_campos_cad");
             const arrAux = element.value.split(",");
+
             if(!arrAux.includes(valor_parametro)){
                 if(element.value !== "")
                     element.value += ",";
                 element.value += valor_parametro;
 
-                $("#tabla_0").append(this.getRowStringHtmlFieldTemplate(valor_parametro));
+                this.getLastValueOfParameter(valor_parametro);
+                //$("#tabla_0").append(this.getRowStringHtmlFieldTemplate(valor_parametro, valor));
             }
         }
         //$('#texto_final').summernote('code', document.getElementById("summernote").value);
         this.replaceText();
+    }
+
+    function getLastValueOfParameter(valor_parametro){
+        var templateId = document.getElementById("select_template").value;
+        var configId = document.getElementById("configuracion_id").value;
+        var casoId = document.getElementById("caso_id").value;
+
+        var url = "{{action('CasosController@index')}}";
+
+        $.ajax({
+            dataType: 'json',
+            type:'GET',
+            url: url,
+            cache: false,
+            data: {'option' : "last_value", 'plantillaId' : templateId, 'casoId':casoId, 'configId':configId, 'campo':valor_parametro,'_token':"{{ csrf_token() }}"},
+            success: function(data){
+                $("#tabla_0").append(getRowStringHtmlFieldTemplate(valor_parametro, data['valor']));
+            },
+            error: function(){
+              toastr.error('Hubo un problema por favor intentalo de nuevo mas tarde.', '', {timeOut: 3000});
+            }
+        });
     }
 
 </script>

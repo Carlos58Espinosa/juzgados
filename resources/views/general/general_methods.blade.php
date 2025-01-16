@@ -45,8 +45,6 @@ function changeColorConfiguration(valor) {
 
 function loadColor(option_form){
     var element_modo_color = document.getElementById("modo_color");
-    console.log(element_modo_color);
-    console.log(element_modo_color.value);
     var element = document.getElementById("main-content");
     var table = document.getElementById("table_index");
     if(table)

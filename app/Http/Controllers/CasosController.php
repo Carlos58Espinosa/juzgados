@@ -26,9 +26,9 @@ class CasosController extends Controller
         $res = [];
 
         switch($request->option){
-            /*case "fields_values_template_text":
-                $res = $this->getFieldsValuesTextByTemplateIdAndCaseId($request->all());
-            break;*/
+            case "last_value":
+                $res['valor'] = $this->getLastValue($request->all());
+            break;
             default:                
                 $usuario = \Auth::user();
                 $usuario_ctrl = new UsuariosController();
@@ -41,11 +41,20 @@ class CasosController extends Controller
                 },
                 'formato' => function ($query) {
                     $query->select('id', 'nombre');
-                }])->where('usuarioId', $usuario->id)->orderBy('id', 'desc')->get();
+                }])->where('usuarioId', $usuario->id)->where('activo', 1)->orderBy('id', 'desc')->get();
                 $res = view('casos.index',compact('casos', 'color'));   
             break;
         }
         return $res;               
+    }
+
+    public function getLastValue($arr){
+        $res = '';
+        $qry = "select valor from casos_valores where casoId=".$arr['casoId']." and campo = '".$arr['campo']."' and orden <= (select orden from configuracion_plantillas where configuracionId = ".$arr['configId']." and plantillaId=".$arr['plantillaId'].") order by orden desc;";
+        $aux = DB::select($qry);
+        if(count($aux) > 0)
+            $res = $aux[0]->valor;
+        return $res;
     }
 
     /**
@@ -135,7 +144,9 @@ class CasosController extends Controller
         union
         select p.id, p.nombre, 1000 orden from casos_plantillas c, plantillas p 
         where c.casoId = ".$caso->id." and c.plantillaId = p.id and p.id not in (select plantillaId from configuracion_plantillas where configuracionId = ".$caso->configuracionId.")) as t1 order by t1.orden;");
-        return view('casos.edit', compact('caso', 'plantillas'));
+        $plantillas_ctrl = new PlantillasController();
+        $campos = $plantillas_ctrl->getAllFields();
+        return view('casos.edit', compact('caso', 'plantillas', 'campos'));
     }
 
     /**
@@ -173,11 +184,13 @@ class CasosController extends Controller
      */
     public function destroy($id)
     {
-        CasosPlantillas::where('casoId', $id)->delete();
+        /*CasosPlantillas::where('casoId', $id)->delete();
         CasosValores::where('casoId', $id)->delete();
         CasoPlantillaCampo::where('casoId', $id)->delete();
-        CasosCamposSensibles::where('casoId', $id)->delete();
-        Caso::destroy($id);
+        CasosCamposSensibles::where('casoId', $id)->delete();*/
+        $caso = Caso::findOrFail($id);
+        $caso->activo = 0;
+        $caso->save();
         return response()->json(200);
     }
 
@@ -186,18 +199,23 @@ class CasosController extends Controller
     //Guarda el VALOR deL CAMPO por PLANTILLA 
     public function saveDataBankByTemplateIdAndCaseId($campos, $arr, $plantillaId, $casoId, $orden,$eliminacion){
         //Elimina los valores del caso y de una plantilla en especifico para que no se dupliquen los registros
-        /*if($eliminacion)
-            CasosValores::where('casoId',$casoId)->where('plantillaId',$plantillaId)->delete();*/
-        foreach($campos as $campo){    
+
+        CasosValores::where('casoId',$casoId)->where('plantillaId',$plantillaId)->delete();
+
+        $arr_registros = [];
+        foreach($campos as $campo){ 
             $llave_campo = str_replace(' ', '_', $campo);
-            if (array_key_exists($llave_campo, $arr)) {                
+            if (array_key_exists($llave_campo, $arr)) {   
                 $valor = "";
                 $valor_sensible = false;
                 if($arr[$llave_campo] != null)
                     $valor = $arr[$llave_campo];
-                CasosValores::updateOrCreate(["casoId" => $casoId, "campo" => $campo, "plantillaId" => $plantillaId],["valor" => $valor, "casoId" => $casoId, "campo" => $campo, "plantillaId" => $plantillaId, "orden" => $orden]);
+
+                array_push($arr_registros, ["valor" => $valor, "casoId" => $casoId, "campo" => $campo, "plantillaId" => $plantillaId, "orden" => $orden]);
             }
         }
+        if(count($arr_registros) > 0)
+            CasosValores::insert($arr_registros);
     }
 
     //Guarda los CAMPOS que hay en el TEXTO por PLANTILLA_ID y CASO_ID
@@ -205,8 +223,12 @@ class CasosController extends Controller
         if($eliminacion)
             CasoPlantillaCampo::where("plantillaId", $plantillaId)->where("casoId", $casoId)->delete();
 
+        $arr_registros = [];
         foreach($campos as $campo)
-            CasoPlantillaCampo::create(["campo" => $campo, "plantillaId" => $plantillaId, "casoId" => $casoId]); 
+            array_push($arr_registros, ["campo" => $campo, "plantillaId" => $plantillaId, "casoId" => $casoId]);
+
+        if(count($arr_registros) > 0)
+            CasoPlantillaCampo::insert($arr_registros);
     }
 
     public function generalSave($arr_request, $caso, $band_delete){
@@ -248,6 +270,7 @@ class CasosController extends Controller
         foreach($banco_datos as $b){
             if($b->valor != null && $b->valor != ""){
                 $valor = $b->valor;
+                $valor = nl2br($valor);
                 if($b->sensible == 1){
                     $valorAux = "";
                     for($pos = 0; $pos < strlen($valor); $pos++)
@@ -260,6 +283,7 @@ class CasosController extends Controller
 
         $res = str_replace('<button type="button" class="button_summernote" contenteditable="false" onclick="editButton(this)">', '', $res);
         $res = str_replace('</button>', '', $res);
+
 
         $caso = Caso::with(['formato' => function ($query) {
             $query->select('id', 'nombre_aux');
@@ -308,7 +332,7 @@ class CasosController extends Controller
 
         $view = view($formato, $compact);
         $view = preg_replace('/>\s+</', '><', $view);
-        $pdf = \PDF::loadHTML($view);        
+        $pdf = \PDF::loadHTML($view);  
         $pdf->getDomPDF()->set_option("enable_php", true);
         $pdf->set_paper($tamPapel, 'portrait');//letter
         return $pdf->stream();

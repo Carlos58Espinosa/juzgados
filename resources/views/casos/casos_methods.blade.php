@@ -85,6 +85,7 @@
             cache: false,
             data: {'option' : "fields_text_by_template_id", 'plantillaId' : templateId, 'casoId':casoId, 'configId':configId,'_token':"{{ csrf_token() }}"},
             success: function(data){
+                //console.log(data);
                 //console.log(data['grupos_campos']);
                 showFieldsAndTemplate(data, 'insert');
             },
@@ -150,10 +151,17 @@
     function getRowStringHtmlFieldTemplate(campo, valor){
         var html = `<tr id="${campo}">`;
         html += `<td width="200px;">${campo}</td>`;
-        html += `<td style="padding-right: 5px;"><input autocomplete="on" onCopy="return false;" style="text-transform:none; width:400px;float:left;" type="text" class="form-control" name="${campo}" oninput="replaceText()" `;
-        if(valor != null)
-            html += ` value="${valor}" `;
-        html += ' required></td></tr>';
+        html += `<td style="padding-right: 5px;">`;
+        //Cuando se usaban INPUTS
+        //html += `<input autocomplete="on" onCopy="return false;" style="text-transform:none; width:400px;float:left;" type="text" class="form-control" name="${campo}" oninput="replaceText()" `;
+
+        html += `<textarea style="width:400px; height:25px; float:left;" class="form-control" name="${campo}" oninput="replaceText()" `;
+        /*if(valor != null)
+            html += ` value="${valor}" `;*/
+        //html += ' required>'
+        html += ` required>${valor}</textarea>`;
+        html += '</td></tr>';
+        
         //html += '<td><button type="button" class="delete-param-alert btn btn-link" data-message1="No podrás recuperar el registro." data-message2="¡Borrado! Verifica la redacción de la Plantilla." data-message3="Verifica la redacción de la Plantilla." data-message4="'+campo+'" style="width:40px; margin: 0; padding: 0;"><i class="far fa-trash-alt"></i></button></td>';
         return html;
     }
@@ -174,13 +182,15 @@
     function replaceText(){
         var textoAux = document.getElementById("summernote").value;
         var element = document.getElementById("div_campos_plantilla");
-        var inputs = element.getElementsByTagName('input');
+        //var inputs = element.getElementsByTagName('input');
+        var inputs = element.getElementsByTagName('textarea');
 
         for(let input of inputs){
             //console.log("INPUTNAME:"+input.name);
             var campo = '>' + input.name + '</';
             var valor_final = '>' + input.value + '</';
-
+            valor_final = valor_final.replaceAll("\n", "<br>");
+            
             if(input.value != "")
                 textoAux = textoAux.replaceAll(campo, valor_final);
         }
