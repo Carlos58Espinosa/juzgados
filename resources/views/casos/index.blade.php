@@ -51,7 +51,7 @@
                     <form method="GET" action="{{action('ArchivosController@index')}}">
                     @csrf
                         <input type="hidden" name="caso_id" value="{{$caso->id}}">
-                        <button class="btn" title="Subir Archivos"><i class="fas fa-file-invoice"></i></button>
+                        <button class="btn" title="Subir Archivos"><i class="fas fa-cloud-upload-alt"></i></button>
                     </form>
                   </div>
 
