@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Archivo;
 
 class ArchivosController extends Controller
 {
@@ -11,9 +12,11 @@ class ArchivosController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $casoId = $request->caso_id;
+        $archivos = Archivo::where('casoId', $casoId)->get();
+        return view('casos.file_upload',compact('archivos', 'casoId'));   
     }
 
     /**
@@ -34,7 +37,17 @@ class ArchivosController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'archivo' => 'required'
+        ]);
+
+        $usuario = \Auth::user();
+        $file = $request->file('archivo');
+        $fileName = $file->getClientOriginalName();
+        $fileNameFinal = $usuario->id . '_' . date('Y_m_d_H_i_s') . '.' . $file->getClientOriginalExtension();
+        $archivo = Archivo::create(['nombre' => $fileName, 'nombre_final' => $fileNameFinal, 'casoId' => $request->caso_id, 'tipo'=>$file->getClientOriginalExtension()]);
+        \Storage::disk('archivos')->put($fileNameFinal,  \File::get($file));
+        return $archivo;
     }
 
     /**
@@ -79,6 +92,9 @@ class ArchivosController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $archivo = Archivo::findOrFail($id);
+        \Storage::disk('archivos')->delete($archivo->nombre_final);
+        Archivo::destroy($id);
+        return true;
     }
 }

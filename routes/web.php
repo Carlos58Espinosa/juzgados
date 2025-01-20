@@ -38,6 +38,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('casos/obtener_formato', 'CasosController@getFormat');
     Route::post('casos/guardar_formato', 'CasosController@saveFormat');
     Route::resource('casos_logos','LogosController');
+    Route::resource('casos_archivos','ArchivosController');
 });
 
 

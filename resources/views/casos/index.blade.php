@@ -48,6 +48,14 @@
                   </div>
 
                   <div>
+                    <form method="GET" action="{{action('ArchivosController@index')}}">
+                    @csrf
+                        <input type="hidden" name="caso_id" value="{{$caso->id}}">
+                        <button class="btn" title="Subir Archivos"><i class="fas fa-file-invoice"></i></button>
+                    </form>
+                  </div>
+
+                  <div>
                       <a href="{{action('CasosController@show',$caso->id)}}" class="btn" title="Ver Registro"><i class="far fa-eye"></i></a>
                   </div>
 

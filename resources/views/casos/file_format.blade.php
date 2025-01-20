@@ -17,12 +17,12 @@
 	 
     <br>      
 
-    <div>
-	   	<label for="">Subir Nuevo Archivo:</label>
+    <div id="div_file" hidden>
+	   	<label for="">Subir Nueva Imagen:</label>
 	   	<br>
-	   	<div style="width: 300px;">
-	    	<input type="file" name="logo" id="logo" class="form-control" style="float:left; width: 250px;">
-	    	<button style="margin-top:-60px; margin-left: 260px;" type="button" onclick="saveImage()" class="btn boton_guardar" title="Guardar Logo"><i class="far fa-image" alt="Guardar Logo"></i></button>
+	   	<div style="width: 400px;">
+	    	<input type="file" name="logo" id="logo" class="form-control" style="float:left; width: 350px;">
+	    	<button style="margin-top:-60px; margin-left: 360px;" type="button" onclick="saveImage()" class="btn boton_guardar" title="Guardar Logo"><i class="far fa-image" alt="Guardar Logo"></i></button>
 	    </div> 
     </div>
 
@@ -99,7 +99,7 @@
 
  </form>
 
- <div id="div_logos" style="height: 600px; width: 550px; margin-top: -400px; margin-left: 350px; overflow-y: auto;">
+ <div id="div_logos" style="height: 600px; width: 550px; margin-top: -400px; margin-left: 350px; overflow-y: auto;" hidden>
 
     
 

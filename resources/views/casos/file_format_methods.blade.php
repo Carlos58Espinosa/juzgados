@@ -5,9 +5,21 @@
 $(document).ready(function() {    
     var caso = @json($caso);
 
-    formatoVistaPrevia(caso['formato']);
-    reordenamientoLogos(caso['formato']['numero_logos']);
+    if(caso.formato != null){
+        formatoVistaPrevia(caso['formato']);
+        reordenamientoLogos(caso['formato']['numero_logos']);
+    }
 });
+
+function ocultarElementos(numero_logos){
+    if(numero_logos > 0){
+        document.getElementById("div_file").hidden = false;
+        document.getElementById("div_logos").hidden = false;
+    } else {
+        document.getElementById("div_file").hidden = true;
+        document.getElementById("div_logos").hidden = true;
+    }
+}
 
 /**********   Muestra la vista previa de un formato ****************/
 function seleccionFormato(indice) {
@@ -58,8 +70,30 @@ function saveImage() {
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
-        success: function(response){            
-            var str_row = `<tr id="${response.id}" draggable="true" ondragstart="start()" ondragover="dragover()"><td width="40%"><i title="Ordenar" class="fas fa-arrows-alt-v flecha_tipo_procedimiento"></i>${response.nombre}</td><td width="10%"><button class="delete-alert-logo btn" data-reload="1" data-table="#tabla_logos" data-message1="No podrás recuperar el registro." data-message2="¡Borrado!" data-message3="El registro ha sido borrado." data-method="DELETE" data-message4="${response.id}" data-action="@{{action('LogosController@destroy',${response.id})}}" title="Eliminar Logo"><i class="far fa-trash-alt"></i></button></td></tr>`;
+        success: function(response){   
+            var urlEliminarArchivo = "{{ route('casos_logos.destroy',':id') }}";
+            var urlEliminar = urlEliminarArchivo.replace(':id', response.id);
+
+            var str_row = `<tr id="${response.id}" 
+            draggable="true" ondragstart="start()" ondragover="dragover()">
+                <td width="40%">
+                    <i title="Ordenar" class="fas fa-arrows-alt-v flecha_tipo_procedimiento"></i>${response.nombre}
+                </td>
+                <td width="10%">
+                    <button class="delete-alert-logo btn" 
+                    data-reload="1" 
+                    data-table="#tabla_logos" 
+                    data-message1="No podrás recuperar el registro." 
+                    data-message2="¡Borrado!" 
+                    data-message3="El registro ha sido borrado." data-method="DELETE"
+                    data-message4="${response.id}"
+                    data-method="DELETE"
+                    data-action="${urlEliminar}"
+                    title="Eliminar Logo">
+                    <i class="far fa-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>`;
             $('#tabla_logos').find('tbody').append(str_row);
             toastr.success('Imagen subida correctamente.', '', {timeOut: 3000});
             var formato = @json($formatos)[document.getElementById("select_format").selectedIndex-1];
@@ -80,6 +114,8 @@ function reordenamientoLogos(numero_logos){
         }
         document.getElementById('old_ids').value = arrIds;
     }
+
+    ocultarElementos(numero_logos);
 }
 
 var row;
@@ -106,7 +142,6 @@ $('body').on('click','.delete-alert-logo',function(event){
       var url = $(this).attr('data-action');
       var table = $(this).attr('data-table');
       var reload = $(this).attr('data-reload');
-
       var method = $(this).attr('data-method');
       var message1 = $(this).attr('data-message1');
       var message2 = $(this).attr('data-message2');
@@ -126,7 +161,7 @@ $('body').on('click','.delete-alert-logo',function(event){
       }).then((result) => {
         if (result.isConfirmed) {
           $.ajax({
-            type: "POST",
+            type: method,
             headers:{"X-CSRF-TOKEN": to},
             url: url,
             cache: false,
@@ -153,7 +188,7 @@ $('body').on('click','.delete-alert-logo',function(event){
                 $.parseJSON(jqXHR.responseText);
               }
               else{
-                message = '{{__("Oops! there was an error, please try again later.")}}';
+                message = '{{__("No se pudo eliminar el Formato.")}}';
               }
               Swal.fire(
                'Error!',

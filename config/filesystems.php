@@ -67,6 +67,10 @@ return [
         'logos' => [
             'driver' => 'local',
             'root' => public_path().'/logos',
+        ],
+        'archivos' => [
+            'driver' => 'local',
+            'root' => public_path().'/archivos',
         ]
 
     ],
