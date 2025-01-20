@@ -47,6 +47,7 @@
                     </form>
                   </div>
 
+                  @if($tipo == 'Administrador')
                   <div>
                     <form method="GET" action="{{action('ArchivosController@index')}}">
                     @csrf
@@ -54,6 +55,7 @@
                         <button class="btn" title="Subir Archivos"><i class="fas fa-cloud-upload-alt"></i></button>
                     </form>
                   </div>
+                  @endif
 
                   <div>
                       <a href="{{action('CasosController@show',$caso->id)}}" class="btn" title="Ver Registro"><i class="far fa-eye"></i></a>

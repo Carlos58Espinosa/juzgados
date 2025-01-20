@@ -31,6 +31,7 @@ class CasosController extends Controller
             break;
             default:                
                 $usuario = \Auth::user();
+                $tipo = $usuario->tipo;
                 $usuario_ctrl = new UsuariosController();
                 $color = $usuario_ctrl->getColorByUser();
                 $casos = Caso::with(['configuracion' => function ($query) {
@@ -42,7 +43,7 @@ class CasosController extends Controller
                 'formato' => function ($query) {
                     $query->select('id', 'nombre');
                 }])->where('usuarioId', $usuario->id)->where('activo', 1)->orderBy('id', 'desc')->get();
-                $res = view('casos.index',compact('casos', 'color'));   
+                $res = view('casos.index',compact('casos', 'color', 'tipo'));   
             break;
         }
         return $res;               
