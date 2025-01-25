@@ -28,10 +28,13 @@ class CasosController extends Controller
         switch($request->option){
             case "last_value":
                 $res['valor'] = $this->getLastValue($request->all());
-            break;
-            default:                
+            break;            
+            default:  
+                ($request->exists("inactivos") == false) ? $activo = 1 : $activo = $request->inactivos;
+                ($activo == 1) ? $vista = 'casos.index' : $vista = 'casos.index_inactives';
+                
                 $usuario = \Auth::user();
-                $tipo = $usuario->tipo;
+                $usuario_id = $usuario->id;
                 $usuario_ctrl = new UsuariosController();
                 $color = $usuario_ctrl->getColorByUser();
                 $casos = Caso::with(['configuracion' => function ($query) {
@@ -42,8 +45,8 @@ class CasosController extends Controller
                 },
                 'formato' => function ($query) {
                     $query->select('id', 'nombre');
-                }])->where('usuarioId', $usuario->id)->where('activo', 1)->orderBy('id', 'desc')->get();
-                $res = view('casos.index',compact('casos', 'color', 'tipo'));   
+                }])->where('usuarioId', $usuario->id)->where('activo', $activo)->orderBy('id', 'desc')->get();
+                $res = view($vista, compact('casos', 'color', 'usuario_id'));   
             break;
         }
         return $res;               
@@ -190,7 +193,7 @@ class CasosController extends Controller
         CasoPlantillaCampo::where('casoId', $id)->delete();
         CasosCamposSensibles::where('casoId', $id)->delete();*/
         $caso = Caso::findOrFail($id);
-        $caso->activo = 0;
+        ($caso->activo == 1) ? $caso->activo = 0 : $caso->activo = 1;
         $caso->save();
         return response()->json(200);
     }

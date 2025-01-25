@@ -6,7 +6,13 @@
 
   <div>
       <a href="{{action('CasosController@create')}}" class="btn boton_agregar" title="Agregar Registro"><i class="fas fa-plus"></i></a>
-      <input type="text" class="input_search" name="busqueda_texto" placeholder="Busqueda de Expedientes" oninput="search(this.value)">               
+      <input type="text" class="input_search" name="busqueda_texto" placeholder="Busqueda de Expedientes" oninput="search(this.value)">  
+      <div align="right" style="padding-right: 100px; margin-top: -30px;">
+        <form method="GET" action="{{action('CasosController@index')}}">
+          <input type="hidden" name="inactivos" value="0">  
+          <button name=""><i class="fa fa-eye"></i> Ver Inactivos</button>
+        </form>
+      </div>
   </div>
 
   <br>
@@ -47,7 +53,7 @@
                     </form>
                   </div>
 
-                  @if($tipo == 'Administrador')
+                  @if($usuario_id == 8)
                   <div>
                     <form method="GET" action="{{action('ArchivosController@index')}}">
                     @csrf
@@ -74,7 +80,7 @@
                   </div>
 
                   <div class="col-4 active" style="padding: 0;">
-                      <button class="delete-alert btn" data-reload="1" data-table="#table_index" data-message1="No podrás recuperar el registro." data-message2="¡Borrado!" data-message3="El registro ha sido borrado." data-method="DELETE" data-action="{{action('CasosController@destroy',$caso->id)}}" title="Eliminar Registro"><i class="far fa-trash-alt"></i></button>
+                      <button class="delete-alert btn" data-reload="1" data-table="#table_index" data-message1="No podrás recuperar el registro." data-message2="¡Borrado!" data-message3="El registro ha sido borrado." data-method="DELETE" data-action="{{action('CasosController@destroy',$caso->id)}}" title="Desactivar Registro"><i class="far fa-trash-alt"></i></button>
                   </div>
                   
                 </div>

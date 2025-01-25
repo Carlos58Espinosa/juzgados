@@ -22,21 +22,29 @@
 	    </div> 
     </div>
 
-    <div align="center">
+    <div align="center" style="float:left; margin-left:400px;">
 	    <table id="tabla_archivos" width="400px">
 	        <tbody>
 	        @foreach($archivos as $archivo)
 	            <tr id="{{$archivo->id}}">
-	                <td width="20%">
+	                <td width="40%">
 	                	{{$archivo->nombre}}
 	                </td>
-	                <td width="10%">
-	                    <button class="delete-alert-archivo btn" data-reload="1" data-table="#tabla_archivos" data-message1="No podrás recuperar el registro." data-message2="¡Borrado!" data-message3="El registro ha sido borrado." data-method="DELETE" data-message4="{{$archivo->id}}" data-action="{{action('ArchivosController@destroy',$archivo->id)}}" title="Eliminar Archivo"><i class="far fa-trash-alt"></i></button>
+	                <td width="30%">
+	                	<div class="div_btn_acciones"> 
+	                    	<button class="delete-alert-archivo btn" data-reload="1" data-table="#tabla_archivos" data-message1="No podrás recuperar el registro." data-message2="¡Borrado!" data-message3="El registro ha sido borrado." data-method="DELETE" data-message4="{{$archivo->id}}" data-action="{{action('ArchivosController@destroy',$archivo->id)}}" title="Eliminar Archivo"><i class="far fa-trash-alt"></i></button>
+	                    	<a href="archivos/{{ $archivo->nombre_final }}" class="btn" download="{{$archivo->nombre}}"><i class="fas fa-cloud-download-alt"></i></a>
+	                    	<button onclick="visualizarArchivo('{{$archivo->nombre_final}}')" class="btn"><i class="fa fa-eye"></i></button>
+	                    </div>	                    
 	                </td>
 	            </tr>   
 	        @endforeach
 	        </tbody>
 	    </table>
+    </div>
+
+    <div align="center">
+    	<iframe id="contenido_visualizar" width="400" height="400" src="" frameborder="0"></iframe>
     </div>
 
 @stop

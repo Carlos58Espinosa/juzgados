@@ -99,7 +99,7 @@
 
  </form>
 
- <div id="div_logos" style="height: 600px; width: 550px; margin-top: -400px; margin-left: 350px; overflow-y: auto;" hidden>
+ <div id="div_logos"  style="height: 600px; width: 550px; margin-top: -400px; margin-left: 350px; overflow-y: auto;" hidden>
 
     
 
@@ -114,7 +114,9 @@
                     <i title="Ordenar" class="fas fa-arrows-alt-v flecha_tipo_procedimiento"></i>{{$logo->nombre}}
                 </td>
                 <td width="10%">
-                    <button class="delete-alert-logo btn" data-reload="1" data-table="#tabla_logos" data-message1="No podrás recuperar el registro." data-message2="¡Borrado!" data-message3="El registro ha sido borrado." data-method="DELETE" data-message4="{{$logo->id}}" data-action="{{action('LogosController@destroy',$logo->id)}}" title="Eliminar Logo"><i class="far fa-trash-alt"></i></button>
+                    <div class="div_btn_acciones"> 
+                        <button class="delete-alert-logo btn" data-reload="1" data-table="#tabla_logos" data-message1="No podrás recuperar el registro." data-message2="¡Borrado!" data-message3="El registro ha sido borrado." data-method="DELETE" data-message4="{{$logo->id}}" data-action="{{action('LogosController@destroy',$logo->id)}}" title="Eliminar Logo"><i class="far fa-trash-alt"></i></button>
+                    </div>  
                 </td>
             </tr>   
         @endforeach

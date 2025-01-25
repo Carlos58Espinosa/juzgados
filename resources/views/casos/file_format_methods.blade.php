@@ -80,6 +80,7 @@ function saveImage() {
                     <i title="Ordenar" class="fas fa-arrows-alt-v flecha_tipo_procedimiento"></i>${response.nombre}
                 </td>
                 <td width="10%">
+                  <div class="div_btn_acciones"> 
                     <button class="delete-alert-logo btn" 
                     data-reload="1" 
                     data-table="#tabla_logos" 
@@ -92,6 +93,7 @@ function saveImage() {
                     title="Eliminar Logo">
                     <i class="far fa-trash-alt"></i>
                     </button>
+                  </div>
                 </td>
             </tr>`;
             $('#tabla_logos').find('tbody').append(str_row);

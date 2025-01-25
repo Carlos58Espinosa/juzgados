@@ -14,6 +14,10 @@ class ArchivosController extends Controller
      */
     public function index(Request $request)
     {
+        if( url()->previous() != url()->current() ){
+            session()->forget('urlBack');
+            session(['urlBack' => url()->previous()]);
+        }
         $casoId = $request->caso_id;
         $archivos = Archivo::where('casoId', $casoId)->get();
         return view('casos.file_upload',compact('archivos', 'casoId'));   
@@ -40,6 +44,11 @@ class ArchivosController extends Controller
         $this->validate($request, [
             'archivo' => 'required'
         ]);
+
+        if( url()->previous() != url()->current() ){
+            session()->forget('urlBack');
+            session(['urlBack' => url()->previous()]);
+        }
 
         $usuario = \Auth::user();
         $file = $request->file('archivo');
@@ -92,6 +101,10 @@ class ArchivosController extends Controller
      */
     public function destroy($id)
     {
+        if( url()->previous() != url()->current() ){
+            session()->forget('urlBack');
+            session(['urlBack' => url()->previous()]);
+        }
         $archivo = Archivo::findOrFail($id);
         \Storage::disk('archivos')->delete($archivo->nombre_final);
         Archivo::destroy($id);

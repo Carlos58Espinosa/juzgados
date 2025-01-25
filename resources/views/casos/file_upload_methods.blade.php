@@ -27,6 +27,7 @@ function saveFile() {
 		      var str_row = `<tr id="${response.id}">
 		            <td width="20%">${response.nombre}</td>
 		            <td width="10%">
+                  <div class="div_btn_acciones">
 		                <button
 		                    class="delete-alert-archivo btn"
 		                    data-reload="1"
@@ -40,6 +41,9 @@ function saveFile() {
 		                    title="Eliminar Archivo">
 		                    <i class="far fa-trash-alt"></i>
 		                </button>
+                    <a href="archivos/${response.nombre_final}" class="btn" download="${response.nombre}"><i class="fas fa-cloud-download-alt"></i></a>
+                    <button onclick="visualizarArchivo('${response.nombre_final}')" class="btn"><i class="fa fa-eye"></i></button>
+                   </div>
 		            </td>
 		        </tr>`;         
             $('#tabla_archivos').find('tbody').append(str_row);
@@ -109,4 +113,8 @@ $('body').on('click','.delete-alert-archivo',function(event){
         }
       });
     });
+
+function visualizarArchivo(archivo){
+  document.getElementById("contenido_visualizar").src = `archivos/${archivo}`;
+}
 </script>
