@@ -69,7 +69,6 @@ class PlantillasController extends Controller
      */
     public function store(Request $request)
     {   
-        $this->getTemplateFields($request->texto);
         if( url()->previous() != url()->current() ){
             session()->forget('urlBack');
             session(['urlBack' => url()->previous()]);
