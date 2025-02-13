@@ -296,7 +296,8 @@ class CasosController extends Controller
         $tamPapel = $caso->tamPapel == 'Carta' ? 'letter' : 'folio';
         $GLOBALS['y_paginado'] = $caso->paginado == 'Derecha' ? 60 : 300;
         $logos = ['','',''];
-        $formato = 'pdfs.sin_logos';     
+        $formato = 'pdfs.sin_logos';
+        $caso_logos = [];   
 
         if($caso->formato != null){
             switch($caso->formato->nombre_aux){

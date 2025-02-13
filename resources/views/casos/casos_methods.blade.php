@@ -86,7 +86,7 @@
             data: {'option' : "fields_text_by_template_id", 'plantillaId' : templateId, 'casoId':casoId, 'configId':configId,'_token':"{{ csrf_token() }}"},
             success: function(data){
                 //console.log(data);
-                //console.log(data['grupos_campos']);
+                console.log(data['grupos_campos'][0]['campos']);
                 showFieldsAndTemplate(data, 'insert');
             },
             error: function(){
