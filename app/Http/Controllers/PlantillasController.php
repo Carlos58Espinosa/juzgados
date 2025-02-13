@@ -287,8 +287,9 @@ class PlantillasController extends Controller
         //Campos Agrupados
         $aux = DB::table('grupos')->join('grupos_campos', 'grupos.id', '=', 'grupos_campos.grupoId')   
             ->join('plantillas_campos', 'grupos_campos.campo', '=', 'plantillas_campos.campo')         
-            ->select('grupos.id','grupos.nombre as grupo','grupos_campos.campo', DB::raw('null as valor_plantilla'), DB::raw('null as valor_ultimo'), 
-                DB::raw('(select valor from casos_valores where casoId = '.$casoId.' and campo = plantillas_campos.campo and plantillaId = '.$plantillaId.') as valor_plantilla2'))
+            ->select('grupos.id','grupos.nombre as grupo','grupos_campos.campo', 
+                DB::raw("(select valor from casos_valores where casoId = ".$casoId." and campo = plantillas_campos.campo and orden <= (select orden from configuracion_plantillas where configuracionId=".$configId." and plantillaId = ".$plantillaId.") and valor is not null and valor != '' order by orden desc limit 1) as valor_ultimo"), 
+                DB::raw('(select valor from casos_valores where casoId = '.$casoId.' and campo = plantillas_campos.campo and plantillaId = '.$plantillaId.') as valor_plantilla'))
             ->where('grupos.usuarioId',$usuarioId)->where('plantillas_campos.plantillaId', $plantillaId)
             ->get()->toArray();
         $this->getArrayGroupFields($aux, $res);
