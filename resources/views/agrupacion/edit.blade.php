@@ -5,13 +5,6 @@
 @include('agrupacion.agrupacion_methods')
 
 @csrf 
-
-	<div>
-      <a href="{{session('urlBack')}}" title="Regresar" class="btn boton_agregar"><i class="fas fa-long-arrow-alt-left"></i></a>
-  </div>
-
-  <br>
-
   <div class="row">
 
 		 	<input type ="hidden" id="grupo_id" name="grupo_id">

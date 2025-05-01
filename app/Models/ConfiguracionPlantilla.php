@@ -16,4 +16,8 @@ class ConfiguracionPlantilla extends Model
     public function plantilla_campos(){
         return $this->hasMany('App\Models\PlantillaCampo', 'plantillaId', 'plantillaId');
     }
+
+    public function configuracion(){
+        return $this->hasOne('App\Models\Configuracion', 'id', 'configuracionId');
+    }
 }

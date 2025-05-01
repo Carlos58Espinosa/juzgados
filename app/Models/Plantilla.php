@@ -11,4 +11,8 @@ class Plantilla extends Model
      public function usuario(){
           return $this->hasOne('App\User', 'id', 'usuarioId');
      }
+
+     public function configuracion_plantillas(){
+          return $this->hasMany('App\Models\ConfiguracionPlantilla', 'plantillaId','id');
+     }
 }

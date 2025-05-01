@@ -109,7 +109,7 @@
               ['height', ['height']],
               ['mybutton', ['addParam']],
               ['mybutton2', ['lowerCase']],
-              //['view', ['codeview']],
+              ['view', ['codeview']],
             ],
             lineHeights: ['1.0', '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7'],
             buttons: {
@@ -385,7 +385,8 @@
             cache: false,
             data: {'option' : "last_value", 'plantillaId' : templateId, 'casoId':casoId, 'configId':configId, 'campo':valor_parametro,'_token':"{{ csrf_token() }}"},
             success: function(data){
-                $("#tabla_0").append(getRowStringHtmlFieldTemplate(valor_parametro, data['valor']));
+                if( !document.getElementById(valor_parametro) )
+                    $("#tabla_0").append(getRowStringHtmlFieldTemplate(valor_parametro, data['valor']));
             },
             error: function(){
               toastr.error('Hubo un problema por favor intentalo de nuevo mas tarde.', '', {timeOut: 3000});

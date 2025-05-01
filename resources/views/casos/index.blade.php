@@ -20,7 +20,8 @@
   <table id="table_index" class="table" width="100%">
         <thead>
           <tr>
-            <th>Nombre del Caso / Cliente</th>            
+            <th>Nombre del Caso / Cliente</th>
+            <th>Tipo de Creación</th>             
             <th>Tipo de Procedimiento</th>
             <th>Etapa</th>
             <th>Formato</th>
@@ -32,8 +33,17 @@
         <tbody>
           @foreach($casos as $caso)
             <tr>
-              <td>{{$caso->nombre_cliente}}</td>              
-              <td>{{$caso->configuracion->nombre}}</td>
+              <td>{{$caso->nombre_cliente}}</td> 
+              @if($caso->tipo_creacion == "1")
+                <td>Libre</td>
+              @else
+                <td>Tipo de Procedimiento</td>
+              @endif       
+              @if($caso->configuracion != null)
+                <td>{{$caso->configuracion->nombre}}</td>
+              @else
+                <td></td>
+              @endif            
               <td>{{$caso->etapa_plantilla->nombre}}</td>              
               @if($caso->formato != null)
                 <td>{{$caso->formato->nombre}}</td>

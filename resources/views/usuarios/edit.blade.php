@@ -8,7 +8,6 @@
   <input type="hidden" name="_method" value="PUT">
   
   <div>
-      <a href="{{session('urlBack')}}" title="Regresar" class="btn boton_agregar"><i class="fas fa-long-arrow-alt-left"></i></a>
       <button type="submit" class="btn boton_guardar" title="Guardar Registro"><i class="fa fa-save" alt="Guardar"></i></button>
   </div>
 

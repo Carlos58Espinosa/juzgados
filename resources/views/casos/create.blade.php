@@ -20,7 +20,6 @@
   @csrf
 
       <div>
-          <a href="{{session('urlBack')}}" title="Regresar" class="btn boton_agregar"><i class="fas fa-long-arrow-alt-left"></i></a>
           <button type="submit" class="btn boton_guardar" title="Guardar Registro"><i class="fa fa-save" alt="Guardar"></i></button>         
       </div>
 
@@ -44,6 +43,21 @@
 
           <div class="col-12 col-sm-6 col-md-4">
             <div class="form-group">
+              <label for="">Tipo de Creación: <span style="color:red">*</span></label>
+              <select id="select_tipo" onchange="getTemplatesByType(this.value)"  class="form-control selectpicker @error('select_tipo') is-invalid @enderror input100" name="tipo_creacion" title="-- Tipo de Creación --" data-live-search="true">
+                  <option value="1">Libre (Todas las Plantillas)</option>
+                  <option value="2">Tipo de Procedimiento</option>
+              </select>
+              @error('tipo')
+                  <span class="invalid-feedback" role="alert">
+                      <strong>{{ $message }}</strong>
+                  </span>
+              @enderror
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-md-4" id="div_select_config">
+            <div class="form-group">
               <label for="">Tipo de Procedimiento: <span style="color:red">*</span></label>
               <select id="select_config" onchange="getAndShowTemplatesByConfigId()"  class="form-control selectpicker @error('configuracion_id') is-invalid @enderror input100" name="configuracion_id" title="-- Selecciona una Configuración --" data-live-search="true">
                   @foreach($configuraciones as $config)
@@ -58,10 +72,21 @@
             </div>
           </div>
 
-          <div id="div_plantillas" class="col-12 col-sm-6 col-md-4" hidden>
+          <div id="div_plantillas" class="col-12 col-sm-6 col-md-4">
             <div class="form-group">
               <label for="">Plantillas: <span style="color:red">*</span></label>
-              <select id="select_template" onchange="getAndShowFieldsByTemplateId()" class="form-control selectpicker" name="plantilla_id" title="-- Selecciona una Plantilla --" data-live-search="true">   
+              <select id="select_template" onchange="getAndShowFieldsByTemplateId('no_libre')" class="form-control selectpicker" name="plantilla_id" title="-- Selecciona una Plantilla --" data-live-search="true">   
+              </select>
+            </div>
+          </div>
+
+          <div id="div_plantillas2" class="col-12 col-sm-6 col-md-4">
+            <div class="form-group">
+              <label for="">Plantillas: <span style="color:red">*</span></label>
+              <select id="select_template_2" onchange="getAndShowFieldsByTemplateId('libre')" class="form-control selectpicker" name="plantilla_id_2" title="-- Selecciona una Plantilla --" data-live-search="true"> 
+               @foreach($plantillas_all as $plantilla)
+                  <option value="{{$plantilla->id}}" {{ old('plantilla_id_2') == $plantilla->id ? 'selected' : '' }}>{{$plantilla->nombre}}</option>
+                @endforeach  
               </select>
             </div>
           </div>
@@ -73,8 +98,17 @@
       <br>
       <br>
       <br>
-      @include('casos.form')
 
+      <br>
+      <br>
+      <br>
+      <br>
+
+
+      @include('casos.form')
+      
+
+     
  </form>
 
 @stop

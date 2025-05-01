@@ -1,9 +1,12 @@
 <script>
 
-    $(document).ready(function() {       
+    $(document).ready(function() { 
+        if(document.getElementById("div_select_config"))
+            document.getElementById("div_select_config").hidden = true;  
+        document.getElementById("div_plantillas").hidden = true; 
+        if(document.getElementById("div_plantillas2")) 
+            document.getElementById("div_plantillas2").hidden = true;         
         document.getElementById("carouselExampleCaptions").hidden = true;
-        if(document.getElementById("div_plantillas"))
-            document.getElementById("div_plantillas").hidden = true;
         document.getElementById("nuevos_campos_cad").value = "";
         initSummernotes();
     });
@@ -28,15 +31,15 @@
    
     /******** Combo de CONFIGURACIÓN *******/
     function getAndShowTemplatesByConfigId(){
-          //console.log("Entre a: showConfigInfo");
-          var url_templates = "{{action('ConfiguracionController@index')}}";
-          var configId = document.getElementById("select_config").value;
+        //console.log("Entre a: showConfigInfo");
+        var url_templates = "{{action('ConfiguracionController@index')}}";
+        var configId = document.getElementById("select_config").value;
 
-          document.getElementById("div_plantillas").hidden = false;
-          document.getElementById("nuevos_campos_cad").value = "";
-          document.getElementById("carouselExampleCaptions").hidden = true;
+        document.getElementById("div_plantillas").hidden = false;
+        document.getElementById("nuevos_campos_cad").value = "";
+        document.getElementById("carouselExampleCaptions").hidden = true;
 
-          $.ajax({
+        $.ajax({
             dataType: 'json',
             type:'GET',
             url: url_templates,
@@ -49,36 +52,46 @@
             error: function(){
               toastr.error('Hubo un problema por favor intentalo de nuevo mas tarde.', '', {timeOut: 3000});
             }
-          });
+        });
     }
 
     function fillSelectTemplates(templates){
-          //console.log("Entre a:fillSelectTemplates");
-          $("#select_template").empty();
-          for(template of templates){        
-                var cad = template.plantilla.nombre;
-                var id = template.plantilla.id;
-                $("#select_template").append('<option value="'+id+'">'+cad+'</option>');
-          }
-          $("#select_template").selectpicker("refresh");
+        //console.log("Entre a:fillSelectTemplates");
+        $("#select_template").empty();
+        for(template of templates){        
+            var cad = template.plantilla.nombre;
+            var id = template.plantilla.id;
+            $("#select_template").append('<option value="'+id+'">'+cad+'</option>');
+        }
+        $("#select_template").selectpicker("refresh");
+    }
+
+    function cleanElements(){
+        document.getElementById("nuevos_campos_cad").value = "";
+        document.getElementById("texto_final").value = "";
+        document.getElementById("carouselExampleCaptions").hidden = true;
     }
 
     /******** Combo de PLANTILLAS *******/
-    function getAndShowFieldsByTemplateId(){
-          //console.log("Entre a:getAndShowFieldsByTemplateId");
-          var templateId = document.getElementById("select_template").value;
-          var elementConfig = document.getElementById("configuracion_id");
-          var elementCaso = document.getElementById("caso_id");
-          document.getElementById("nuevos_campos_cad").value = "";
-          document.getElementById("carouselExampleCaptions").hidden = true;
-          var configId, casoId;
+    function getAndShowFieldsByTemplateId(option){
+        //console.log("Entre en la seleccion de Plantillas= " + option);
+        var templateId = null, elementConfig = null, elementCaso = document.getElementById("caso_id"), configId, casoId;
+        if(option == 'libre')
+            templateId = document.getElementById("select_template_2").value;
+        else{
+            templateId = document.getElementById("select_template").value;
+            elementConfig = document.getElementById("configuracion_id");
+        }
 
-          (elementConfig != null) ? configId = elementConfig.value : configId = 0;
-          (elementConfig != null) ? casoId = elementCaso.value : casoId = 0;
+        cleanElements();
 
-          var url = "{{action('PlantillasController@index')}}";
+        (elementConfig != null) ? configId = elementConfig.value : configId = 0;
+        (elementCaso != null) ? casoId = elementCaso.value : casoId = 0;
 
-          $.ajax({
+
+        var url = "{{action('PlantillasController@index')}}";
+
+        $.ajax({
             dataType: 'json',
             type:'GET',
             url: url,
@@ -86,13 +99,45 @@
             data: {'option' : "fields_text_by_template_id", 'plantillaId' : templateId, 'casoId':casoId, 'configId':configId,'_token':"{{ csrf_token() }}"},
             success: function(data){
                 //console.log(data);
-                console.log(data['grupos_campos'][0]['campos']);
+                //console.log(data['grupos_campos'][0]['campos']);
                 showFieldsAndTemplate(data, 'insert');
             },
             error: function(){
               toastr.error('Hubo un problema por favor intentalo de nuevo mas tarde.', '', {timeOut: 3000});
             }
-          });
+        });
+    }
+
+    function getAndShowFieldsEditByTemplateId(option){
+        console.log("Entre a getAndShowFieldsEditByTemplateId "+ option);
+        var templateId = null, caseTemplateId = null, elementConfig = document.getElementById("configuracion_id"), casoId = document.getElementById("caso_id").value, configId;
+        (option == 'nueva') ? templateId = document.getElementById("select_template").value :          caseTemplateId = document.getElementById("select_template_2").value;
+        
+        console.log(elementConfig);
+        console.log(elementConfig.value);
+        (elementConfig != null) ? configId = elementConfig.value : configId = 0;
+
+        cleanElements();
+
+        console.log("Template = " + templateId + "  Caso = "+casoId + "  Config = "+ configId);
+
+        var url = "{{action('PlantillasController@index')}}";
+
+        $.ajax({
+            dataType: 'json',
+            type:'GET',
+            url: url,
+            cache: false,
+            data: {'option' : "fields_text_by_template_id", 'plantillaId' : templateId, 'casoId':casoId, 'configId':configId, 'casoPlantillaId': caseTemplateId,'_token':"{{ csrf_token() }}"},
+            success: function(data){
+                //console.log(data);
+                //console.log(data['grupos_campos'][0]['campos']);
+                showFieldsAndTemplate(data, 'insert');
+            },
+            error: function(){
+              toastr.error('Hubo un problema por favor intentalo de nuevo mas tarde.', '', {timeOut: 3000});
+            }
+        });
     }
 
     /***** Muestra los CAMPOS, VALORES y TEXTO de la PLANTILLA *****/
@@ -159,7 +204,7 @@
         /*if(valor != null)
             html += ` value="${valor}" `;*/
         //html += ' required>'
-        html += ` required>${valor}</textarea>`;
+        html += `>${valor}</textarea>`;
         html += '</td></tr>';
         
         //html += '<td><button type="button" class="delete-param-alert btn btn-link" data-message1="No podrás recuperar el registro." data-message2="¡Borrado! Verifica la redacción de la Plantilla." data-message3="Verifica la redacción de la Plantilla." data-message4="'+campo+'" style="width:40px; margin: 0; padding: 0;"><i class="far fa-trash-alt"></i></button></td>';
@@ -210,6 +255,38 @@
             carrusel2.style.visibility = "collapse";
         }
         replaceTextEditTemplate();
+    }
+
+    function getTemplatesByType(valor) {
+        document.getElementById("div_select_config").hidden = true;
+        document.getElementById("div_plantillas").hidden = true;
+        document.getElementById("div_plantillas2").hidden = true;
+
+        cleanElements();
+
+        switch(valor) {
+            case "1":
+                document.getElementById("div_plantillas2").hidden = false;
+                break;
+            case "2":
+                document.getElementById("div_select_config").hidden = false;
+                break;
+        }
+    }
+
+    function disableEditionElements(valor){
+        $('#select_template').val('').selectpicker('refresh');
+        $('#select_template_2').val('').selectpicker('refresh');
+
+        cleanElements();
+
+        if(valor == "1"){
+            document.getElementById("div_plantillas").hidden = false;
+            document.getElementById("div_plantillas_contestadas").hidden = true;     
+        } else {
+            document.getElementById("div_plantillas").hidden = true;
+            document.getElementById("div_plantillas_contestadas").hidden = false;
+        }
     }
 
 

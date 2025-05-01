@@ -13,6 +13,7 @@ use App\Models\CasosCamposSensibles;
 use App\Models\FormatoCaso;
 use App\Models\Logo;
 use App\Models\CasoLogo;
+use App\Models\CasoPlantillaLog;
 
 class CasosController extends Controller
 {
@@ -72,10 +73,12 @@ class CasosController extends Controller
             session()->forget('urlBack');
             session(['urlBack' => url()->previous()]);
         }
+        $usuario = \Auth::user();
+        $plantillas_all = DB::table('plantillas')->whereIn('usuarioId', [5, $usuario->id])->select('id','nombre', 'texto')->orderBy('nombre')->get();
         $configuraciones = DB::table('configuracion')->select('id','nombre')->orderBy('nombre')->get();
         $plantillas_ctrl = new PlantillasController();
-        $campos = $plantillas_ctrl->getAllFields();
-        return view('casos.create', compact('configuraciones', 'campos'));
+        $campos = $plantillas_ctrl->getDictionaryParams();
+        return view('casos.create', compact('configuraciones', 'campos', 'plantillas_all'));
     }
 
     /**
@@ -87,10 +90,31 @@ class CasosController extends Controller
     public function store(Request $request)
     {
         $transaction = DB::transaction(function() use($request){
+            $arr_request = $request->all();
             $usuario = \Auth::user();
-            $caso = Caso::create(["nombre_cliente" => $request->nombre_cliente, "configuracionId" => $request->configuracion_id, "etapaPlantillaId" => $request->plantilla_id, 'usuarioId' => $usuario->id]);
 
-            $this->generalSave($request->all(), $caso, false);
+            $plantilla_id = $request->plantilla_id_2;
+            if($request->tipo_creacion == "2")
+                $plantilla_id = $request->plantilla_id;
+            $arr_request['plantilla_id'] = $plantilla_id;
+
+            //1.- Genera el registro de Caso
+            $caso = Caso::create(["nombre_cliente" => $request->nombre_cliente, "configuracionId" => $request->configuracion_id, "etapaPlantillaId" => $plantilla_id, 'usuarioId' => $usuario->id, "tipo_creacion"=> $request->tipo_creacion]);
+
+            //2.- Genera el registro de Caso Plantilla
+            $caso_plantilla = CasosPlantillas::updateOrCreate(["plantillaId" => $arr_request['plantilla_id'], "casoId" => $caso->id],
+            ["texto" => $arr_request['texto'], "plantillaId" => $arr_request['plantilla_id'], "casoId" => $caso->id]);
+
+            //3.- Genera los campos del Caso
+            $plantillas_ctrl = new PlantillasController();
+            $campos = $plantillas_ctrl->getParamsInText($arr_request['texto']);
+            $orden = 1;
+            $this->saveCaseValuesFields($campos, $arr_request, $plantilla_id, $caso->id, $caso_plantilla->id, $orden, false);
+
+            //4.- Guarda en la tabla casos_plantillas_campos
+            $this->saveCaseTemplateFields($caso->id, $plantilla_id, $caso_plantilla->id, $campos, false);
+
+            CasoPlantillaLog::create(['usuarioId' => $usuario->id, 'texto_final' => $request->texto_final, 'casoId' =>  $caso->id, 'plantillaId' => $plantilla_id, 'casoPlantillaId' => $caso_plantilla->id]);
 
             $notification = array(
                   'message' => 'Registro Guardado.',
@@ -142,15 +166,26 @@ class CasosController extends Controller
         /*$plantillas = ConfiguracionPlantilla::with(['plantilla' => function ($query) {
             $query->select('id', 'nombre');
         }])->where('configuracionId', $caso->configuracionId)->select('id', 'plantillaId', 'orden')->orderBy('orden')->get();*/
-        $plantillas = DB::select("select * from (
-        select p.id, p.nombre, c.orden from configuracion_plantillas c, plantillas p
-        where c.configuracionId = ".$caso->configuracionId." and c.plantillaId = p.id 
-        union
-        select p.id, p.nombre, 1000 orden from casos_plantillas c, plantillas p 
-        where c.casoId = ".$caso->id." and c.plantillaId = p.id and p.id not in (select plantillaId from configuracion_plantillas where configuracionId = ".$caso->configuracionId.")) as t1 order by t1.orden;");
+        
+
+        if($caso->tipo_creacion == "1"){
+            $usuario = \Auth::user();
+            $plantillas = DB::table('plantillas')->whereIn('usuarioId', [5, $usuario->id])->select('id','nombre', 'texto')->orderBy('nombre')->get();
+        }
+        else {
+            $plantillas = DB::select("select * from (
+            select p.id, p.nombre, c.orden from configuracion_plantillas c, plantillas p
+            where c.configuracionId = ".$caso->configuracionId." and c.plantillaId = p.id 
+            union
+            select p.id, p.nombre, 1000 orden from casos_plantillas c, plantillas p 
+            where c.casoId = ".$caso->id." and c.plantillaId = p.id and p.id not in (select plantillaId from configuracion_plantillas where configuracionId = ".$caso->configuracionId.")) as t1 order by t1.orden;");
+        }
         $plantillas_ctrl = new PlantillasController();
-        $campos = $plantillas_ctrl->getAllFields();
-        return view('casos.edit', compact('caso', 'plantillas', 'campos'));
+        $campos = $plantillas_ctrl->getDictionaryParams();  
+        $plantillas_contestadas = CasosPlantillas::with(['plantilla' => function ($query) {
+            $query->select('id', 'nombre');
+        }])->where('casoId', $caso->id)->select('id', 'plantillaId')->get();  
+        return view('casos.edit', compact('caso', 'plantillas', 'campos', 'plantillas_contestadas'));
     }
 
     /**
@@ -162,14 +197,38 @@ class CasosController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //return $request->all();
         $transaction = DB::transaction(function() use($request, $id){
-            $caso = Caso::findOrFail($id);
+            $arr_request = $request->all();
+
+            $caso = Caso::findOrFail($id);           
+
+            //1.- Genera un registro nuevo (accion_id = 1) y si es una actualizacion (accion_id = 2)
+            if($request->accion_id == "1"){ //Create
+                $caso_plantilla = CasosPlantillas::create(["texto" => $arr_request['texto'], "plantillaId" => $arr_request['plantilla_id'], "casoId" => $caso->id]);
+                $plantilla_id = $arr_request['plantilla_id'];
+            } else { //Edit
+                $caso_plantilla = CasosPlantillas::findOrFail($arr_request['caso_plantilla_id']);
+                $caso_plantilla->texto = $arr_request['texto'];
+                $caso_plantilla->save();
+                $plantilla_id = $caso_plantilla->plantillaId;
+            }
+
+            //2.- Actualiza los campos del Caso
             $caso->nombre_cliente = $request->nombre_cliente;
-            $caso->etapaPlantillaId = $request->plantilla_id;
+            $caso->etapaPlantillaId = $plantilla_id;
             $caso->save();
 
-            $this->generalSave($request->all(), $caso, true);
+            //3.- Genera los campos del Caso
+            $plantillas_ctrl = new PlantillasController();
+            $campos = $plantillas_ctrl->getParamsInText($arr_request['texto']);
+            $orden = 1;
+            $this->saveCaseValuesFields($campos, $arr_request, $caso_plantilla->plantillaId, $caso->id, $caso_plantilla->id, $orden, true);
+
+            //4.- Guarda en la tabla casos_plantillas_campos
+            $this->saveCaseTemplateFields($caso->id, $caso_plantilla->plantillaId, $caso_plantilla->id, $campos, true);
+
+            $usuario = \Auth::user();
+            CasoPlantillaLog::create(['usuarioId' => $usuario->id, 'texto_final' => $request->texto_final, 'casoId' =>  $caso->id, 'plantillaId' => $plantilla_id, 'casoPlantillaId' => $caso_plantilla->id]);
 
             $notification = array(
                   'message' => 'Registro Guardado.',
@@ -198,8 +257,50 @@ class CasosController extends Controller
         return response()->json(200);
     }
 
-    /***********************    Función de GUARDADO General   **************/
+    public function saveCaseValuesFields($campos, $arr_valores, $plantillaId, $casoId, $casoPlantillaId, $orden, $eliminacion){
+        //Elimina los valores del caso y de una plantilla en especifico para que no se dupliquen los registros
+        if($eliminacion)
+            CasosValores::where('casoPlantillaId', $casoPlantillaId)->delete();
 
+        $arr_registros = [];
+        foreach($campos as $campo){ 
+            $llave_campo = str_replace(' ', '_', $campo);
+            if (array_key_exists($llave_campo, $arr_valores)) {   
+                $valor = "";
+                $valor_sensible = false;
+                if($arr_valores[$llave_campo] != null)
+                    $valor = $arr_valores[$llave_campo];
+
+                array_push($arr_registros, ["valor" => $valor, "casoId" => $casoId, "campo" => $campo, "plantillaId" => $plantillaId, "orden" => $orden, "casoPlantillaId" => $casoPlantillaId]);
+            }
+        }
+        if(count($arr_registros) > 0)
+            CasosValores::insert($arr_registros);
+    }
+
+    //Guarda los CAMPOS que hay en el TEXTO por PLANTILLA_ID y CASO_ID
+    public function saveCaseTemplateFields($casoId, $plantillaId, $casoPlantillaId, $campos, $eliminacion) {
+        if($eliminacion)
+            CasoPlantillaCampo::where("casoPlantillaId", $casoPlantillaId)->delete();
+
+        $arr_registros = [];
+        foreach($campos as $campo)
+            array_push($arr_registros, ["campo" => $campo, "plantillaId" => $plantillaId, "casoId" => $casoId, "casoPlantillaId" => $casoPlantillaId]);
+
+        if(count($arr_registros) > 0)
+            CasoPlantillaCampo::insert($arr_registros);
+    }
+
+
+
+
+
+
+
+
+
+    /***********************    Función de GUARDADO General   **************/
+/*
     //Guarda el VALOR deL CAMPO por PLANTILLA 
     public function saveDataBankByTemplateIdAndCaseId($campos, $arr, $plantillaId, $casoId, $orden,$eliminacion){
         //Elimina los valores del caso y de una plantilla en especifico para que no se dupliquen los registros
@@ -237,18 +338,20 @@ class CasosController extends Controller
 
     public function generalSave($arr_request, $caso, $band_delete){
         $plantillas_ctrl = new PlantillasController();
-        $campos = $plantillas_ctrl->getTemplateFields($arr_request['texto']);
-
-        $config_plantilla = ConfiguracionPlantilla::where('configuracionId', $caso->configuracionId)->where('plantillaId', $arr_request['plantilla_id'])->first();
-        $orden = $config_plantilla->orden;
-
+        $campos = $plantillas_ctrl->getParamsInText($arr_request['texto']);
+        $orden = 1;
+        if( array_key_exists('tipo_creacion', $arr_request) &&  $arr_request['tipo_creacion'] == "2"){
+            $config_plantilla = ConfiguracionPlantilla::where('configuracionId', $caso->configuracionId)->where('plantillaId', $arr_request['plantilla_id'])->first();
+            $orden = $config_plantilla->orden;
+        }
+        
         $this->saveDataBankByTemplateIdAndCaseId($campos, $arr_request, $arr_request['plantilla_id'], $caso->id, $orden, $band_delete);
 
         CasosPlantillas::updateOrCreate(["plantillaId" => $arr_request['plantilla_id'], "casoId" => $caso->id],
             ["texto" => $arr_request['texto'], "plantillaId" => $arr_request['plantilla_id'], "casoId" => $caso->id]);
 
         $this->saveFieldsByTemplateIdByCaseId($caso->id, $arr_request['plantilla_id'], $campos, $band_delete);
-    }
+    }*/
 
     /*****************************  Ver PDF *******************************/
 

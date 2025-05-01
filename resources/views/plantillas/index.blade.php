@@ -15,6 +15,7 @@
       <thead>
         <tr>
           <th>Nombre de la Plantilla</th>
+          <th>Tipo de Procedimientos</th>
           <th width="45%">Texto / Contenido</th>
           <th width="5%">Última Actualización</th>
           <th>Acciones</th>
@@ -24,6 +25,16 @@
         @foreach($plantillas as $plantilla)
           <tr>
             <td>{{$plantilla->nombre}}</td>
+            <td style="padding: 5px;">
+            @if(count($plantilla->configuracion_plantillas))
+              <ul>
+              @foreach($plantilla->configuracion_plantillas as $config_plantilla)
+                <li>{{$config_plantilla->configuracion->nombre}}</li>
+                <br>
+              @endforeach
+              </ul>
+            @endif
+            </td>
             <td><div style="height: 150px; overflow-y: scroll;">{!!$plantilla->texto!!}</div></td>
             <td>{{date("d/m/Y", strtotime($plantilla->updated_at))}}</td>
             <td>
