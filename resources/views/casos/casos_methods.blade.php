@@ -114,7 +114,7 @@
         (option == 'nueva') ? templateId = document.getElementById("select_template").value :          caseTemplateId = document.getElementById("select_template_2").value;
         
         console.log(elementConfig);
-        console.log(elementConfig.value);
+        //console.log(elementConfig.value);
         (elementConfig != null) ? configId = elementConfig.value : configId = 0;
 
         cleanElements();
@@ -152,6 +152,7 @@
 
             $('#a'+data['grupos_campos'][0]['id']).focus();
         }
+        document.getElementById('detalle').value = data['detalle'];
 
         $('#texto_final').summernote('code', data['texto']);
         $('#summernote').summernote('code', data['texto']);

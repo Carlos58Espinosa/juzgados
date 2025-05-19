@@ -55,7 +55,7 @@ class ArchivosController extends Controller
         $fileName = $file->getClientOriginalName();
         $fileNameFinal = $usuario->id . '_' . date('Y_m_d_H_i_s') . '.' . $file->getClientOriginalExtension();
         $archivo = Archivo::create(['nombre' => $fileName, 'nombre_final' => $fileNameFinal, 'casoId' => $request->caso_id, 'tipo'=>$file->getClientOriginalExtension()]);
-        \Storage::disk('archivos')->put($fileNameFinal,  \File::get($file));
+        \Storage::disk('public')->put($fileNameFinal,  \File::get($file));
         return $archivo;
     }
 
@@ -106,7 +106,7 @@ class ArchivosController extends Controller
             session(['urlBack' => url()->previous()]);
         }
         $archivo = Archivo::findOrFail($id);
-        \Storage::disk('archivos')->delete($archivo->nombre_final);
+        \Storage::disk('public')->delete($archivo->nombre_final);
         Archivo::destroy($id);
         return true;
     }

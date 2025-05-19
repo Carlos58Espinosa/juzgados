@@ -115,6 +115,6 @@ $('body').on('click','.delete-alert-archivo',function(event){
     });
 
 function visualizarArchivo(archivo){
-  document.getElementById("contenido_visualizar").src = `archivos/${archivo}`;
+  document.getElementById("contenido_visualizar").src = `/archivos/${archivo}`;
 }
 </script>

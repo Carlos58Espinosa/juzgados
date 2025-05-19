@@ -30,7 +30,6 @@ class ConfiguracionController extends Controller
                 $color = $usuario_ctrl->getColorByUser();
                 $plantillas_ctrl =  new PlantillasController();
                 $arrUsuariosIds = $plantillas_ctrl->getArrayUserIds();
-
                 $configuraciones = Configuracion::with(['usuario' => function ($query) {
                     $query->select('id', 'tipo');
                 }])->whereIn('usuarioId', $arrUsuariosIds)->orderBy('updated_at', 'desc')->get();

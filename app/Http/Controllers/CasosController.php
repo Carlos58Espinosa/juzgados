@@ -73,10 +73,10 @@ class CasosController extends Controller
             session()->forget('urlBack');
             session(['urlBack' => url()->previous()]);
         }
-        $usuario = \Auth::user();
-        $plantillas_all = DB::table('plantillas')->whereIn('usuarioId', [5, $usuario->id])->select('id','nombre', 'texto')->orderBy('nombre')->get();
-        $configuraciones = DB::table('configuracion')->select('id','nombre')->orderBy('nombre')->get();
         $plantillas_ctrl = new PlantillasController();
+        $arrUsuariosIds = $plantillas_ctrl->getArrayUserIds();
+        $plantillas_all = DB::table('plantillas')->whereIn('usuarioId', $arrUsuariosIds)->select('id','nombre', 'texto')->orderBy('nombre')->get();
+        $configuraciones = DB::table('configuracion')->whereIn('usuarioId', $arrUsuariosIds)->select('id','nombre')->orderBy('nombre')->get();
         $campos = $plantillas_ctrl->getDictionaryParams();
         return view('casos.create', compact('configuraciones', 'campos', 'plantillas_all'));
     }
@@ -103,7 +103,7 @@ class CasosController extends Controller
 
             //2.- Genera el registro de Caso Plantilla
             $caso_plantilla = CasosPlantillas::updateOrCreate(["plantillaId" => $arr_request['plantilla_id'], "casoId" => $caso->id],
-            ["texto" => $arr_request['texto'], "plantillaId" => $arr_request['plantilla_id'], "casoId" => $caso->id]);
+            ["texto" => $arr_request['texto'], "plantillaId" => $arr_request['plantilla_id'], "casoId" => $caso->id, 'detalle' => $arr_request['detalle']]);
 
             //3.- Genera los campos del Caso
             $plantillas_ctrl = new PlantillasController();
@@ -204,7 +204,7 @@ class CasosController extends Controller
 
             //1.- Genera un registro nuevo (accion_id = 1) y si es una actualizacion (accion_id = 2)
             if($request->accion_id == "1"){ //Create
-                $caso_plantilla = CasosPlantillas::create(["texto" => $arr_request['texto'], "plantillaId" => $arr_request['plantilla_id'], "casoId" => $caso->id]);
+                $caso_plantilla = CasosPlantillas::create(["texto" => $arr_request['texto'], "plantillaId" => $arr_request['plantilla_id'], "casoId" => $caso->id, "detalle" => $arr_request['detalle']]);
                 $plantilla_id = $arr_request['plantilla_id'];
             } else { //Edit
                 $caso_plantilla = CasosPlantillas::findOrFail($arr_request['caso_plantilla_id']);

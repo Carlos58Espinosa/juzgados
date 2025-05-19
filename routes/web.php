@@ -39,6 +39,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('casos/guardar_formato', 'CasosController@saveFormat');
     Route::resource('casos_logos','LogosController');
     Route::resource('casos_archivos','ArchivosController');
+    Route::get('/archivos/{archivo}', function ($archivo) {
+        $path = storage_path('app/public/' . $archivo); // o resource_path()
+        if (!File::exists($path)) 
+            abort(404);
+        return response()->file($path);
+    });
 });
 
 

@@ -91,6 +91,18 @@
             </div>
           </div>
 
+          <div class="col-12 col-sm-6 col-md-4">
+            <div class="form-group">
+              <label for="">Detalle:</label>
+              <input style="text-transform: none;" type="text" class="form-control @error('detalle') is-invalid @enderror input100" name="detalle" id="detalle" value="{{old('detalle')}}">
+              @error('detalle')
+              <span class="invalid-feedback" role="alert">
+                  <strong>{{ $message }}</strong>
+              </span>
+              @enderror
+            </div>
+          </div>
+
       </div>
       <!-- --------------------------------------------------------------- -->
 

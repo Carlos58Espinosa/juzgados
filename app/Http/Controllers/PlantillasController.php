@@ -325,6 +325,7 @@ class PlantillasController extends Controller
     public function getFieldsAndTemplateByTemplateId($arr){
         $usuario = \Auth::user();
         $res["grupos_campos"] = [];
+        $res['detalle'] = "";
         $casoId = $arr['casoId']; $configId = $arr['configId']; 
         (array_key_exists('casoPlantillaId', $arr)) ? $casoPlantillaId = $arr['casoPlantillaId'] : $casoPlantillaId = 0;
 
@@ -340,6 +341,7 @@ class PlantillasController extends Controller
                 $this->getFieldsAndTemplateByTemplateIdCase1($arr['plantillaId'], $res, $usuario->id,$configId, $casoId);
             else{ //Caso 3
                 $res['texto'] = $caso_plantilla->texto;
+                $res['detalle'] = $caso_plantilla->detalle;
                 $this->getFieldsAndTemplateByTemplateIdCase3($res, $usuario->id, $casoId, $casoPlantillaId);
             }
         }
