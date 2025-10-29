@@ -10,8 +10,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('admincss/fontawesome5.3.1.css') }} ">
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> 
 
 	<?php
 		$actual_link = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
@@ -75,9 +74,11 @@
 					<li>
 						<a id="menu_agrupacion" href="{{action('AgrupacionesController@index')}}"><i class="fas fa-gavel"></i> Agrupación de Valores</a>
 					</li>
+					@if(auth()->user()->tipo != 'Empleado')
 					<li>
 						<a id="menu_usuarios" href="{{action('UsuariosController@index')}}"><i class="fas fa-gavel"></i> Usuarios</a>
 					</li>
+					@endif
 					<li>
             			<form id="form_logout" action="{{action('AuthController@logout')}}" method="post" accept-charset="UTF-8" enctype="multipart/form-data">
             			@csrf

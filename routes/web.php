@@ -29,6 +29,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post("casos_campos_sensibles","CasosController@getSensitiveData");
     Route::post("casos_guardar_campos_sensibles","CasosController@saveSensitiveData");
     Route::post("casos_update/{id}","CasosController@update");
+    Route::post('casos_colaboradores', "CasosController@addCollaborators");
     Route::resource("agrupacion",'AgrupacionesController');
     Route::post("agrupacion_eliminacion","AgrupacionesController@deleteGroupsAndFields");
     Route::post("agrupacion_guardar_grupo","AgrupacionesController@addGroup");

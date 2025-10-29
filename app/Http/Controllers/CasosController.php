@@ -14,6 +14,8 @@ use App\Models\FormatoCaso;
 use App\Models\Logo;
 use App\Models\CasoLogo;
 use App\Models\CasoPlantillaLog;
+use App\Models\CasosUsuarios;
+use App\User;
 
 class CasosController extends Controller
 {
@@ -29,28 +31,67 @@ class CasosController extends Controller
         switch($request->option){
             case "last_value":
                 $res['valor'] = $this->getLastValue($request->all());
-            break;            
+            break;   
+            case "colaboradores":            
+                $casoId = $request->caso_id;
+                $colaboradores = CasosUsuarios::where('casoId', $casoId)->pluck('usuarioId');
+                return response()->json($colaboradores);
+            break;         
             default:  
+                $colaboradores = [];
                 ($request->exists("inactivos") == false) ? $activo = 1 : $activo = $request->inactivos;
-                ($activo == 1) ? $vista = 'casos.index' : $vista = 'casos.index_inactives';
-                
+                ($activo == 1) ? $vista = 'casos.index' : $vista = 'casos.index_inactives';                 
                 $usuario = \Auth::user();
                 $usuario_id = $usuario->id;
+                $tipo_usuario = $usuario->tipo;
                 $usuario_ctrl = new UsuariosController();
-                $color = $usuario_ctrl->getColorByUser();
-                $casos = Caso::with(['configuracion' => function ($query) {
-                    $query->select('id', 'nombre');
-                }, 
-                'etapa_plantilla' => function ($query) {
-                    $query->select('id', 'nombre');
-                },
-                'formato' => function ($query) {
-                    $query->select('id', 'nombre');
-                }])->where('usuarioId', $usuario->id)->where('activo', $activo)->orderBy('id', 'desc')->get();
-                $res = view($vista, compact('casos', 'color', 'usuario_id'));   
+                $color = $usuario_ctrl->getColorByUser();                   
+                //Casos del Líder    
+                if($usuario->tipo == 'Cliente') {
+                    $colaboradores = User::where('usuarioId', $usuario_id)->select('id', 'nombre')->get();
+                    $casos = $this->getCasesLeader($activo);
+                } else //Casos del Colaborador
+                    $casos = $this->getCasesCollaborator($usuario_id, $activo);
+                $res = view($vista, compact('casos', 'color', 'usuario_id', 'colaboradores', 'tipo_usuario'));       
             break;
         }
         return $res;               
+    }
+
+    private function queryCasos($ids, $activo) {
+        return Caso::with([
+            'configuracion:id,nombre',
+            'etapa_plantilla:id,nombre',
+            'formato:id,nombre'
+        ])
+        ->whereIn('id', $ids)
+        ->where('activo', $activo)
+        ->orderByDesc('id')
+        ->get();
+    }
+
+    public function getCasesLeader($activo)  {
+        $plantillas_ctrl = new PlantillasController();
+        $arrUsuariosIds = $plantillas_ctrl->getArrayUserIds(); 
+
+        $ids = Caso::whereIn('usuarioId', $arrUsuariosIds)
+            ->where('activo', $activo)
+            ->pluck('id');
+
+        return $this->queryCasos($ids, $activo);
+    }
+
+    public function getCasesCollaborator($usuarioId, $activo)  {
+        $casosCreados = Caso::where('usuarioId', $usuarioId)
+            ->where('activo', $activo)
+            ->pluck('id');
+
+        $casosColaborador = CasosUsuarios::where('usuarioId', $usuarioId)
+            ->pluck('casoId');
+
+        $ids = $casosCreados->merge($casosColaborador)->unique();
+
+        return $this->queryCasos($ids, $activo);
     }
 
     public function getLastValue($arr){
@@ -159,18 +200,19 @@ class CasosController extends Controller
             session()->forget('urlBack');
             session(['urlBack' => url()->previous()]);
         }
+        $plantillas_ctrl = new PlantillasController();
 
         $caso = Caso::with(['configuracion' => function ($query) {
             $query->select('id', 'nombre');
         }, 'plantillas'])->findOrFail($id);
         /*$plantillas = ConfiguracionPlantilla::with(['plantilla' => function ($query) {
             $query->select('id', 'nombre');
-        }])->where('configuracionId', $caso->configuracionId)->select('id', 'plantillaId', 'orden')->orderBy('orden')->get();*/
-        
+        }])->where('configuracionId', $caso->configuracionId)->select('id', 'plantillaId', 'orden')->orderBy('orden')->get();*/        
 
         if($caso->tipo_creacion == "1"){
             $usuario = \Auth::user();
-            $plantillas = DB::table('plantillas')->whereIn('usuarioId', [5, $usuario->id])->select('id','nombre', 'texto')->orderBy('nombre')->get();
+            $arrUsuariosIds = $plantillas_ctrl->getArrayUserIds(); 
+            $plantillas = DB::table('plantillas')->whereIn('usuarioId', $arrUsuariosIds)->select('id','nombre', 'texto')->orderBy('nombre')->get();
         }
         else {
             $plantillas = DB::select("select * from (
@@ -180,7 +222,7 @@ class CasosController extends Controller
             select p.id, p.nombre, 1000 orden from casos_plantillas c, plantillas p 
             where c.casoId = ".$caso->id." and c.plantillaId = p.id and p.id not in (select plantillaId from configuracion_plantillas where configuracionId = ".$caso->configuracionId.")) as t1 order by t1.orden;");
         }
-        $plantillas_ctrl = new PlantillasController();
+        
         $campos = $plantillas_ctrl->getDictionaryParams();  
         $plantillas_contestadas = CasosPlantillas::with(['plantilla' => function ($query) {
             $query->select('id', 'nombre');
@@ -289,6 +331,15 @@ class CasosController extends Controller
 
         if(count($arr_registros) > 0)
             CasoPlantillaCampo::insert($arr_registros);
+    }
+
+    //Agrega los colaboradores a un caso
+    public function addCollaborators(Request $request){
+        $params = $request->all();
+        CasosUsuarios::where('casoId', $params['caso_id'])->delete();
+        foreach($params['usuarios'] as $usuario)
+            CasosUsuarios::create(['casoId' => $params['caso_id'], "usuarioId" => $usuario]);
+        return redirect()->back()->with('success', 'Colaboradores asignados correctamente.');
     }
 
 

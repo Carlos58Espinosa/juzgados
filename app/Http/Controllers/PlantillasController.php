@@ -25,23 +25,18 @@ class PlantillasController extends Controller
                 $res = $this->getFieldsAndTemplateByTemplateId($request->all());
                 break;           
             default:
+                $user_id = \Auth::user()->id;
                 $tipo_usuario = \Auth::user()->tipo;                
-                $arrUsuariosIds = $this->getArrayUserIds();                
+                $arrUsuariosIds = $this->getArrayUserIds();       
                 $plantillas = Plantilla::with(['usuario' => function ($query) {
-                    $query->select('id', 'tipo');
+                    $query->select('id', 'tipo', 'usuarioId');
                 }, 'configuracion_plantillas.configuracion'=> function ($query) {
                     $query->select('configuracion.id','configuracion.nombre');
                 }])->whereIn('usuarioId', $arrUsuariosIds)->orderBy('updated_at', 'desc')->get();
-                /*$notification = array(
-                          'message' => 'Successful!!',
-                          'alert-type' => 'success'
-                    );
-                session()->flash("message", "Carlangas");   
-                session()->flash("alert-type", "success"); 
-                session()->flash("title", "alerta"); */  
-                //print_r($plantillas);
-                //return true;
-                $res = view('plantillas.index',compact('plantillas','tipo_usuario'));
+                $user_ids = [];
+                $clientes = User::where('usuarioId', $user_id)->pluck('id')->toArray();
+                $user_ids = array_merge($user_ids, $clientes); 
+                $res = view('plantillas.index',compact('plantillas','tipo_usuario', 'user_id', 'user_ids'));
                 break;
         }
         return $res;
@@ -261,15 +256,45 @@ class PlantillasController extends Controller
         return response()->json(200);
     }
 
-    public function getArrayUserIds(){
+    public function getArrayUserIds() {
+        $user = \Auth::user();
+        $userIds = [$user->id]; //Agrega el Usuario en Sesión
+
+        //Agrega el Usuario Cliente
+        if (!empty($user->usuarioId) && $user->usuarioId > 0) 
+            $userIds[] = $user->usuarioId;
+
+        //Agrega usuario Administrador de Turi
+        $admins = User::where('tipo', 'Administrador')->pluck('id')->toArray();
+        $userIds = array_merge($userIds, $admins);
+
+        //Agrega los Usuarios Hijos del Usuario Cliente
+        $user_id_search = $user->id;
+        if ($user->tipo === 'Empleado') 
+            $user_id_search = $user->usuarioId;
+        $clientes = User::where('usuarioId', $user_id_search)->pluck('id')->toArray();
+        $userIds = array_merge($userIds, $clientes);        
+        return $userIds;
+    }
+
+
+    /*public function getArrayUserIds(){
         $arrUsuariosIds = [];
         $usuario = \Auth::user();
         array_push($arrUsuariosIds, $usuario->id);
+        if($usuario->usuarioId != null && $usuario->usuarioId > 0)
+            array_push($arrUsuariosIds, $usuario->usuarioId);
+        if($usuario->tipo == 'Cliente'){
+            $usuarios = User::where('usuarioId', $usuario->id)->get();
+            foreach($usuarios as $usuario_iter)
+                array_push($arrUsuariosIds, $usuario_iter->id);
+        }
+        
         $usuarios = User::where('tipo', 'Administrador')->get();
         foreach($usuarios as $usuario_iter)
             array_push($arrUsuariosIds, $usuario_iter->id);
         return $arrUsuariosIds;
-    }
+    }*/
 
     public function saveRegister(Request $request){
         $usuario = \Auth::user();

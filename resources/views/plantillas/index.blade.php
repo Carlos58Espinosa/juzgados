@@ -55,8 +55,7 @@
                     <button class="btn" title="Ver PDF"><i class="far fa-file-pdf"></i></button>
                   </form>
                 </div>
-
-                @if($plantilla->usuario->tipo != 'Administrador' || $tipo_usuario == 'Administrador')
+                @if(in_array($plantilla->usuario->id, $user_ids) || $tipo_usuario == 'Administrador' || $plantilla->usuario->id == $user_id)
                 <div>                    
                    <a class="btn" title="Editar Registro" href="{{action('PlantillasController@edit',$plantilla->id)}}"><i class="far fa-edit"></i></a>
                 </div>               
