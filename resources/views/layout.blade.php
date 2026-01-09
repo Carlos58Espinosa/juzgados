@@ -9,6 +9,9 @@
 	<!-- Icons -->
     <link rel="stylesheet" type="text/css" href="{{ asset('admincss/fontawesome5.3.1.css') }} ">
 
+    <!-- FullCalendar CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> 
 
@@ -40,7 +43,7 @@
 
 
 	<!-------------------------------- Multiple SELECT -------------------------------------------------->
-	<script src="{{ asset('adminjs/jquery3.3.1.js') }}"></script>
+	<!--<script src="{{ asset('adminjs/jquery3.3.1.js') }}"></script>-->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 	<script src="{{ asset('adminjs/bootstrap4.1.js') }}"></script>
 	<script src="{{ asset('adminjs/bootstrap-select.min.js') }}"></script>
@@ -74,10 +77,13 @@
 					<li>
 						<a id="menu_agrupacion" href="{{action('AgrupacionesController@index')}}"><i class="fas fa-gavel"></i> Agrupación de Valores</a>
 					</li>
+					<li>
+						<a id="menu_calendario" href="{{action('CalendarioController@index')}}"><i class="fas fa-gavel"></i> Calendario</a>
+					</li>
 					@if(auth()->user()->tipo != 'Empleado')
 					<li>
 						<a id="menu_usuarios" href="{{action('UsuariosController@index')}}"><i class="fas fa-gavel"></i> Usuarios</a>
-					</li>
+					</li>					
 					@endif
 					<li>
             			<form id="form_logout" action="{{action('AuthController@logout')}}" method="post" accept-charset="UTF-8" enctype="multipart/form-data">
@@ -106,53 +112,18 @@
 			</div>
 		
     	</div>
-        <!--<div class="section__content section__content--p30">
-            <div class="container-fluid">
-                <div class="header-wrap">
-                    <div class="header-button">
-                        <div class="account-wrap">
-                            <div class="account-item clearfix js-item-menu">
-
-                                <div class="image">
-									<img src="{{asset('/images/profiles/empty.jpg')}}" alt="" />							
-                                </div>
-
-                                <div class="account-dropdown js-dropdown">
-                                    <div class="info clearfix">
-                                        <div class="image">
-                                            <a href="#">
-												<img src="{{asset('/images/profiles/empty.jpg')}}" alt="" />
-                                            </a>
-                                        </div>
-                                        <div class="content">
-                                            <h5 class="name">
-                                                <a href="#"></a>
-                                            </h5>
-                                            <h5 class="name">
-                                                <a href="#"></a>
-                                            </h5>
-                                            <span class="email"></span>
-                                        </div>
-                                    </div>			
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
+        
     </header> 
 	<!-- HEADER DESKTOP-->
 
     <!-- MAIN CONTENT-->
-    <!-- <div id="main-content"> -->     	
+
     	<input type="hidden" id="modo_color" value="{{session('color')}}">
     	<main id="main-content">
     	@include('general.general_methods')
 
         @yield('content')
-    </main>
-    <!-- </div> @livewireScripts -->
+        </main>
      
 	<!-- END MAIN CONTENT-->
 

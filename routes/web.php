@@ -46,6 +46,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             abort(404);
         return response()->file($path);
     });
+    Route::resource('calendario','CalendarioController');
 });
 
 
