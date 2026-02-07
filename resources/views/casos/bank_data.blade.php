@@ -16,17 +16,18 @@
 
       	  <div style="margin-left:200px;" class="col-12 col-sm-6 col-md-4">
               <div class="form-group">
-                <label for="">Nombre del Caso / Cliente:</label>
+                <label>Nombre del Caso / Cliente:</label>
                 <p>{{$caso->nombre_cliente}}</p>
               </div>
           </div>
-
+          @if($caso->configuracion != null)
           <div class="col-12 col-sm-6 col-md-4">
               <div class="form-group">
-                <label for="">Configuración: </label> 
+                <label>Configuración: </label> 
                 <p>{{$caso->configuracion->nombre}}</p>
               </div>
           </div>
+          @endif
 
       </div>
 

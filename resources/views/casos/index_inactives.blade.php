@@ -33,8 +33,12 @@
         <tbody>
           @foreach($casos as $caso)
             <tr>
-              <td>{{$caso->nombre_cliente}}</td>              
-              <td>{{$caso->configuracion->nombre}}</td>
+              <td>{{$caso->nombre_cliente}}</td> 
+              @if($caso->configuracion != null)
+                <td>{{$caso->configuracion->nombre}}</td>
+              @else
+                <td>Libre</td>
+              @endif
               <td>{{$caso->etapa_plantilla->nombre}}</td>              
               @if($caso->formato != null)
                 <td>{{$caso->formato->nombre}}</td>
@@ -53,9 +57,4 @@
         </tbody>
   </table>
 
-<script>
-  $(document).ready(function() {
-      selectedMenu("menu_expedientes"); 
-  });
-</script>
 @stop

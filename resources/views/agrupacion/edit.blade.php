@@ -20,11 +20,14 @@
 		  <div style="margin-left: 230px;" class="col-12 col-sm-6 col-md-4">
 		      <div class="form-group">
 		          <label for="">Claves:</label>
-		          <select class="form-control selectpicker" data-style="form-control" data-live-search="true" title="-- Selecciona Clave --" multiple="multiple" name="campos_ids[]" id="campos_ids_aux">
-		              @foreach($campos as $campo)
-		                <option value="{{$campo->campo}}">{{$campo->campo}}</option>
-		              @endforeach
-		          </select>
+				  <select class="form-control" 
+							name="campos_ids[]" 
+							id="campos_ids_aux" 
+							multiple>
+						@foreach($campos as $campo)
+							<option value="{{$campo->campo}}">{{$campo->campo}}</option>
+						@endforeach
+					</select>
 		          <a onclick="addFields()" class="btn boton_guardar" title="Agregar Parámetros al Grupo" style="margin-left:430px; margin-top: -60px;"><i class="fas fa-plus"></i></a>
 		      </div>
 		  </div>

@@ -62,13 +62,13 @@ class ConfiguracionController extends Controller
      */
     public function store(Request $request)
     {
-        //return $request->all();
+        // return $request->all();
         $this->validate($request, [
             'nombre' => 'required|unique:configuracion',
         ], ['nombre.unique' => 'El nombre debe de ser único.', 'nombre.required', "este campo es requerido."]);
         try{
             $transaction = DB::transaction(function() use($request){
-                $arrIds = explode(',',$request->old_ids[0]);
+                $arrIds = explode(',',$request->old_ids);
                 $usuario = \Auth::user();
                 $config = Configuracion::create(['nombre'=> $request->nombre, 'usuarioId' => $usuario->id]);
                 $this->saveConfiguracionPlantillas($config, $arrIds);
@@ -157,6 +157,7 @@ class ConfiguracionController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // return $request->all();
         $this->validate($request, [
             'nombre' => 'required|unique:configuracion,nombre,'.$id
         ]);
@@ -165,7 +166,8 @@ class ConfiguracionController extends Controller
             $configuracion->nombre = $request->nombre;
             $configuracion->save();
             ConfiguracionPlantilla::where('configuracionId', $id)->delete();
-            $arrIds = explode(',',$request->old_ids[0]);
+            $arrIds = explode(',',$request->old_ids);
+            print_r($arrIds);
             $this->saveConfiguracionPlantillas($configuracion, $arrIds);
             if ($configuracion) {
                 $notification = array(

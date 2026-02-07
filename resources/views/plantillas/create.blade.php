@@ -4,6 +4,10 @@
 
 @include('editor_summernote.summernote_methods')
 
+  <div>
+    <a href="{{session('urlBack')}}" title="Regresar" class="btn boton_agregar"><i class="fas fa-long-arrow-alt-left"></i></a>
+  </div>
+
   <form action="{{action('PlantillasController@store')}}" method="post" accept-charset="UTF-8" enctype="multipart/form-data">
   @csrf
       <div>
@@ -12,7 +16,7 @@
 
       <div align="center">
 
-          <label for="">Nombre: <span style="color:red">*</span></label>
+          <label>Nombre: <span style="color:red">*</span></label>
           <input type="text" class="form-control @error('nombre') is-invalid @enderror input_nombre" required name="nombre" value="{{old('nombre')}}" id="nombre">
           @error('nombre')
             <span class="invalid-feedback" role="alert">
@@ -22,7 +26,7 @@
 
           <br>
 
-          <label  for="">Texto / Contenido de la Plantilla: <span style="color:red">*</span></label>  
+          <label>Texto / Contenido de la Plantilla: <span style="color:red">*</span></label>  
       </div>
 
       <div style="margin-left: 360px;"> 

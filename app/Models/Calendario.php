@@ -8,4 +8,9 @@ class Calendario extends Model
 {
     protected $table = 'calendario';
     protected $guarded = ['id', 'created_at', 'updated_at'];
+
+    public function usuarios()
+    {
+        return $this->hasMany(CalendarioUsuario::class, 'calendarioId');
+    }
 }

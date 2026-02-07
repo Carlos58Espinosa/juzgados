@@ -342,68 +342,6 @@ class CasosController extends Controller
         return redirect()->back()->with('success', 'Colaboradores asignados correctamente.');
     }
 
-
-
-
-
-
-
-
-
-    /***********************    Función de GUARDADO General   **************/
-/*
-    //Guarda el VALOR deL CAMPO por PLANTILLA 
-    public function saveDataBankByTemplateIdAndCaseId($campos, $arr, $plantillaId, $casoId, $orden,$eliminacion){
-        //Elimina los valores del caso y de una plantilla en especifico para que no se dupliquen los registros
-
-        CasosValores::where('casoId',$casoId)->where('plantillaId',$plantillaId)->delete();
-
-        $arr_registros = [];
-        foreach($campos as $campo){ 
-            $llave_campo = str_replace(' ', '_', $campo);
-            if (array_key_exists($llave_campo, $arr)) {   
-                $valor = "";
-                $valor_sensible = false;
-                if($arr[$llave_campo] != null)
-                    $valor = $arr[$llave_campo];
-
-                array_push($arr_registros, ["valor" => $valor, "casoId" => $casoId, "campo" => $campo, "plantillaId" => $plantillaId, "orden" => $orden]);
-            }
-        }
-        if(count($arr_registros) > 0)
-            CasosValores::insert($arr_registros);
-    }
-
-    //Guarda los CAMPOS que hay en el TEXTO por PLANTILLA_ID y CASO_ID
-    public function saveFieldsByTemplateIdByCaseId($casoId, $plantillaId, $campos, $eliminacion) {
-        if($eliminacion)
-            CasoPlantillaCampo::where("plantillaId", $plantillaId)->where("casoId", $casoId)->delete();
-
-        $arr_registros = [];
-        foreach($campos as $campo)
-            array_push($arr_registros, ["campo" => $campo, "plantillaId" => $plantillaId, "casoId" => $casoId]);
-
-        if(count($arr_registros) > 0)
-            CasoPlantillaCampo::insert($arr_registros);
-    }
-
-    public function generalSave($arr_request, $caso, $band_delete){
-        $plantillas_ctrl = new PlantillasController();
-        $campos = $plantillas_ctrl->getParamsInText($arr_request['texto']);
-        $orden = 1;
-        if( array_key_exists('tipo_creacion', $arr_request) &&  $arr_request['tipo_creacion'] == "2"){
-            $config_plantilla = ConfiguracionPlantilla::where('configuracionId', $caso->configuracionId)->where('plantillaId', $arr_request['plantilla_id'])->first();
-            $orden = $config_plantilla->orden;
-        }
-        
-        $this->saveDataBankByTemplateIdAndCaseId($campos, $arr_request, $arr_request['plantilla_id'], $caso->id, $orden, $band_delete);
-
-        CasosPlantillas::updateOrCreate(["plantillaId" => $arr_request['plantilla_id'], "casoId" => $caso->id],
-            ["texto" => $arr_request['texto'], "plantillaId" => $arr_request['plantilla_id'], "casoId" => $caso->id]);
-
-        $this->saveFieldsByTemplateIdByCaseId($caso->id, $arr_request['plantilla_id'], $campos, $band_delete);
-    }*/
-
     /*****************************  Ver PDF *******************************/
 
     public function getDataBankByCasoIdByTemplateId($casoId, $plantillaId){
@@ -530,73 +468,73 @@ class CasosController extends Controller
     }
 
     public function getAllFieldsSensibleTemplatesByConfigId($configId, $casoId){
-        $query = "select *, (select sensible from casos_campos_sensibles where campo = t1.campo and casoId = ".$casoId.") as sensible  
-        from (
-        select pc.campo 
-        from configuracion_plantillas cp, plantillas_campos pc
-        where cp.configuracionId =".$configId."  and pc.plantillaId = cp.plantillaId ";
-        if($casoId != null){
-            $query .= " and cp.plantillaId not in (select plantillaId from casos_plantillas_campos where casoId=".$casoId.") union select campo from casos_plantillas_campos where casoId=".$casoId;        
-        }
-        $query .= ") as t1 group by t1.campo order by t1.campo;";
-        return DB::select($query);
+        $resultado = CasoPlantillaCampo::from('casos_plantillas_campos as cpc')
+        ->leftJoin('casos_campos_sensibles as ccs', function ($join) {
+            $join->on('ccs.campo', '=', 'cpc.campo')
+                ->on('ccs.casoId', '=', 'cpc.casoId');
+        })
+        ->select(
+            'cpc.campo',
+            DB::raw('MAX(ccs.sensible) as sensible')
+        )
+        ->where('cpc.casoId', $casoId)
+        ->groupBy('cpc.campo')
+        ->orderBy('cpc.campo')
+        ->get();
+        return $resultado;
     }
 
     /*********************** Guardar campos sensibles *******************************/
-    public function saveSensitiveData(Request $request){
-        $transaction = DB::transaction(function() use($request){
-            //Guarda los valores sensibles
-            $stringArray = json_encode($request->all());
-            $banco_datos = [];
-            if (str_contains($stringArray, "_check"))
-                $banco_datos = $this->getAllFieldsTemplatesByConfigId($request->configuracionId, $request->casoId);
-            $this->saveSensitiveDataByCasoId($banco_datos, $request->all(), $request->casoId);            
+    public function saveSensitiveData(Request $request)
+    {
+        $banco_datos = [];
+        $hasChecks = collect($request->keys())->contains(fn($k) => str_ends_with($k, '_check'));
 
-            $notification = array(
-                  'message' => 'Registro Guardado.',
-                  'alert-type' => 'success'
-            );
-            return $notification;
-        });
-        return redirect()->action('CasosController@index')->with($transaction);
+        if ($hasChecks) 
+            $banco_datos = $this->getAllFieldsSensibleTemplatesByConfigId($request->configuracionId, $request->casoId);
+
+        $this->saveSensitiveDataByCasoId($banco_datos, $request->all(), $request->casoId);
+
+        return redirect()
+            ->action('CasosController@index')
+            ->with([
+                'message' => 'Registro Guardado.',
+                'alert-type' => 'success'
+            ]);
     }
 
-     public function getAllFieldsTemplatesByConfigId($configId, $casoId){
-        $query = "select * from (
-        select pc.campo 
-        from configuracion_plantillas cp, plantillas_campos pc
-        where cp.configuracionId =".$configId."  and pc.plantillaId = cp.plantillaId ";
-        if($casoId != null){
-            $query .= " and cp.plantillaId not in (select plantillaId from casos_plantillas_campos where casoId=".$casoId.") union select campo from casos_plantillas_campos where casoId=".$casoId;        
-        }
-        $query .= ") as t1 group by t1.campo order by t1.campo;";
-        $campos_plantilla = DB::select($query);
-        $arr_campos = [];
-        array_filter($campos_plantilla, function($iter) use(&$arr_campos){
-           array_push($arr_campos, $iter->campo);
-        });
-        return $arr_campos;
-    }
-
-    public function saveSensitiveDataByCasoId($campos, $arr, $casoId){
-        $campos_aux = [];
-        foreach($campos as $c){
-            $key_field = str_replace(' ', '_', $c);
-            if (array_key_exists($key_field."_check",$arr)) {
-                if($arr[$key_field."_check"] == "on"){
-                    array_push($campos_aux, $c);
-                    CasosCamposSensibles::updateOrCreate(["casoId" => $casoId, "campo" => $c], ["casoId" => $casoId, "campo" => $c, "sensible" => true]);
+    public function saveSensitiveDataByCasoId($campos, $arr, $casoId)
+    {
+        DB::transaction(function () use ($campos, $arr, $casoId) {
+            $camposSeleccionados = [];
+            foreach ($campos as $c) {
+                $key = str_replace(' ', '_', $c->campo) . '_check';
+                if (!empty($arr[$key]) && $arr[$key] === 'on') {
+                    $camposSeleccionados[] = $c->campo;
+                    CasosCamposSensibles::updateOrCreate(
+                        [
+                            'casoId' => $casoId,
+                            'campo'  => $c->campo
+                        ],
+                        [
+                            'sensible' => 1
+                        ]
+                    );
                 }
             }
-        }
 
-        if(count($campos_aux) > 0)
-            CasosCamposSensibles::where("casoId", $casoId)->whereNotIn('campo', $campos_aux)->delete();
-        else{
-            if(count($campos_aux) == 0)
-                CasosCamposSensibles::where("casoId", $casoId)->delete();
-        }
-    } 
+            // Borrar los que ya no están seleccionados
+            if (!empty($camposSeleccionados)) {
+                CasosCamposSensibles::where('casoId', $casoId)
+                    ->whereNotIn('campo', $camposSeleccionados)
+                    ->delete();
+
+            } else {
+                // Si no hay ninguno sensible → borrar todos
+                CasosCamposSensibles::where('casoId', $casoId)->delete();
+            }
+        });
+    }
 
     /************************************************************************/ 
 

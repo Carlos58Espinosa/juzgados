@@ -13,14 +13,10 @@
 }
 
 .dialogo_boton {
-        width: 40px;
+    width: 40px;
 }
-
 </style>
 
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
-<script src="{{ asset('js/sweetalert.js') }}"></script>
 
 <dialog id="modal" class="dialogo">
 

@@ -26,101 +26,91 @@
       <br>
 
       <!-- Contenedor de: Expediente, Configuración y Plantilla -->
+      <div class="container">
 
-      <div>
+        <div class="row">
 
-          <div class="col-12 col-sm-6 col-md-4">
-            <div class="form-group">
-              <label for="">Expediente: <span style="color:red">*</span></label>
-              <input style="text-transform: none;" type="text" class="form-control @error('nombre_cliente') is-invalid @enderror input100" required name="nombre_cliente" value="{{old('nombre_cliente')}}">
-              @error('nombre_cliente')
-                  <span class="invalid-feedback" role="alert">
-                      <strong>{{ $message }}</strong>
-                  </span>
-              @enderror
-            </div>
+          <div class="col-12 col-sm-6 col-md-4 mb-3">
+            <label>Expediente: <span class="text-danger">*</span></label>
+            <input type="text"
+                  class="form-control @error('nombre_cliente') is-invalid @enderror input100"
+                  required name="nombre_cliente"
+                  value="{{old('nombre_cliente')}}">
+            @error('nombre_cliente')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
 
-          <div class="col-12 col-sm-6 col-md-4">
-            <div class="form-group">
-              <label for="">Tipo de Creación: <span style="color:red">*</span></label>
-              <select id="select_tipo" onchange="getTemplatesByType(this.value)"  class="form-control selectpicker @error('select_tipo') is-invalid @enderror input100" name="tipo_creacion" title="-- Tipo de Creación --" data-live-search="true">
-                  <option value="1">Libre (Todas las Plantillas)</option>
-                  <option value="2">Tipo de Procedimiento</option>
-              </select>
-              @error('tipo')
-                  <span class="invalid-feedback" role="alert">
-                      <strong>{{ $message }}</strong>
-                  </span>
-              @enderror
-            </div>
+          <div class="col-12 col-sm-6 col-md-4 mb-3">
+            <label>Tipo de Creación: <span class="text-danger">*</span></label>
+            <select id="select_tipo"
+                    onchange="getTemplatesByType(this.value)"
+                    class="form-select @error('select_tipo') is-invalid @enderror input100"
+                    name="tipo_creacion">
+              <option value="">-- Tipo de Creación --</option>
+              <option value="1">Libre (Todas las Plantillas)</option>
+              <option value="2">Tipo de Procedimiento</option>
+            </select>
           </div>
 
-          <div class="col-12 col-sm-6 col-md-4" id="div_select_config">
-            <div class="form-group">
-              <label for="">Tipo de Procedimiento: <span style="color:red">*</span></label>
-              <select id="select_config" onchange="getAndShowTemplatesByConfigId()"  class="form-control selectpicker @error('configuracion_id') is-invalid @enderror input100" name="configuracion_id" title="-- Selecciona una Configuración --" data-live-search="true">
-                  @foreach($configuraciones as $config)
-                    <option value="{{$config->id}}" {{ old('configuracion_id') == $config->id ? 'selected' : '' }}>{{$config->nombre}}</option>
-                  @endforeach
-              </select>
-              @error('configuracion_id')
-                  <span class="invalid-feedback" role="alert">
-                      <strong>{{ $message }}</strong>
-                  </span>
-              @enderror
-            </div>
+          <div class="col-12 col-sm-6 col-md-4 mb-3" id="div_select_config">
+            <label>Tipo de Procedimiento: <span class="text-danger">*</span></label>
+            <select id="select_config"
+                    onchange="getAndShowTemplatesByConfigId()"
+                    class="form-select @error('configuracion_id') is-invalid @enderror input100"
+                    name="configuracion_id">
+              <option value="">-- Selecciona una Configuración --</option>
+              @foreach($configuraciones as $config)
+                <option value="{{$config->id}}" {{ old('configuracion_id') == $config->id ? 'selected' : '' }}>
+                  {{$config->nombre}}
+                </option>
+              @endforeach
+            </select>
           </div>
 
-          <div id="div_plantillas" class="col-12 col-sm-6 col-md-4">
-            <div class="form-group">
-              <label for="">Plantillas: <span style="color:red">*</span></label>
-              <select id="select_template" onchange="getAndShowFieldsByTemplateId('no_libre')" class="form-control selectpicker" name="plantilla_id" title="-- Selecciona una Plantilla --" data-live-search="true">   
-              </select>
-            </div>
+          <div id="div_plantillas" class="col-12 col-sm-6 col-md-4 mb-3">
+            <label>Plantillas: <span class="text-danger">*</span></label>
+            <select id="select_template"
+                    onchange="getAndShowFieldsByTemplateId('no_libre')"
+                    class="form-select"
+                    name="plantilla_id">
+              <option value="">-- Selecciona una Plantilla --</option>
+            </select>
           </div>
 
-          <div id="div_plantillas2" class="col-12 col-sm-6 col-md-4">
-            <div class="form-group">
-              <label for="">Plantillas: <span style="color:red">*</span></label>
-              <select id="select_template_2" onchange="getAndShowFieldsByTemplateId('libre')" class="form-control selectpicker" name="plantilla_id_2" title="-- Selecciona una Plantilla --" data-live-search="true"> 
-               @foreach($plantillas_all as $plantilla)
-                  <option value="{{$plantilla->id}}" {{ old('plantilla_id_2') == $plantilla->id ? 'selected' : '' }}>{{$plantilla->nombre}}</option>
-                @endforeach  
-              </select>
-            </div>
+          <div id="div_plantillas2" class="col-12 col-sm-6 col-md-4 mb-3">
+            <label>Plantillas: <span class="text-danger">*</span></label>
+            <select id="select_template_2"
+                    onchange="getAndShowFieldsByTemplateId('libre')"
+                    class="form-select"
+                    name="plantilla_id_2">
+              <option value="">-- Selecciona una Plantilla --</option>
+              @foreach($plantillas_all as $plantilla)
+                <option value="{{$plantilla->id}}" {{ old('plantilla_id_2') == $plantilla->id ? 'selected' : '' }}>
+                  {{$plantilla->nombre}}
+                </option>
+              @endforeach
+            </select>
           </div>
 
-          <div class="col-12 col-sm-6 col-md-4">
-            <div class="form-group">
-              <label for="">Detalle:</label>
-              <input style="text-transform: none;" type="text" class="form-control @error('detalle') is-invalid @enderror input100" name="detalle" id="detalle" value="{{old('detalle')}}">
-              @error('detalle')
-              <span class="invalid-feedback" role="alert">
-                  <strong>{{ $message }}</strong>
-              </span>
-              @enderror
-            </div>
+          <div class="col-12 col-sm-6 col-md-4 mb-3">
+            <label>Detalle:</label>
+            <input type="text"
+                  class="form-control @error('detalle') is-invalid @enderror input100"
+                  name="detalle"
+                  id="detalle"
+                  value="{{old('detalle')}}">
+            @error('detalle')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
+
+        </div>
 
       </div>
-      <!-- --------------------------------------------------------------- -->
-
-      <br>
-      <br>
-      <br>
-      <br>
-
-      <br>
-      <br>
-      <br>
-      <br>
-
 
       @include('casos.form')
       
-
-     
  </form>
 
 @stop

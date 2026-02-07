@@ -39,4 +39,8 @@ class User extends Authenticatable
     protected $casts = [
         //'email_verified_at' => 'datetime',
     ];
+
+    public function usuarios(){
+        return $this->hasMany('App\User', 'usuarioId', 'id')->where('activo', 1)->select('id', 'nombre', 'usuarioId');
+    }
 }

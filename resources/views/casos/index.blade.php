@@ -158,9 +158,6 @@
 </div>
 
 <script>
-  $(document).ready(function() {
-      selectedMenu("menu_expedientes"); 
-  });
   document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.btn-asignar').forEach(function (button) {
       button.addEventListener('click', function () {

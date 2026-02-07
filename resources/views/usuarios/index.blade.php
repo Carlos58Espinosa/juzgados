@@ -58,11 +58,4 @@
         @endforeach
     </tbody>
 </table>
-
-<script>
-  $(document).ready(function() {
-      selectedMenu("menu_usuarios"); 
-  });
-</script>
-
 @stop

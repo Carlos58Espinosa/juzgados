@@ -10,7 +10,7 @@
 
   <div align="center">
 
-      <label for="">Nombre:</label>
+      <label>Nombre:</label>
       <input style="text-transform: none;" type="text" class="form-control @error('nombre') is-invalid @enderror input_nombre" name="nombre" value="{{$config->nombre}}" disabled>
       @error('nombre')
           <span class="invalid-feedback" role="alert">
@@ -44,12 +44,5 @@
           </tbody>
       </table>   
 
-  </div>
-
-  <script>
-  $(document).ready(function() {
-      document.getElementById("type_config").value = 0;
-      loadColor('index');
-  });
-</script>       
+  </div>      
   @stop

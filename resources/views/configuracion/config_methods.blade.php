@@ -1,77 +1,73 @@
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
-  $(document).ready(function() {
-      var arrIds = [];
-      if($('#old_ids').val() != ""){
-          arrIds = $('#old_ids').val().split(',');
-          rebuildListGroup(arrIds);
-      }
-  });
+document.addEventListener('DOMContentLoaded', () => {
+    const sel   = document.getElementById('plantillas');
+    const lista = document.getElementById('lista');
+    const hid   = document.getElementById('old_ids');
 
-  function getHStringtmlLi(id, value){
-      return '<li id="'+ id +'" class="list-group-item list-group-item-info sortable-itemc ui-state-default"><i title="Ordenar" class="fas fa-arrows-alt-v flecha_tipo_procedimiento"></i>   ' + value + '</li>';
-  }
+    if (!sel || !lista || !hid) 
+        return; // ahora sí es válido, porque estamos dentro de una función
 
-  function rebuildListGroup(arrIds) {
-      var cad = '';
-      var plantillas = @json($plantillas);
-      let plantillas_aux = plantillas.filter(plantilla => arrIds.indexOf(String(plantilla['id'])) > -1 );
+    const map = new Map();
+    @foreach($plantillas as $p)
+        map.set(String({{ $p->id }}), @json($p->nombre));
+    @endforeach
 
-      for (const iter of arrIds){
-          var aux = plantillas_aux.filter(plantilla => String(plantilla['id']) == iter);
-          if(aux.length > 0)
-              cad += getHStringtmlLi(aux[0]['id'], aux[0]['nombre']);
-      }
-      document.getElementById("list_templates").innerHTML += cad;
-  }
-  
-  function reorderArrayIds() {
-      var arrIds = [];
-      var items = document.getElementsByClassName("list-group-item");
-
-      for (var i = 0; i < items.length; i++)
-          arrIds.push(items[i]["id"]);
-      document.getElementById('old_ids').value = arrIds;
-  }
-
-  function addTemplateRowListGroup(){
-    //console.log("entre a:addRowTableTemplates");
-    //console.log($('#plantillas_ids_aux').options);
-    //var plantillas_ids_selected = $('#plantillas_ids_aux').val();     
-    var options_selected = $('#plantillas_ids_aux').find(':selected');
-    var arrIds = [];
-    var band = false;
-
-    if($('#old_ids').val() != "")
-        arrIds = $('#old_ids').val().split(',');
-
-    for (const iter of options_selected){
-        if(document.getElementById(iter['value']) == null){
-            document.getElementById("list_templates").innerHTML += getHStringtmlLi(iter['value'], iter['innerText']);
-            arrIds.push(iter['value']);
-            band = true;
-        } 
+    let orden = (hid.value || '').split(',').filter(Boolean);
+    if (orden.length === 0) {
+        orden = Array.from(sel.selectedOptions).map(o => o.value);
     }
+    render();
 
-    if(!band){ //Deselecciono una opción        
-        var options_unselected = $("#plantillas_ids_aux").find('option').not(':selected');
+    sel.addEventListener('mousedown', function (e) {
+        if (e.target.tagName === 'OPTION') {
+            e.preventDefault();
+            const opt = e.target;
+            opt.selected = !opt.selected;
 
-        for (const iter of options_unselected){
-            var indice = arrIds.indexOf(iter['value']);
-            if(indice > -1){
-                arrIds.splice(indice, 1);
-                document.getElementById(iter['value']).remove();
+            const id = opt.value;
+            if (opt.selected) {
+                if (!orden.includes(id)) orden.push(id);
+            } else {
+                orden = orden.filter(x => x !== id);
             }
+            render();
         }
-    }
-    document.getElementById('old_ids').value = arrIds;
-  }
+    });
 
-  $( function() {
-      $( "#list_templates" ).sortable({
-        connectWith: ".connectedSortable"
-      }).disableSelection();
-  });  
+    sel.addEventListener('change', () => {
+        const seleccionados = new Set(Array.from(sel.selectedOptions).map(o => o.value));
+        seleccionados.forEach(id => { if (!orden.includes(id)) orden.push(id); });
+        orden = orden.filter(id => seleccionados.has(id));
+        render();
+    });
+
+    new Sortable(lista, {
+        animation: 150,
+        onUpdate: () => {
+            orden = Array.from(lista.children).map(li => li.id);
+            hid.value = orden.join(',');
+        }
+    });
+
+    function render() {
+        lista.innerHTML = '';
+        orden.forEach(id => {
+            const li = document.createElement('li');
+            li.id = id;
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.innerHTML = `
+                <span><i title="Ordenar" class="fas fa-arrows-alt-v flecha_tipo_procedimiento"></i>${map.get(id) || id}</span>
+                <button class="delete-alert btn btn-sm btn-danger"><i class="far fa-trash-alt"></i></button>
+            `;
+            li.querySelector('button').onclick = () => {
+                orden = orden.filter(x => x !== id);
+                Array.from(sel.options).forEach(o => { if (o.value === id) o.selected = false; });
+                render();
+            };
+            lista.appendChild(li);
+        });
+        hid.value = orden.join(',');
+    }
+});
 </script>

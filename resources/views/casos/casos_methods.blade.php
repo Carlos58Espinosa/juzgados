@@ -2,14 +2,16 @@
 
     $(document).ready(function() { 
         if(document.getElementById("div_select_config"))
-            document.getElementById("div_select_config").hidden = true;  
-        document.getElementById("div_plantillas").hidden = true; 
+            document.getElementById("div_select_config").hidden = true;
+
         if(document.getElementById("div_plantillas2")) 
-            document.getElementById("div_plantillas2").hidden = true;         
+            document.getElementById("div_plantillas2").hidden = true;
+
         document.getElementById("carouselExampleCaptions").hidden = true;
         document.getElementById("nuevos_campos_cad").value = "";
         initSummernotes();
     });
+
 
     function initSummernotes(){
         $('#summernote').on('summernote.change', function(we, contents, $editable) {
@@ -58,12 +60,12 @@
     function fillSelectTemplates(templates){
         //console.log("Entre a:fillSelectTemplates");
         $("#select_template").empty();
+        $("#select_template").append('<option value="">-- Selecciona una plantilla --</option>');
         for(template of templates){        
             var cad = template.plantilla.nombre;
             var id = template.plantilla.id;
             $("#select_template").append('<option value="'+id+'">'+cad+'</option>');
         }
-        $("#select_template").selectpicker("refresh");
     }
 
     function cleanElements(){
@@ -276,84 +278,24 @@
     }
 
     function disableEditionElements(valor){
-        $('#select_template').val('').selectpicker('refresh');
-        $('#select_template_2').val('').selectpicker('refresh');
+        document.getElementById('select_template').value = '';
+        document.getElementById('select_template_2').value = '';
 
         cleanElements();
 
-        if(valor == "1"){
-            document.getElementById("div_plantillas").hidden = false;
-            document.getElementById("div_plantillas_contestadas").hidden = true;     
+        const divPlantillas = document.getElementById("div_plantillas");
+        const divContestadas = document.getElementById("div_plantillas_contestadas");
+
+        if(valor === "1"){
+            divPlantillas.classList.remove('d-none');
+            divContestadas.classList.add('d-none');
+        } else if(valor === "2") {
+            divPlantillas.classList.add('d-none');
+            divContestadas.classList.remove('d-none');
         } else {
-            document.getElementById("div_plantillas").hidden = true;
-            document.getElementById("div_plantillas_contestadas").hidden = false;
+            divPlantillas.classList.add('d-none');
+            divContestadas.classList.add('d-none');
         }
-    }
-
-
-
-
-
-
-
-/****************************** VERIFICARRRRRRRRRRRRRRRRR ********************/
-/*
-
-    function copyText(campo){
-        navigator.clipboard.writeText('|'+campo+'|');
-    }
-
-
-    function deleteParamFromTable(campo){
-        //console.log("deleteDataParam:"+campo);
-        var fila = document.getElementById(campo);
-        if (fila) 
-            fila.parentNode.removeChild(fila);
-        
-        var textoAux = document.getElementById("summernote").value;
-        textoAux = textoAux.replaceAll('|' + campo + '|', "");
-        $('#summernote').summernote('code', textoAux);    
-
-        var arrAux = document.getElementById("nuevos_campos_cad").value.split(",");
-        if(arrAux.includes(campo)){
-            var indice = arrAux.indexOf(campo);
-            arrAux.splice(indice, 1);
-            document.getElementById("nuevos_campos_cad").value = arrAux.join();
-        }
-    }
-
-    $('body').on('click','.delete-param-alert',function(event){
-        var message1 = $(this).attr('data-message1');
-        var message2 = $(this).attr('data-message2');
-        var message3 = $(this).attr('data-message3');
-        var campo = $(this).attr('data-message4');
-
-        Swal.fire({
-          title: '{{__("¿Estás seguro de ELIMINAR?")}}',
-          text: message1,
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: '{{__("Sí")}}',
-          cancelButtonText: '{{__("No")}}'
-        }).then((result) => {
-            if (result.isConfirmed) {
-              deleteParamFromTable(campo);
-
-              Swal.fire(
-                 message2,
-                 message3,
-                 'success'
-              );
-            }
-        });      
-    }); //body
-
-
-*/
-
-    
-    
+    }    
 </script>
    

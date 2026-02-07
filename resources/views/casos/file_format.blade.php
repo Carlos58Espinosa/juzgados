@@ -17,8 +17,9 @@
 	 
     <br>      
 
+    <!-- Sección para subir un nuevo logo -->
     <div id="div_file" hidden>
-	   	<label for="">Subir Nueva Imagen:</label>
+	   	<label>Subir Nueva Imagen:</label>
 	   	<br>
 	   	<div style="width: 400px;">
 	    	<input type="file" name="logo" id="logo" class="form-control" style="float:left; width: 350px;">
@@ -26,82 +27,77 @@
 	    </div> 
     </div>
 
-    <div style="height: 270px; width: 66%; float: left;">
+    <!-- Opciones para dar Formato -->
 
-        <div align="center" style="width: 50%; float: left;">
-            <label for="">Tamaño de Hoja: <span style="color:red">*</span></label>              
-            <br>
-            <select class="selectpicker input_nombre" id="select_tam" name="tamPapel" title="-- Selecciona un Tamaño --" data-live-search="true" required>
+    <div class="container">
+      <div class="row g-4 align-items-start">
+
+        <!-- Columna 1 -->
+        <div class="col-lg-4 col-md-6">
+            <label class="form-label">Tamaño de Hoja <span class="text-danger">*</span></label>
+            <select class="form-select" id="select_tam" name="tamPapel" required>
+                <option value="">-- Selecciona un Tamaño --</option>
                 @foreach($tamPapeles as $tamP)
-                    <option value="{{$tamP->nombre}}" {{ $caso->tamPapel == $tamP->nombre ? 'selected' : '' }}>{{$tamP->nombre}}</option>
+                    <option value="{{$tamP->nombre}}" {{ $caso->tamPapel == $tamP->nombre ? 'selected' : '' }}>
+                        {{$tamP->nombre}}
+                    </option>
                 @endforeach
             </select>
-            @error('tamPapel')
-            <span class="invalid-feedback" role="alert">
-                <strong>{{ $message }}</strong>
-            </span>
-            @enderror
 
-            <br>
-            <br>
+            <div class="mt-3">
+                <label class="form-label">Margen X <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" name="margenDerIzq" value="{{$caso->margenDerIzq}}" required>
+            </div>
 
-            <label for="">Margen X: <span style="color:red">*</span></label>
-            <br>
-            <input type="number" name="margenDerIzq" value="{{$caso->margenDerIzq}}" required>
-           
-            <br>
-            <br>
-            <label for="">Posición del Paginado: <span style="color:red">*</span></label>           
-            <br>
-            <select class="selectpicker input_nombre" id="select_paginado" name="paginado" title="-- Selecciona el Paginado --" data-live-search="true" required>
-                @foreach($paginados as $paginado)
-                    <option value="{{$paginado->nombre}}" {{ $caso->paginado == $paginado->nombre ? 'selected' : '' }}>{{$paginado->nombre}}</option>
-                @endforeach
-            </select>
-            @error('paginado')
-            <span class="invalid-feedback" role="alert">
-                <strong>{{ $message }}</strong>
-            </span>
-            @enderror
+            <div class="mt-3">
+                <label class="form-label">Posición del Paginado <span class="text-danger">*</span></label>
+                <select class="form-select" id="select_paginado" name="paginado" required>
+                    <option value="">-- Selecciona el Paginado --</option>
+                    @foreach($paginados as $paginado)
+                        <option value="{{$paginado->nombre}}" {{ $caso->paginado == $paginado->nombre ? 'selected' : '' }}>
+                            {{$paginado->nombre}}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
         </div>
 
-        <div align="center" style="width: 50%; margin-left: 50%;">
-            <label for="">Formato: <span style="color:red">*</span></label>             
-            <br>
-            <select class="selectpicker input_nombre" id="select_format" onchange="seleccionFormato(this.selectedIndex)" name="formato_id" title="-- Selecciona un Formato --" data-live-search="true" required>
+        <!-- Columna 2 -->
+        <div class="col-lg-4 col-md-6">
+            <label class="form-label">Formato <span class="text-danger">*</span></label>
+            <select class="form-select" id="select_format" onchange="seleccionFormato(this.selectedIndex)" name="formato_id" required>
+                <option value="">-- Selecciona un Formato --</option>
                 @foreach($formatos as $formato)
-                    <option value="{{$formato->id}}" {{ $caso->formatoId == $formato->id ? 'selected' : '' }}>{{$formato->nombre}}</option>
+                    <option value="{{$formato->id}}" {{ $caso->formatoId == $formato->id ? 'selected' : '' }}>
+                        {{$formato->nombre}}
+                    </option>
                 @endforeach
             </select>
-            @error('formato_id')
-            <span class="invalid-feedback" role="alert">
-                <strong>{{ $message }}</strong>
-            </span>
-            @enderror
 
-            <br>
-            <br>
+            <div class="mt-3">
+                <label class="form-label">Margen Y <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" name="margenArrAba" value="{{$caso->margenArrAba}}" required>
+            </div>
 
-            <label for="">Margen Y: <span style="color:red">*</span></label>
-            <br>
-            <input type="number" name="margenArrAba" value="{{$caso->margenArrAba}}" required>
-
-            <input type ="hidden" id="old_ids" name="old_ids[]" value="{{$old_ids[0]}}">
+            <input type="hidden" id="old_ids" name="old_ids[]" value="{{$old_ids[0]}}">
         </div>
 
+        
+
+        <!-- Columna 3 - Vista previa -->
+        <div class="col-lg-4 text-center">
+            <label class="form-label fw-bold">Vista previa</label>
+
+            <div class="border rounded p-3 mt-2" style="min-height: 420px;">
+                <img src="" id="imagen_previa" class="img-fluid" style="max-height: 380px;" hidden>
+            </div>
+        </div>
+      </div>
     </div>
 
-    <div align="center" style="width: 33%; height: 600px; margin-left: 67%;">
-        <label for="">Vista Previa:</label> 
-        <br>
-        <img src="" id="imagen_previa" style="position: relative;height: 400px; width: 300px;" hidden />
-    </div>
+</form>
 
- </form>
-
- <div id="div_logos"  style="height: 600px; width: 550px; margin-top: -400px; margin-left: 350px; overflow-y: auto;" hidden>
-
-    
+ <div id="div_logos"  style="height: 600px; width: 550px;margin-left: 300px; overflow-y: auto;" hidden>
 
     <table id="tabla_orden" style="float:left;" width="30%">
     </table>
