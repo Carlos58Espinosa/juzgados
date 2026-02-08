@@ -488,7 +488,10 @@ class CasosController extends Controller
     public function saveSensitiveData(Request $request)
     {
         $banco_datos = [];
-        $hasChecks = collect($request->keys())->contains(fn($k) => str_ends_with($k, '_check'));
+        $hasChecks = collect($request->keys())->contains(function($k){
+            return str_ends_with($k, '_check');
+        });
+
 
         if ($hasChecks) 
             $banco_datos = $this->getAllFieldsSensibleTemplatesByConfigId($request->configuracionId, $request->casoId);

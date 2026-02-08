@@ -112,6 +112,26 @@ $(document).ready(function() {
     $('.btn-cancelar').on('click', function () {
         this.blur(); // quita foco al botón
     });
+
+    $('#btnEliminarEvento').on('click', function(){
+        let id = $('#edit_evento_id').val();
+
+        fetch(`{{ url('calendario') }}/${id}`, {
+            method: "DELETE",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            }
+        })
+        .then(r => r.json())
+        .then(r => {
+            if(r.ok){
+                let evento = calendar.getEventById(id);
+                evento.remove();
+                modalEditar.hide();
+            }
+        })
+        .catch(err => console.error(err));
+    });
 });
 
 function limpiarControles() {
@@ -168,6 +188,8 @@ document.addEventListener("DOMContentLoaded", function () {
             $('#edit_observaciones').val(eventoSeleccionado.extendedProps.observaciones || '').prop('disabled', band_creador);
             $('#edit_select_expediente').val(eventoSeleccionado.extendedProps.expediente_id || '').trigger('change');
             $('#edit_select_estatus').val(eventoSeleccionado.extendedProps.estatus).prop('disabled', band_asignado);
+            console.log("Band Creador: ", band_creador);
+            $('#btnEliminarEvento').toggle(!band_creador);
 
             let usuarios = (eventoSeleccionado.extendedProps.usuarios || []).map(String);
             choicesEditar.removeActiveItems();

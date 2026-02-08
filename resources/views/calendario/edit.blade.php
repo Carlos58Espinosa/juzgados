@@ -60,6 +60,7 @@
         </div>
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn btn-danger" id="btnEliminarEvento">Eliminar</button>
         <button type="button" class="btn btn-secondary btn-cancelar" data-bs-dismiss="modal">Cancelar</button>
         <button type="button" class="btn btn-primary" id="btnGuardarEdicion">Guardar cambios</button>
       </div>

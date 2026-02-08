@@ -226,6 +226,10 @@ class CalendarioController extends Controller
      */
     public function destroy($id)
     {
-        //
+        CalendarioUsuario::where('calendarioId', $id)->delete();
+        Calendario::findOrFail($id)->delete();
+        return response()->json([
+            'ok' => true
+        ]);
     }
 }
