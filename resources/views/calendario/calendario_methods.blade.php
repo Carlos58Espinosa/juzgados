@@ -168,16 +168,20 @@ document.addEventListener("DOMContentLoaded", function () {
             choicesEditar.enable();
             $('#div_edit_observaciones_asignado').hide();
 
-            // El líder no esta asignado y no lo creo
-            if (!eventoSeleccionado.extendedProps.usuarios.includes(USER_ID)) {
-                band_creador = true;
-                band_asignado = true;  
-                choicesEditar.disable();              
-            } else {  //El ayudante esta asignado
-                if(USER_ID != eventoSeleccionado.extendedProps.usuarioId){// es asignacion                    
+            //console.log("Usuario en Sesion = ", USER_ID, " Usuarios Evento = ", eventoSeleccionado.extendedProps.usuarioId);
+
+            if(USER_ID != eventoSeleccionado.extendedProps.usuarioId){
+                // El líder no esta asignado y no lo creo
+                if (!eventoSeleccionado.extendedProps.usuarios.includes(USER_ID)) {
                     band_creador = true;
-                    choicesEditar.disable();
-                    $('#div_edit_observaciones_asignado').show();
+                    band_asignado = true;  
+                    choicesEditar.disable();              
+                } else {  //El ayudante esta asignado
+                    if(USER_ID != eventoSeleccionado.extendedProps.usuarioId){// es asignacion                    
+                        band_creador = true;
+                        choicesEditar.disable();
+                        $('#div_edit_observaciones_asignado').show();
+                    }
                 }
             }
 

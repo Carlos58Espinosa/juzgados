@@ -147,7 +147,10 @@ class CalendarioController extends Controller
                     [$evento->usuarioId],
                     $request->input('usuarios', [])
                 ),
-                'color' => '#4e73df' // color alta
+                'color' => '#4e73df', // color alta
+                 'extendedProps' => [
+                    'usuarioId' => $evento->usuarioId,
+                ]
             ]
         ]);
     }
