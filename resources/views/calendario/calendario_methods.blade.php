@@ -192,7 +192,6 @@ document.addEventListener("DOMContentLoaded", function () {
             $('#edit_observaciones').val(eventoSeleccionado.extendedProps.observaciones || '').prop('disabled', band_creador);
             $('#edit_select_expediente').val(eventoSeleccionado.extendedProps.expediente_id || '').trigger('change');
             $('#edit_select_estatus').val(eventoSeleccionado.extendedProps.estatus).prop('disabled', band_asignado);
-            console.log("Band Creador: ", band_creador);
             $('#btnEliminarEvento').toggle(!band_creador);
 
             let usuarios = (eventoSeleccionado.extendedProps.usuarios || []).map(String);
