@@ -26,7 +26,7 @@
             <select id="select_expediente" class="form-select">
               <option value="">-- Selecciona expediente --</option>
               @foreach($expedientes as $exp)
-                <option value="{{ $exp->id }}">{{ $exp->etapa_plantilla->nombre }}</option>
+                <option value="{{ $exp->id }}">{{ $exp->nombre_cliente }}</option>
               @endforeach
             </select>
             <button class="btn btn-outline-primary" type="button" id="btnAgregarExpediente">
