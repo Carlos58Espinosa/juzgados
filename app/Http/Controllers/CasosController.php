@@ -182,9 +182,8 @@ class CasosController extends Controller
         $caso = Caso::findOrFail($id);
         $plantillas = CasosPlantillas::with(['plantilla'=> function ($query) {
             $query->select('id', 'nombre');
-        }])->where("casoId",$id)->select('casoId','plantillaId')->get();
+        }])->where("casoId",$id)->select('id','casoId','plantillaId')->get();
 
-        
         return view('casos.show', compact('caso', 'plantillas'));
     }
 
@@ -344,22 +343,32 @@ class CasosController extends Controller
 
     /*****************************  Ver PDF *******************************/
 
-    public function getDataBankByCasoIdByTemplateId($casoId, $plantillaId){
-        $query = "select c.campo,
-        (select valor from casos_valores where casoId = c.casoId and plantillaId = c.plantillaId and campo = c.campo) as valor,
-        (select sensible from casos_campos_sensibles where  casoId= c.casoId and campo = c.campo) as sensible
-        from casos_plantillas_campos c
-        where c.casoId = ".$casoId." and c.plantillaId = ".$plantillaId.";";
-        return DB::select($query);
+    public function getDataBankByCasoIdByTemplateId($casoPlantillaId){
+       return CasoPlantillaCampo::query()
+        ->where('casoPlantillaId', $casoPlantillaId)
+        ->select('campo') // columnas base
+        ->selectSub(function($query) {
+            $query->from('casos_valores')
+                ->select('valor')
+                ->whereColumn('casos_valores.casoId', 'casos_plantillas_campos.casoId')
+                ->whereColumn('casos_valores.plantillaId', 'casos_plantillas_campos.plantillaId')
+                ->whereColumn('casos_valores.campo', 'casos_plantillas_campos.campo')
+                ->limit(1);
+        }, 'valor')
+        ->selectSub(function($query) {
+            $query->from('casos_campos_sensibles')
+                ->select('sensible')
+                ->whereColumn('casos_campos_sensibles.casoId', 'casos_plantillas_campos.casoId')
+                ->whereColumn('casos_campos_sensibles.campo', 'casos_plantillas_campos.campo')
+                ->limit(1);
+        }, 'sensible')->get();
     }
 
     public function viewCasosPdf(Request $request) {
-        $plantilla_id = openssl_decrypt($request->plantilla_id, 'AES-128-CTR', 'GeeksforGeeks', 0, '1234567891011121');
+        $caso_plantilla_id = openssl_decrypt($request->id, 'AES-128-CTR', 'GeeksforGeeks', 0, '1234567891011121');
         $caso_id = openssl_decrypt($request->caso_id, 'AES-128-CTR', 'GeeksforGeeks', 0, '1234567891011121');
-        $banco_datos = $this->getDataBankByCasoIdByTemplateId($caso_id, $plantilla_id);
-
-        $plantilla = CasosPlantillas::where("casoId", $caso_id)
-        ->where("plantillaId", $plantilla_id)->first();
+        $banco_datos = $this->getDataBankByCasoIdByTemplateId($caso_plantilla_id);
+        $plantilla = CasosPlantillas::findOrFail($caso_plantilla_id);
 
         $res = $plantilla->texto;      
 

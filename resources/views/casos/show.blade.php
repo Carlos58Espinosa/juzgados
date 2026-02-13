@@ -42,7 +42,7 @@
                   <div class="div_btn_acciones">
                     <form method="GET" action="{{action('CasosController@viewCasosPdf')}}" target="_blank">
                     @csrf
-                      <input type="hidden" name="plantilla_id" value="{{openssl_encrypt($p->plantillaId, 'AES-128-CTR', 'GeeksforGeeks', 0, '1234567891011121')}}">
+                      <input type="hidden" name="id" value="{{openssl_encrypt($p->id, 'AES-128-CTR', 'GeeksforGeeks', 0, '1234567891011121')}}">
                       <input type="hidden" name="caso_id" value="{{openssl_encrypt($p->casoId, 'AES-128-CTR', 'GeeksforGeeks', 0, '1234567891011121')}}">
                       <button class="btn" title="Ver PDF"><i class="far fa-file-pdf"></i></button>
                     </form>
