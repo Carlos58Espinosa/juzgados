@@ -59,7 +59,7 @@ class UsuariosController extends Controller
             'email' => 'required|unique:usuarios,email,',                       
             'nombre' => 'required',
             'tipo' => 'required',
-        ], ['email.unique' => 'El email debe de ser único.']);
+        ], ['email.unique' => 'El email ya esta registrado.']);
 
         $transaction = DB::transaction(function() use($request){
             $arr = $request->except('_token');

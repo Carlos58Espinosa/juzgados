@@ -56,4 +56,19 @@
   </div>
 
 </form>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mostrar errores de validación con Toastr
+    @if ($errors->any())
+        @foreach ($errors->all() as $error)
+            toastr.error("{{ $error }}");
+        @endforeach
+    @endif
+
+    // Mostrar mensajes de éxito con Toastr
+    @if(session('message'))
+        toastr.success("{{ session('message') }}");
+    @endif
+});
+</script>
 @stop
