@@ -1,16 +1,33 @@
 <style>
 .dialogo {
-     padding:20px; 
-     width:700px; 
-     height: 400px;
-     position: absolute; 
-     left: 50%; 
-     top: 50%; 
-     transform: translate(-50%, -50%); 
-     border:2px solid black; 
-     border-radius:10px;
-     background: white;
+    padding: 20px;
+    width: 700px;
+    max-height: 90vh;   /* hasta el 90% de la pantalla */
+    height: auto;       /* que crezca según contenido */
+    overflow-y: auto;   /* scroll solo si el contenido supera el modal */
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid black;
+    border-radius: 10px;
+    background: white;
 }
+
+#camposLlenar table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+#camposLlenar td.texto {
+    overflow-wrap: break-word;
+    white-space: normal;
+    padding-right: 5px;
+    width: calc(100% - 20px); /* segunda columna ocupa el resto */
+}
+
+
 
 .dialogo_boton {
     width: 40px;
@@ -27,7 +44,7 @@
 
     <div class="row" style="width:400px;">
         <div style="width:200px;" class="form-group">
-            <select id="select_tipo_letra" class="form-control selectpicker @error('select_tipo_letra') is-invalid @enderror" title="-- Selecciona Tipo --" data-live-search="true">               
+            <select id="select_tipo_letra" class="form-control @error('select_tipo_letra') is-invalid @enderror" title="-- Selecciona Tipo --" data-live-search="true">               
                 <option style="font-family: Arial;" value="Arial">Arial</option>
                 <option style="font-family: Comic Sans MS;" value="Comic Sans MS">Comic Sans MS</option>
                 <option style="font-family: Courier New;" value="Courier New">Courier New</option>
@@ -39,13 +56,13 @@
         </div>
 
         <div style="width:200px;" class="form-group">
-            <select id="select_tam_letra" class="form-control selectpicker @error('select_tam_letra') is-invalid @enderror input100" title="-- Selecciona Tamaño --" data-live-search="true">    
+            <select id="select_tam_letra" class="form-control @error('select_tam_letra') is-invalid @enderror input100" title="-- Selecciona Tamaño --" data-live-search="true">    
                 <option value="8px">8</option>
                 <option value="9px">9</option>
                 <option value="10px">10</option>
                 <option value="11px">11</option>
                 <option value="12px">12</option>
-                <option value="14px">14</option>
+                <option value="14px" selected>14</option>
                 <option value="18px">18</option>
                 <option value="24px">24</option>
                 <option value="36px">36</option>
@@ -77,9 +94,21 @@
         </div>
     </div>
 
-    <div id="camposLlenar" style="width:230px; height:350px;margin-left:410px; margin-top: -110px; overflow: hidden; overflow-y: scroll; border-radius: 10px;">    
+    <div id="camposLlenar" 
+        style="
+            position: absolute; 
+            top: 40px;  
+            right: 10px; 
+            width: 250px; 
+            max-height: 300px; 
+            overflow-y: auto; 
+            border-radius: 10px; 
+            background: #f8f9fa; 
+            border: 1px solid #ccc;
+            padding: 5px;">
+    </div>
 
-    </div> 
+
 
 </dialog>
 
@@ -288,7 +317,6 @@
                         document.getElementById('select_tam_letra').value = arr_aux[1]; 
                         break; 
                 }
-                $('.selectpicker').selectpicker('refresh');
             }            
         }
 
@@ -322,7 +350,7 @@
             var cadHtml = '<table id="tabla_campos" class="table"><thead></thead><tbody>';
 
             for (var c of campos_encontrados)
-                cadHtml += this.getStringHtmlField(c.campo);
+                cadHtml += getStringHtmlField(c.campo);
             cadHtml += "</tbody></table>";
             document.getElementById("camposLlenar").innerHTML = cadHtml;
         }
@@ -330,11 +358,13 @@
 
     /****  Regresa la cadena de Html  *****/
     function getStringHtmlField(campo){
-        var html = '<tr id="'+campo+'">';
-        html += '<td>'+campo+'</td>';
-        html += `<td><div class="div_btn_acciones"><button type="button" class="btn" onclick="copyText('${campo}')">`;
-        html += '<i class="far fa-copy"></i></button></div>';
-        html += '</td>';
+        var html = '<tr>';
+        html += `<td class="texto">${campo}</td>`; 
+        html += `<td width="50px"><div class="div_btn_acciones">
+                    <button type="button" class="btn btn-light btn-sm" onclick="copyText('${campo}')">
+                        <i class="far fa-copy"></i>
+                    </button>
+                </div></td>`;
         html += '</tr>';
         return html;
     }
