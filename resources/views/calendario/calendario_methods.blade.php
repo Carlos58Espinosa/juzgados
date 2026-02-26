@@ -7,25 +7,11 @@ let choicesNuevo;
 let choicesEditar;
 
 $(document).ready(function() {
-    function initChoices() {
-        if (!choicesNuevo) {
-            choicesNuevo = new Choices('#usuarios_ids', {
-                removeItemButton: true,
-                shouldSort: false,
-                placeholderValue: 'Selecciona usuarios'
-            });
-        }
+    
 
-        if (!choicesEditar) {
-            choicesEditar = new Choices('#edit_usuarios_ids', {
-                removeItemButton: true,
-                shouldSort: false,
-                placeholderValue: 'Selecciona usuarios'
-            });
-        }
-    }
+    initChoices();    
+    initSelectIfExists('select_expediente', '-- Selecciona expediente --');
 
-    initChoices();
 
     $('#btnAgregarExpediente').on('click', function() {
         let texto = $('#select_expediente option:selected').text();
@@ -133,6 +119,37 @@ $(document).ready(function() {
         .catch(err => console.error(err));
     });
 });
+
+function initChoices() {
+        if (!choicesNuevo) {
+            choicesNuevo = new Choices('#usuarios_ids', {
+                removeItemButton: true,
+                shouldSort: false,
+                placeholderValue: 'Selecciona usuarios'
+            });
+        }
+
+        if (!choicesEditar) {
+            choicesEditar = new Choices('#edit_usuarios_ids', {
+                removeItemButton: true,
+                shouldSort: false,
+                placeholderValue: 'Selecciona usuarios'
+            });
+        }
+    }
+
+function initSelectIfExists(id, placeholder){
+    const el = document.getElementById(id);
+    if (el && !el.tomselect) {
+        new TomSelect(el, {
+            maxItems: 1,
+            placeholder: placeholder,
+            create: false,
+            allowEmptyOption: true,
+            items: [] // 🔥 Esto evita selección automática
+        });
+    }
+} 
 
 function limpiarControles() {
     $('#fecha_evento').val('');

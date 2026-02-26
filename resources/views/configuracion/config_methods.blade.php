@@ -1,47 +1,62 @@
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const sel   = document.getElementById('plantillas');
+    const sel = document.getElementById('plantillas');
     const lista = document.getElementById('lista');
-    const hid   = document.getElementById('old_ids');
+    const hid = document.getElementById('old_ids');
 
-    if (!sel || !lista || !hid) 
-        return; // ahora sí es válido, porque estamos dentro de una función
+    if (!sel || !lista || !hid) return;
 
-    const map = new Map();
-    @foreach($plantillas as $p)
-        map.set(String({{ $p->id }}), @json($p->nombre));
-    @endforeach
-
-    let orden = (hid.value || '').split(',').filter(Boolean);
-    if (orden.length === 0) {
-        orden = Array.from(sel.selectedOptions).map(o => o.value);
-    }
-    render();
-
-    sel.addEventListener('mousedown', function (e) {
-        if (e.target.tagName === 'OPTION') {
-            e.preventDefault();
-            const opt = e.target;
-            opt.selected = !opt.selected;
-
-            const id = opt.value;
-            if (opt.selected) {
-                if (!orden.includes(id)) orden.push(id);
-            } else {
-                orden = orden.filter(x => x !== id);
-            }
-            render();
-        }
+    // Inicializar Tom Select
+    const ts = new TomSelect(sel, {
+        plugins: ['remove_button'],
+        maxItems: null,
+        placeholder: "Selecciona plantillas...",
+        create: false
     });
 
-    sel.addEventListener('change', () => {
-        const seleccionados = new Set(Array.from(sel.selectedOptions).map(o => o.value));
-        seleccionados.forEach(id => { if (!orden.includes(id)) orden.push(id); });
-        orden = orden.filter(id => seleccionados.has(id));
+    // Mapa de ID -> nombre
+    const map = new Map([
+        @foreach($plantillas as $p)
+            ['{{ $p->id }}', @json($p->nombre)],
+        @endforeach
+    ]);
+
+    // Estado del orden
+    let orden = (hid.value || '').split(',').filter(Boolean);
+    if (orden.length === 0) orden = ts.getValue();
+
+    // Renderizar la lista
+    const render = () => {
+        lista.innerHTML = '';
+        orden.forEach(id => {
+            const li = document.createElement('li');
+            li.id = id;
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.innerHTML = `
+                <span><i title="Ordenar" class="fas fa-arrows-alt-v me-2"></i>${map.get(id) || id}</span>
+                <button class="delete-alert btn btn-sm btn-danger"><i class="far fa-trash-alt"></i></button>
+            `;
+            li.querySelector('button').onclick = () => {
+                orden = orden.filter(x => x !== id);
+                ts.removeItem(id);  // elimina del Tom Select
+                render();
+            };
+            lista.appendChild(li);
+        });
+        hid.value = orden.join(',');
+    };
+
+    // Cuando cambian los valores en Tom Select
+    ts.on('change', () => {
+        const seleccionados = ts.getValue();
+        // Mantener orden previo, agregar nuevos
+        orden = [...orden.filter(id => seleccionados.includes(id)), 
+                 ...seleccionados.filter(id => !orden.includes(id))];
         render();
     });
 
+    // Ordenable con SortableJS
     new Sortable(lista, {
         animation: 150,
         onUpdate: () => {
@@ -50,24 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    function render() {
-        lista.innerHTML = '';
-        orden.forEach(id => {
-            const li = document.createElement('li');
-            li.id = id;
-            li.className = 'list-group-item d-flex justify-content-between align-items-center';
-            li.innerHTML = `
-                <span><i title="Ordenar" class="fas fa-arrows-alt-v flecha_tipo_procedimiento"></i>${map.get(id) || id}</span>
-                <button class="delete-alert btn btn-sm btn-danger"><i class="far fa-trash-alt"></i></button>
-            `;
-            li.querySelector('button').onclick = () => {
-                orden = orden.filter(x => x !== id);
-                Array.from(sel.options).forEach(o => { if (o.value === id) o.selected = false; });
-                render();
-            };
-            lista.appendChild(li);
-        });
-        hid.value = orden.join(',');
-    }
+    // Primer render
+    render();
 });
 </script>

@@ -1,21 +1,27 @@
 <script>
 $(document).ready(function() {
 
-    if (document.getElementById("menu_agrupacion")) {
+    if (document.getElementById("menu_agrupacion")) 
         selectedMenu("menu_agrupacion");
-    }
 
-    if ($.fn.select2 && document.getElementById('campos_ids_aux')) {
-        $('#campos_ids_aux').select2({
-            placeholder: '-- Selecciona Clave --',
-            width: '100%'
-        });
-    }
+    initSelectIfExists('campos_ids_aux', '-- Selecciona Clave --');
 
     document.getElementById("grupo").value = "";
     document.getElementById("grupo_id").value = "";
 });
 
+function initSelectIfExists(id, placeholder){
+    const el = document.getElementById(id);
+    if (el && !el.tomselect) {
+        new TomSelect(el, {
+            maxItems: null,
+            placeholder: placeholder,
+            create: false,
+            allowEmptyOption: true,
+            items: [] // 🔥 Esto evita selección automática
+        });
+    }
+} 
 
 /***************  Agregar GRUPO  ********************/
 function addGroup(){

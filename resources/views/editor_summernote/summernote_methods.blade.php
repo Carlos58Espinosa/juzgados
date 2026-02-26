@@ -2,7 +2,7 @@
 .dialogo {
     padding: 20px;
     width: 700px;
-    max-height: 90vh;   /* hasta el 90% de la pantalla */
+    max-height: 90vh;  /* hasta el 90% de la pantalla */
     height: auto;       /* que crezca según contenido */
     overflow-y: auto;   /* scroll solo si el contenido supera el modal */
     position: absolute;
@@ -107,12 +107,13 @@
             border: 1px solid #ccc;
             padding: 5px;">
     </div>
-
-
-
 </dialog>
 
 <script>
+    $(document).on('click', '.button_summernote', function(e) {
+        editButton(this);
+    });
+
                     
     $(document).ready(function() {
 
@@ -124,6 +125,7 @@
             width: 600,
             focus: true,
             fontNames: ['Arial', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Tahoma', 'Times New Roman', 'Verdana'],
+            fontSizes: ['8','9','10','11','12','14','16','18','24','36'],
             toolbar: [
               ['style', ['style']],
               ['fontname', ['fontname']],
@@ -134,7 +136,7 @@
               ['height', ['height']],
               ['mybutton', ['addParam']],
               ['mybutton2', ['lowerCase']],
-              ['view', ['codeview']],
+              //['view', ['codeview']],
             ],
             lineHeights: ['1.0', '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7'],
             buttons: {
@@ -288,8 +290,8 @@
         $('#summernote').summernote('editor.restoreRange');
         $('#summernote').summernote('editor.focus');        
 
-        var botonHtml = `<button type="button" class="button_summernote" contenteditable="false" onclick="editButton(this)">${valor_parametro}</button>`;
-
+        //var botonHtml = `<button type="button" class="button_summernote" contenteditable="false" onclick="editButton(this)">${valor_parametro}</button>`;
+        var botonHtml = `<button type="button" class="button_summernote" contenteditable="false">${valor_parametro}</button>`;
         $('#summernote').summernote('pasteHTML', botonHtml);
     }
 

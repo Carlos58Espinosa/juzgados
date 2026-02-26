@@ -28,7 +28,6 @@
           <label class="form-label">Expediente</label>
           <div class="input-group">
             <select id="select_expediente" class="form-select">
-              <option value="">-- Selecciona expediente --</option>
               @foreach($expedientes as $exp)
                 <option value="{{ $exp->id }}">{{ $exp->etapa_plantilla->nombre }}</option>
               @endforeach

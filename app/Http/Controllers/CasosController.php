@@ -386,7 +386,13 @@ class CasosController extends Controller
             }
         }
 
-        $res = str_replace('<button type="button" class="button_summernote" contenteditable="false" onclick="editButton(this)">', '', $res);
+        //$res = str_replace('<button type="button" class="button_summernote" contenteditable="false" onclick="editButton(this)">', '', $res);
+        // Elimina el tag de apertura del botón
+        $res = preg_replace(
+            '/<button[^>]*class="[^"]*button_summernote[^"]*"[^>]*>/i',
+            '',
+            $res
+        );
         $res = str_replace('</button>', '', $res);
 
 

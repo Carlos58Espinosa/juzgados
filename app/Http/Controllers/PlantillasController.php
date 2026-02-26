@@ -202,12 +202,31 @@ class PlantillasController extends Controller
 
     //Limpia las cadenas de apariciones HTML
     public function getParamsInText($text){
-        $res_arr = $this->getTagContents($text , '<button type="button" class="button_summernote" contenteditable="false" onclick="editButton(this)">' , "</button>");
+        /*$res_arr = $this->getTagContents($text , '<button type="button" class="button_summernote" contenteditable="false" onclick="editButton(this)">' , "</button>");
         $arr_final = [];
         foreach($res_arr as $r)
             array_push($arr_final, strip_tags($r));
         $arr_final = array_unique($arr_final);
-        return $arr_final;
+        return $arr_final;*/
+        $arr_final = [];
+
+        libxml_use_internal_errors(true);
+
+        $dom = new \DOMDocument();
+        $dom->loadHTML('<?xml encoding="utf-8" ?>' . $text);
+
+        $xpath = new \DOMXPath($dom);
+
+        // Busca todos los botones con la clase button_summernote
+        $nodes = $xpath->query("//button[contains(@class, 'button_summernote')]");
+
+        foreach ($nodes as $node) {
+            $arr_final[] = trim($node->textContent);
+        }
+
+        libxml_clear_errors();
+
+        return array_unique($arr_final);
     }
     
     //Guarda el arreglo de $campos en la tabla PlantillaCampo
@@ -235,7 +254,17 @@ class PlantillasController extends Controller
     public function viewPdf(Request $request) { 
         $id = openssl_decrypt($request->id, 'AES-128-CTR', 'GeeksforGeeks', 0, '1234567891011121');
         $plantilla = Plantilla::findOrFail($id);
-        $res = str_replace('<button type="button" class="button_summernote" contenteditable="false" onclick="editButton(this)">', '<span class="span_param">', $plantilla->texto);
+        /*$res = str_replace('<button type="button" class="button_summernote" contenteditable="false" onclick="editButton(this)">', '<span class="span_param">', $plantilla->texto);
+        $res = str_replace('</button>', '</span>', $res);*/
+
+        // Reemplaza cualquier <button> que contenga la clase button_summernote
+        $res = preg_replace(
+            '/<button[^>]*class="[^"]*button_summernote[^"]*"[^>]*>/i',
+            '<span class="span_param">',
+            $plantilla->texto
+        );
+
+        // Cierra correctamente los botones
         $res = str_replace('</button>', '</span>', $res);
 
         $caso = (object)['margenArrAba' => 10 ,'margenDerIzq' => 100];

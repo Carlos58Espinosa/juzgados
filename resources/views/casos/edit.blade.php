@@ -65,10 +65,9 @@
         <input type="hidden" name="orden" id="orden_plantilla">
         <label class="form-label">Plantillas <span class="text-danger">*</span></label>
         <select id="select_template"
-                onchange="getAndShowFieldsEditByTemplateId('nueva')"
+                onchange="fetchTemplateFields({ plantillaId: this.value })"
                 class="form-select"
                 name="plantilla_id">
-            <option value="">-- Selecciona una Plantilla --</option>
             @foreach($plantillas as $plantilla)
                 <option value="{{ $plantilla->id }}">{{ $plantilla->nombre }}</option>
             @endforeach
@@ -80,10 +79,9 @@
         <input type="hidden" name="orden" id="orden_contestada">
         <label class="form-label">Plantillas Contestadas <span class="text-danger">*</span></label>
         <select id="select_template_2"
-                onchange="getAndShowFieldsEditByTemplateId('edicion')"
+                onchange="fetchTemplateFields({ casoPlantillaId: this.value })"
                 class="form-select"
                 name="caso_plantilla_id">
-            <option value="">-- Selecciona una Plantilla --</option>
             @foreach($plantillas_contestadas as $plantilla)
                 <option value="{{ $plantilla->id }}">{{ $plantilla->plantilla->nombre }}</option>
             @endforeach

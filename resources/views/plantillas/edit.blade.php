@@ -1,34 +1,18 @@
 @extends('layout')
 
 @section('content')
-
 @include('editor_summernote.summernote_methods')
 
-  <form class="" action="{{action('PlantillasController@update', $plantilla->id)}}" method="post" accept-charset="UTF-8" enctype="multipart/form-data">
-  @csrf
-      <div>
-          <button type="submit" class="btn boton_guardar" title="Guardar Registro"><i class="fa fa-save" alt="Guardar"></i></button>
-      </div>
-      <input type="hidden" name="_method" value="PUT">
+<div>
+    <a href="{{ session('urlBack') }}" title="Regresar" class="btn boton_agregar">
+        <i class="fas fa-long-arrow-alt-left"></i>
+    </a>
+</div>
 
-      <div align="center">
-
-          <label for="">Nombre: <span style="color:red">*</span></label>
-          <input type="text" class="form-control @error('nombre') is-invalid @enderror input_nombre" required name="nombre" value="{{$plantilla->nombre}}">
-          @error('nombre')
-              <span class="invalid-feedback" role="alert">
-                  <strong>{{ $message }}</strong>
-              </span>
-          @enderror
-          
-          <br>
-
-          <label for="">Texto / Contenido de la Plantilla: <span style="color:red">*</span></label>
-      </div>
-
-      <div style="margin-left: 360px;">       
-          <textarea name="texto" id="summernote" required>{{$plantilla->texto}}</textarea> 
-      </div> 
-      
-    </form>
-  @stop
+@include('plantillas.form', [
+    'formAction' => action('PlantillasController@update', $plantilla->id),
+    'isEdit' => true,
+    'nombreValue' => old('nombre', $plantilla->nombre),
+    'textoValue' => old('texto', $plantilla->texto)
+])
+@stop

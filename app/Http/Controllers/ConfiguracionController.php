@@ -160,6 +160,9 @@ class ConfiguracionController extends Controller
         // return $request->all();
         $this->validate($request, [
             'nombre' => 'required|unique:configuracion,nombre,'.$id
+        ], [
+            'nombre.unique' => 'El nombre debe de ser único.',
+            'nombre.required' => 'Este campo es requerido.',
         ]);
         $transaction = DB::transaction(function() use($request, $id){
             $configuracion = Configuracion::findOrFail($id);
