@@ -1,39 +1,42 @@
 <script>
-let calendar;       
-let modalEvento; 
-let modalEditar;   
+
+// ✅ Declaración única de variables globales
+let calendar;
+let modalEvento;
+let modalEditar;
 let eventoSeleccionado;
 let choicesNuevo;
 let choicesEditar;
 
 $(document).ready(function() {
-    
+    initChoices();
+    initSelectIfExists('create_select_expediente', '-- Selecciona expediente --');
+    initSelectIfExists('edit_select_expediente', '-- Selecciona expediente --');
 
-    initChoices();    
-    initSelectIfExists('select_expediente', '-- Selecciona expediente --');
-
-
-    $('#btnAgregarExpediente').on('click', function() {
-        let texto = $('#select_expediente option:selected').text();
-        let id = $('#select_expediente').val();
+    // Delegación para ambos botones de expediente
+    $(document).on('click', '[id^=btnAgregarExpediente]', function() {
+        const prefix = this.id.includes('Create') ? 'create' : 'edit';
+        let texto = $(`#${prefix}_select_expediente option:selected`).text();
+        let id = $(`#${prefix}_select_expediente`).val();
         if (!id) return;
 
-        let obs = $('#observaciones').val();
+        let obs = $(`#${prefix}_observaciones`).val();
         let nuevoTexto = obs
             ? obs + '\nExpediente: ' + texto
             : 'Expediente: ' + texto;
 
-        $('#observaciones').val(nuevoTexto);
+        $(`#${prefix}_observaciones`).val(nuevoTexto);
     });
 
     // Guardar evento nuevo
     $('#btnGuardarEvento').off('click').on('click', function() {
         let data = {
             fecha: $('#fecha_evento').val(),
-            titulo: $('#titulo_evento').val(),
-            observaciones: $('#observaciones').val(),
-            usuarios: $('#usuarios_ids').val(),
-            estatus: $('#select_estatus').val()
+            titulo: $('#create_titulo_evento').val(),
+            observaciones: $('#create_observaciones').val(),
+            usuarios: $('#create_usuarios_ids').val(),
+            expediente_id: $('#create_select_expediente').val(),
+            estatus: 'alta'
         };
 
         fetch("{{ route('calendario.store') }}", {
@@ -64,9 +67,9 @@ $(document).ready(function() {
             observaciones: $('#edit_observaciones').val(),
             observaciones_asignado: $('#edit_observaciones_asignado').val(),
             usuarios: $('#edit_usuarios_ids').val(),
+            expediente_id: $('#edit_select_expediente').val(),
             estatus: $('#edit_select_estatus').val()
         };
-        //console.log(data);
 
         fetch(`{{ url('calendario') }}/${id}`, {
             method: "PUT",
@@ -76,14 +79,15 @@ $(document).ready(function() {
             },
             body: JSON.stringify(data)
         })        
-        .then(r => {            
+        .then(r => {
             if (r.ok) {
                 let evento = calendar.getEventById(id);
                 evento.setProp('title', data.titulo);
-                evento.setStart(data.fecha);
+                evento.setDates(data.fecha, null, { allDay: true });
                 evento.setExtendedProp('observaciones', data.observaciones);
                 evento.setExtendedProp('expediente_id', data.expediente_id);
                 evento.setExtendedProp('usuarios', data.usuarios);
+                evento.setExtendedProp('estatus', data.estatus);
 
                 let color = data.estatus === 'alta' ? '#4e73df' : '#1cc88a';
                 evento.setProp('backgroundColor', color);
@@ -93,10 +97,6 @@ $(document).ready(function() {
             }
         })
         .catch(err => console.error("Error de fetch:", err));
-    });
-
-    $('.btn-cancelar').on('click', function () {
-        this.blur(); // quita foco al botón
     });
 
     $('#btnEliminarEvento').on('click', function(){
@@ -118,25 +118,29 @@ $(document).ready(function() {
         })
         .catch(err => console.error(err));
     });
+
+    $('.btn-cancelar').on('click', function () {
+        this.blur();
+    });
 });
 
 function initChoices() {
-        if (!choicesNuevo) {
-            choicesNuevo = new Choices('#usuarios_ids', {
-                removeItemButton: true,
-                shouldSort: false,
-                placeholderValue: 'Selecciona usuarios'
-            });
-        }
-
-        if (!choicesEditar) {
-            choicesEditar = new Choices('#edit_usuarios_ids', {
-                removeItemButton: true,
-                shouldSort: false,
-                placeholderValue: 'Selecciona usuarios'
-            });
-        }
+    if (!choicesNuevo) {
+        choicesNuevo = new Choices('#create_usuarios_ids', {
+            removeItemButton: true,
+            shouldSort: false,
+            placeholderValue: 'Selecciona usuarios'
+        });
     }
+
+    if (!choicesEditar) {
+        choicesEditar = new Choices('#edit_usuarios_ids', {
+            removeItemButton: true,
+            shouldSort: false,
+            placeholderValue: 'Selecciona usuarios'
+        });
+    }
+}
 
 function initSelectIfExists(id, placeholder){
     const el = document.getElementById(id);
@@ -146,24 +150,26 @@ function initSelectIfExists(id, placeholder){
             placeholder: placeholder,
             create: false,
             allowEmptyOption: true,
-            items: [] // 🔥 Esto evita selección automática
+            items: []
         });
     }
 } 
 
 function limpiarControles() {
     $('#fecha_evento').val('');
-    $('#titulo_evento').val('');
-    $('#observaciones').val('');
-    $('#select_expediente').val('').trigger('change');
+    $('#create_titulo_evento').val('');
+    $('#create_observaciones').val('');
+    $('#create_select_expediente').val('').trigger('change');
     if (choicesNuevo) 
         choicesNuevo.removeActiveItems();
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    modalEvento = new bootstrap.Modal(document.getElementById('modalEvento'));
-    modalEditar = new bootstrap.Modal(document.getElementById('modalEditar')); // único modal de edición
 
+    document.addEventListener("DOMContentLoaded", function () {
+    modalEvento = new bootstrap.Modal(document.getElementById('modalCreate'));
+    modalEditar = new bootstrap.Modal(document.getElementById('modalEdit'));
+
+    // ✅ Solo asignación, sin "let"
     calendar = new FullCalendar.Calendar(document.getElementById("calendar"), {
         initialView: "dayGridMonth",
         selectable: true,
@@ -185,16 +191,13 @@ document.addEventListener("DOMContentLoaded", function () {
             choicesEditar.enable();
             $('#div_edit_observaciones_asignado').hide();
 
-            //console.log("Usuario en Sesion = ", USER_ID, " Usuarios Evento = ", eventoSeleccionado.extendedProps.usuarioId);
-
             if(USER_ID != eventoSeleccionado.extendedProps.usuarioId){
-                // El líder no esta asignado y no lo creo
                 if (!eventoSeleccionado.extendedProps.usuarios.includes(USER_ID)) {
                     band_creador = true;
                     band_asignado = true;  
                     choicesEditar.disable();              
-                } else {  //El ayudante esta asignado
-                    if(USER_ID != eventoSeleccionado.extendedProps.usuarioId){// es asignacion                    
+                } else {  
+                    if(USER_ID != eventoSeleccionado.extendedProps.usuarioId){                    
                         band_creador = true;
                         choicesEditar.disable();
                         $('#div_edit_observaciones_asignado').show();
@@ -221,6 +224,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     calendar.render();
+    
 });
-
 </script>

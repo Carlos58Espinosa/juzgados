@@ -593,11 +593,16 @@ class CasosController extends Controller
 
         $paginados = [(Object)['nombre' => 'Centro'], (Object)['nombre' => 'Derecha']];
 
-        return view('casos.file_format', compact('formatos', 'casoId', "caso", 'logos', 'old_ids', 'logos_ids', 'tamPapeles', 'paginados'));
+        $margenes = [['nombre' => '1 cm.', 'valor' => 37], ['nombre' => '2 cm.', 'valor' => 74],
+         ['nombre' => '3 cm.', 'valor' => 111], ['nombre' => '4 cm.', 'valor' => 148], 
+         ['nombre' => '5 cm.', 'valor' => 185], ['nombre' => '6 cm.', 'valor' => 222], 
+         ['nombre' => '7 cm.', 'valor' => 259], ['nombre' => '8 cm.', 'valor' => 296]];
+         
+         return view('casos.file_format', compact('formatos', 'casoId', "caso", 'logos', 'old_ids', 'logos_ids', 'tamPapeles', 'paginados', 'margenes'));
     }  
 
     public  function saveFormat(Request $request){
-        Caso::where('id', $request->caso_id)->update(['formatoId' => $request->formato_id, 'margenArrAba' => $request->margenArrAba, 'margenDerIzq' => $request->margenDerIzq, 'tamPapel' => $request->tamPapel, 'paginado' => $request->paginado]);
+        Caso::where('id', $request->caso_id)->update(['formatoId' => $request->formato_id, 'margenArrAba' => $request->margenArrAba, 'margenDer' => $request->margenDer, 'margenIzq' => $request->margenIzq, 'tamPapel' => $request->tamPapel, 'paginado' => $request->paginado]);
         CasoLogo::where('casoId', $request->caso_id)->delete();
         if($request->old_ids[0] != ''){
             $logos_ids = explode(",", $request->old_ids[0]);

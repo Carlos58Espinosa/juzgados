@@ -45,8 +45,15 @@
             </select>
 
             <div class="mt-3">
-                <label class="form-label">Margen X <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" name="margenDerIzq" value="{{$caso->margenDerIzq}}" required>
+                <label class="form-label">Margen Izquierdo (cm) <span class="text-danger">*</span></label>
+                <select class="form-select" name="margenIzq" required>
+                    <option value="">-- Selecciona el Margen Izquierdo --</option>                    
+                    @foreach($margenes as $margen)
+                        <option value="{{$margen['valor']}}" {{ $caso->margenIzq == $margen['valor'] ? 'selected' : '' }}>
+                            {{$margen['nombre']}}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="mt-3">
@@ -75,8 +82,28 @@
             </select>
 
             <div class="mt-3">
-                <label class="form-label">Margen Y <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" name="margenArrAba" value="{{$caso->margenArrAba}}" required>
+                <label class="form-label">Margen Derecha (cm) <span class="text-danger">*</span></label>
+                <select class="form-select" name="margenDer" required>
+                    <option value="">-- Selecciona el Margen Derecho --</option>                    
+                    @foreach($margenes as $margen)
+                        <option value="{{$margen['valor']}}" {{ $caso->margenDer == $margen['valor'] ? 'selected' : '' }}>
+                            {{$margen['nombre']}}
+                        </option>
+                    @endforeach
+                </select>
+                <!--input type="number" class="form-control" name="margenDerIzq" value="{{$caso->margenDerIzq}}" required-->
+            </div>
+
+            <div class="mt-3">
+                <label class="form-label">Margen Y (cm) <span class="text-danger">*</span></label>
+                <select class="form-select" name="margenArrAba" required>
+                    <option value="">-- Selecciona el Margen --</option> 
+                    @foreach($margenes as $margen)
+                        <option value="{{$margen['valor']}}" {{ $caso->margenArrAba == $margen['valor'] ? 'selected' : '' }}>
+                            {{$margen['nombre']}}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             <input type="hidden" id="old_ids" name="old_ids[]" value="{{$old_ids[0]}}">

@@ -2,7 +2,7 @@
 
 @section('content')
 
-
+@include('calendario.calendario_methods')
 <!-- Leyenda de colores -->
 <div class="container mt-3 mb-2">
     <div class="d-flex gap-3 align-items-center">
@@ -20,9 +20,9 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
-@include('calendario.create')
 
-@include('calendario.edit')
+@include('calendario.form', ['prefix' => 'create'])
+@include('calendario.form', ['prefix' => 'edit'])
 
 <div id="calendar" style="max-width:900px; margin:auto;"></div>
 

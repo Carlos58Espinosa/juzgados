@@ -1,3 +1,9 @@
+<script>
+document.querySelector('form').addEventListener('submit', function () {
+    var contenidoReal = document.querySelector('.note-editable').innerHTML;
+    document.querySelector('#summernote').value = contenidoReal;
+});
+</script>
 <form action="{{ $formAction }}" method="post" enctype="multipart/form-data">
     @csrf
     @if($isEdit)

@@ -25,7 +25,7 @@
           <div class="input-group">
             <select id="select_expediente" class="form-select">
               @foreach($expedientes as $exp)
-                <option value="{{ $exp->id }}">{{ $exp->nombre_cliente }}</option>
+                <option value="{{ $exp['id'] }}">{{ $exp['nombre_cliente'] }}</option>
               @endforeach
             </select>
             <button class="btn btn-outline-primary" type="button" id="btnAgregarExpediente">

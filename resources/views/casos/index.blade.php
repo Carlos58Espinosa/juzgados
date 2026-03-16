@@ -52,7 +52,7 @@
                         </form>
                     </div>
 
-                    @if($usuario_id == 8)
+                    @if(in_array($usuario_id, [8, 9]))
                     <div>
                         <form method="GET" action="{{action('ArchivosController@index')}}">
                             @csrf

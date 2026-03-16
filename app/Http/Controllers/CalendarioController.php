@@ -18,6 +18,7 @@ class CalendarioController extends Controller
      */
     public function index()
     {
+        $expedientes_ctrl = new CasosController();
         $user_id = \Auth::user()->id;
         $user = User::with('usuarios')->find($user_id);
         if($user->usuarios->isEmpty())
@@ -25,9 +26,17 @@ class CalendarioController extends Controller
         else
             $usuarios = $user->usuarios;
 
-        $expedientes_ctrl = new CasosController();
-        $expedientes = $expedientes_ctrl->getCasesCollaborator($user_id, true);
-        
+        if($user->tipo == 'Cliente') 
+            $expedientes = $expedientes_ctrl->getCasesLeader(true);
+        else //Casos del Colaborador
+            $expedientes = $expedientes_ctrl->getCasesCollaborator($usuario_id, true);
+
+        $expedientes = $expedientes->map(function($exp){
+            return [
+                'id' => $exp->id,
+                'nombre_cliente' => $exp->nombre_cliente
+            ];
+        });        
         $query = Calendario::query();
 
         $fechaInicio = Carbon::now()->subMonth()->startOfMonth();
@@ -216,6 +225,8 @@ class CalendarioController extends Controller
                 'id'    => $evento->id,
                 'title' => $evento->titulo,
                 'start' => $evento->fecha,
+                'estatus' => $evento->estatus,
+                'observaciones' => $evento->observaciones,
                 'color' => $evento->estatus === 'alta' ? '#4e73df' : '#1cc88a'
             ]
         ]);

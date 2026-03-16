@@ -1,3 +1,4 @@
+@include('calendario.calendario_methods')
 <!-- Modal para editar evento -->
 <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -27,9 +28,9 @@
         <div class="mb-3">
           <label class="form-label">Expediente</label>
           <div class="input-group">
-            <select id="select_expediente" class="form-select">
+            <select id="edit_select_expediente" class="form-select">
               @foreach($expedientes as $exp)
-                <option value="{{ $exp->id }}">{{ $exp->etapa_plantilla->nombre }}</option>
+                <option value="{{ $exp['id'] }}">{{ $exp['nombre_cliente'] }}</option>
               @endforeach
             </select>
             <button class="btn btn-outline-primary" type="button" id="btnAgregarExpediente">

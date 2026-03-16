@@ -6,7 +6,12 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/style.css">
     <title>Turi - Inforela</title>
-    <style>         
+    <style> 
+
+        main p {
+            margin: 0;
+        }
+        
         .span_param {
             border:1px solid #0dcaf0;
             border-radius: 5px;
@@ -35,9 +40,11 @@
           font-weight: bold;
         }
 
-    
         @page {
-            margin: {{$caso->margenArrAba}}px {{$caso->margenDerIzq}}px;   
+            margin: {{$caso->margenArrAba}}px 
+                    {{$caso->margenDer}}px 
+                    {{$caso->margenArrAba}}px 
+                    {{$caso->margenIzq}}px;
         }
 
         header {

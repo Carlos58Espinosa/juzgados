@@ -32,7 +32,10 @@
         }
     
         @page {
-            margin: {{$caso->margenArrAba}}px {{$caso->margenDerIzq}}px;   
+            margin: {{$caso->margenArrAba}}px 
+                    {{$caso->margenDer}}px 
+                    {{$caso->margenArrAba}}px 
+                    {{$caso->margenIzq}}px;
         }
 
         header {

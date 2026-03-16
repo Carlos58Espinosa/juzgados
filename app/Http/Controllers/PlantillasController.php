@@ -267,7 +267,19 @@ class PlantillasController extends Controller
         // Cierra correctamente los botones
         $res = str_replace('</button>', '</span>', $res);
 
-        $caso = (object)['margenArrAba' => 10 ,'margenDerIzq' => 100];
+        //$res = str_replace("Courier New", "Courier", $res);
+        $fontMap = [
+            'Arial' => 'Helvetica',
+            'Comic Sans MS' => 'Helvetica',
+            'Courier New' => 'Courier',
+            'Helvetica' => 'Helvetica',
+            'Tahoma' => 'Helvetica',
+            'Times New Roman' => 'Times',
+            'Verdana' => 'Helvetica'
+        ];
+        $res = str_replace(array_keys($fontMap), array_values($fontMap), $res);
+
+        $caso = (object)['margenArrAba' => 10 ,'margenDer' => 100, 'margenIzq' => 100];
         $GLOBALS['y_paginado'] = 60;
 
         $view = view('pdfs.sin_logos', compact('res', 'caso'));
