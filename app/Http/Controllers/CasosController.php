@@ -95,11 +95,32 @@ class CasosController extends Controller
     }
 
     public function getLastValue($arr){
-        $res = '';
-        $qry = "select valor from casos_valores where casoId=".$arr['casoId']." and campo = '".$arr['campo']."' and orden <= (select orden from configuracion_plantillas where configuracionId = ".$arr['configId']." and plantillaId=".$arr['plantillaId'].") order by orden desc;";
-        $aux = DB::select($qry);
-        if(count($aux) > 0)
-            $res = $aux[0]->valor;
+        //$qry = "select valor from casos_valores where casoId=".$arr['casoId']." and campo = '".$arr['campo']."' and orden <= (select orden from configuracion_plantillas where configuracionId = ".$arr['configId']." and plantillaId=".$arr['plantillaId'].") order by orden desc;";
+        //$aux = DB::select($qry);
+
+        if( $arr['configId'] != null ){
+            $res = CasosValores::where('casoId', $arr['casoId'])
+            ->where('campo', $arr['campo'])
+            ->where('orden', '<=', function($query) use ($arr) {
+                $query->select('orden')
+                    ->from('configuracion_plantillas')
+                    ->where('configuracionId', $arr['configId'])
+                    ->where('plantillaId', $arr['plantillaId']);
+            })
+            ->orderBy('orden', 'desc')
+            ->value('valor') ?? "";
+        } else{
+            $aux = CasosPlantillas::query()
+            ->join('casos_valores as cv', function($join) {
+                $join->on('casos_plantillas.casoId', '=', 'cv.casoId')
+                    ->on('casos_plantillas.plantillaId', '=', 'cv.plantillaId'); // <-- faltaba esto
+            })
+            ->where('casos_plantillas.casoId', $arr['casoId'])
+            ->where('cv.campo', $arr['campo'])
+            ->orderBy('casos_plantillas.id', 'desc')
+            ->first();
+            $res = $aux ? $aux->valor : "";
+        }
         return $res;
     }
 
@@ -238,6 +259,7 @@ class CasosController extends Controller
      */
     public function update(Request $request, $id)
     {
+        //return $request->all();
         $transaction = DB::transaction(function() use($request, $id){
             $arr_request = $request->all();
 

@@ -116,36 +116,47 @@
 
                     
     $(document).ready(function() {
-
         $('div.note-group-select-from-files').remove();
-        $('#summernote').summernote(
-          {
-            disableDragAndDrop:true,
-            height: 450,
-            width: 600,
-            focus: true,
-            fontNames: ['Arial', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Tahoma', 'Times New Roman', 'Verdana'],
-            fontSizes: ['8','9','10','11','12','14','16','18','24','36'],
-            toolbar: [
-              //['style', ['style']],
-              ['fontname', ['fontname']],
-              ['fontsize', ['fontsize']],
-              ['font', ['bold', 'underline', 'clear', 'italic', 'strikethrough']],
-              ['para', ['ul', 'ol', 'paragraph']],
-              ['misc', ['undo', 'redo']],
-              ['height', ['height']],
-              ['mybutton', ['addParam']],
-              ['mybutton2', ['lowerCase']],
-              //['view', ['codeview']],
-            ],
-            lineHeights: ['1.0', '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7'],
-            buttons: {
-                addParam: addParamButton,
-                lowerCase: lowerCaseButton
-            }
-          }
-        );
+        initSummerNote();        
     });
+
+    function initSummerNote(){
+        if ($('#summernote').length){
+            $('#summernote').summernote(
+            {
+                disableDragAndDrop:true,
+                height: 450,
+                width: 600,
+                focus: false,
+                 styleWithCSS: true,
+                popover: {          // ← evita conflictos de popover con BS5
+                    image: [],
+                    link: [],
+                    air: []
+                },
+                fontNames: ['Arial', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Tahoma', 'Times New Roman', 'Verdana'],
+                fontSizes: ['8','9','10','11','12','14','16','18','24','36'],
+                toolbar: [
+                //['style', ['style']],
+                ['fontname', ['fontname']],
+                ['fontsize', ['fontsize']],
+                ['font', ['bold', 'underline', 'clear', 'italic', 'strikethrough']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['misc', ['undo', 'redo']],
+                ['height', ['height']],
+                ['mybutton', ['addParam']],
+                ['mybutton2', ['lowerCase']],
+                //['view', ['codeview']],
+                ],
+                lineHeights: ['1.0', '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7'],
+                buttons: {
+                    addParam: addParamButton,
+                    lowerCase: lowerCaseButton
+                }
+            }
+            );       
+        }
+    }
 
     /**************************  Estilo TEXTO PARAMETRO  *****************************/
     function changeTextInput(option){
@@ -235,8 +246,8 @@
             var valor_parametro = elemento_param.value.toLowerCase();
             modal.close();
 
-            if(valor_parametro !== ""){
-                valor_parametro = cleanParameterValue(valor_parametro, elemento_param);
+            if(valor_parametro !== ""){                
+                valor_parametro = completeParameterValueWithStyles(valor_parametro, elemento_param);
                 switch(option){
                     case "create":
                         addParamOnSummernote(valor_parametro);
@@ -248,8 +259,11 @@
                 }                
 
                 //Solo para formulario de CASOS
-                if(document.getElementById("nuevos_campos_cad"))
-                    addRowInTableCases(elemento_param.value.toLowerCase());
+                if(document.getElementById("nuevos_campos_cad")) { 
+                    addRowInTableCases(cleanParameterValue(elemento_param.value.toLowerCase()));
+                
+                    //addRowInTableCases(elemento_param.value.toLowerCase());
+                }
             }
         }); 
         $("#closeModal").unbind().click(function() {  
@@ -261,11 +275,16 @@
 
 
     /**** Limpia el VALOR PARAMETRO de saltos de linea, tabuladores y AGREGA el estilo ****/
-    function cleanParameterValue(valor_parametro, elemento_param) {
+    function cleanParameterValue(valor_parametro){
+        valor_parametro = valor_parametro.trim();
         valor_parametro = valor_parametro.replaceAll('\n','');
         valor_parametro = valor_parametro.replaceAll('\t','');
         valor_parametro = valor_parametro.replaceAll('<br>','');
-
+        return valor_parametro;
+    }
+    function completeParameterValueWithStyles(valor_parametro, elemento_param) {
+        valor_parametro = cleanParameterValue(valor_parametro);
+        
         var str_style = '<span style="';
         if(document.getElementById('select_tam_letra').value != '')
             str_style += 'font-size:' + document.getElementById('select_tam_letra').value + ';';
@@ -378,8 +397,6 @@
 
     /******* Agrega un campo nuevo a la Tabla de CASOS ***********/
     function addRowInTableCases(valor_parametro){
-        //console.log("Entre a:addNewFieldInCases");
-
         var elemento = document.getElementById(valor_parametro);
 
         if(!elemento || elemento.localName == "tr"){
@@ -400,8 +417,17 @@
     }
 
     function getLastValueOfParameter(valor_parametro){
-        var templateId = document.getElementById("select_template").value;
-        var configId = document.getElementById("configuracion_id").value;
+        var divPlantillas = document.getElementById("div_plantillas");
+        var divContestadas = document.getElementById("div_plantillas_contestadas");
+        var templateId = null, configId = null;
+
+        // Verifica cuál div está visible para saber cuál select usar
+        if(divPlantillas && !divPlantillas.classList.contains("d-none"))
+            templateId = document.getElementById("select_template").value;
+        else if(divContestadas && !divContestadas.classList.contains("d-none"))
+            templateId = document.getElementById("select_template_2").value;
+        if(document.getElementById("configuracion_id"))
+            configId = document.getElementById("configuracion_id").value;
         var casoId = document.getElementById("caso_id").value;
 
         var url = "{{action('CasosController@index')}}";
@@ -416,7 +442,10 @@
                 if( !document.getElementById(valor_parametro) )
                     $("#tabla_0").append(getRowStringHtmlFieldTemplate(valor_parametro, data['valor']));
             },
-            error: function(){
+            error: function(xhr, status, error){
+                console.log('Status:', status);
+                console.log('Error:', error);
+                console.log('Response:', xhr.responseText); 
               toastr.error('Hubo un problema por favor intentalo de nuevo mas tarde.', '', {timeOut: 3000});
             }
         });

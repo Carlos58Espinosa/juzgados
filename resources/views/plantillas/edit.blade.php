@@ -1,7 +1,6 @@
 @extends('layout')
 
 @section('content')
-@include('editor_summernote.summernote_methods')
 
 <div>
     <a href="{{ session('urlBack') }}" title="Regresar" class="btn boton_agregar">
@@ -15,4 +14,5 @@
     'nombreValue' => old('nombre', $plantilla->nombre),
     'textoValue' => old('texto', $plantilla->texto)
 ])
+@include('editor_summernote.summernote_methods')
 @stop

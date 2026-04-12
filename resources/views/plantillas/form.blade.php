@@ -1,9 +1,3 @@
-<script>
-document.querySelector('form').addEventListener('submit', function () {
-    var contenidoReal = document.querySelector('.note-editable').innerHTML;
-    document.querySelector('#summernote').value = contenidoReal;
-});
-</script>
 <form action="{{ $formAction }}" method="post" enctype="multipart/form-data">
     @csrf
     @if($isEdit)
@@ -34,7 +28,14 @@ document.querySelector('form').addEventListener('submit', function () {
 
     <label style="display:block; text-align:center;">Texto / Contenido de la Plantilla: <span style="color:red">*</span></label>
 
-    <div style="margin-left:360px">        
+    <div style="margin-left:360px; width:600px;">        
         <textarea style="text-align:center;" name="texto" id="summernote" required>{{ $textoValue }}</textarea>
     </div>
 </form>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function () {
+        var contenidoReal = document.querySelector('.note-editable').innerHTML;
+        document.querySelector('#summernote').value = contenidoReal;
+    });
+</script>

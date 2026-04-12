@@ -222,7 +222,8 @@
     }
 
     function replaceTextEditTemplate() {
-        var textoAux = document.getElementById("summernote").value;
+        //var textoAux = document.getElementById("summernote").value;
+        var textoAux = $('#summernote').summernote('code');
         $('#texto_final').summernote('code', textoAux);
         replaceText();
     }
@@ -242,10 +243,11 @@
             if(input.value != "")
                 textoAux = textoAux.replaceAll(campo, valor_final);
         }
-        var textoAux = textoAux.replaceAll('<button', '<button disabled ');
+        textoAux = textoAux.replaceAll('<button', '<button disabled ');
         $('#texto_final').summernote('code', textoAux);
     }  
 
+    // Esta función se encarga de mostrar un solo carrusel y ocultar el otro, dependiendo de cuál esté activo
     function disableCarousel(){
         var carrusel1 = document.getElementById("carrusel1");
         var carrusel2 = document.getElementById("carrusel2");
@@ -257,7 +259,14 @@
             carrusel1.style.visibility = "visible";
             carrusel2.style.visibility = "collapse";
         }
-        replaceTextEditTemplate();
+
+        setTimeout(() => {
+            replaceTextEditTemplate();
+
+            if ($('#summernote').length) {
+                $('#summernote').summernote('refresh');
+            }
+        }, 100);
     }
 
     function getTemplatesByType(valor) {
