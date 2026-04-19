@@ -48,10 +48,10 @@
                 <option style="font-family: Arial;" value="Arial">Arial</option>
                 <option style="font-family: Comic Sans MS;" value="Comic Sans MS">Comic Sans MS</option>
                 <option style="font-family: Courier New;" value="Courier New">Courier New</option>
-                <option style="font-family: Helvetica;" value="Helvetica">Helvetica</option>
-                <option style="font-family: Tahoma;" value="Tahoma">Tahoma</option>
+                <!--option style="font-family: Helvetica;" value="Helvetica">Helvetica</option>
+                <option style="font-family: Tahoma;" value="Tahoma">Tahoma</option-->
                 <option style="font-family: Times New Roman;" value="Times New Roman">Times New Roman</option>
-                <option style="font-family: Verdana;" value="Verdana">Verdana</option>
+                <!--option style="font-family: Verdana;" value="Verdana">Verdana</option-->
             </select>
         </div>
 
@@ -134,7 +134,7 @@
                     link: [],
                     air: []
                 },
-                fontNames: ['Arial', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Tahoma', 'Times New Roman', 'Verdana'],
+                fontNames: ['Arial', 'Comic Sans MS', 'Courier New', 'Times New Roman'/*, 'Helvetica', 'Tahoma', 'Verdana'*/],
                 fontSizes: ['8','9','10','11','12','14','16','18','24','36'],
                 toolbar: [
                 //['style', ['style']],

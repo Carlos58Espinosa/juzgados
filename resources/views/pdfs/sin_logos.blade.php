@@ -8,6 +8,112 @@
     <title>Turi - Inforela</title>
     <style> 
 
+        /* Arial */
+        @font-face {
+            font-family: 'Arial';
+            src: url('{{ storage_path("fonts/arial.ttf") }}') format('truetype');
+            font-weight: normal;
+        }
+
+        @font-face {
+            font-family: 'Arial';
+            src: url('{{ storage_path("fonts/arialbd.ttf") }}') format('truetype');
+            font-weight: bold;
+        }
+
+        @font-face {
+            font-family: 'Arial';
+            src: url('{{ storage_path("fonts/ariali.ttf") }}');
+            font-style: italic;
+        }
+
+        @font-face {
+            font-family: 'Arial';
+            src: url('{{ storage_path("fonts/arialbi.ttf") }}');
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        /* Courier New */
+        @font-face {
+            font-family: 'Courier New';
+            src: url('{{ storage_path("fonts/cour.ttf") }}') format('truetype');
+            font-weight: normal;
+        }
+
+        @font-face {
+            font-family: 'Courier New';
+            src: url('{{ storage_path("fonts/courbd.ttf") }}') format('truetype');
+            font-weight: bold;
+        }
+
+        @font-face {
+            font-family: 'Courier New';
+            src: url('{{ storage_path("fonts/couri.ttf") }}');
+            font-style: italic;
+        }
+
+        @font-face {
+            font-family: 'Courier New';
+            src: url('{{ storage_path("fonts/courbi.ttf") }}');
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        /* Comic Sans MS */
+        @font-face {
+            font-family: 'Comic Sans MS';
+            src: url('{{ storage_path("fonts/comic.ttf") }}') format('truetype');
+            font-weight: normal;
+        }
+
+        @font-face {
+            font-family: 'Comic Sans MS';
+            src: url('{{ storage_path("fonts/comicbd.ttf") }}') format('truetype');
+            font-weight: bold;
+        }
+
+        @font-face {
+            font-family: 'Comic Sans MS';
+            src: url('{{ storage_path("fonts/comici.ttf") }}') format('truetype');
+            font-style: italic;
+        }
+
+        @font-face {
+            font-family: 'Comic Sans MS';
+            src: url('{{ storage_path("fonts/comicbi.ttf") }}') format('truetype');
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        /* Times New Roman */
+        @font-face {
+            font-family: 'Times New Roman';
+            src: url('{{ storage_path("fonts/times.ttf") }}') format('truetype');
+            font-weight: normal;
+        }
+
+        @font-face {
+            font-family: 'Times New Roman';
+            src: url('{{ storage_path("fonts/timesbd.ttf") }}') format('truetype');
+            font-weight: bold;
+        }
+
+        @font-face {
+            font-family: 'Times New Roman';
+            src: url('{{ storage_path("fonts/timesi.ttf") }}') format('truetype');
+            font-style: italic;
+        }
+
+        @font-face {
+            font-family: 'Times New Roman';
+            src: url('{{ storage_path("fonts/timesbi.ttf") }}') format('truetype');
+            font-weight: bold;
+            font-style: italic;
+        }
+
+
+
         main p {
             margin: 0;
         }
@@ -16,9 +122,6 @@
             border:1px solid #0dcaf0;
             border-radius: 5px;
             padding: 1px;
-        }
-        body {
-            font-family:Arial Black ;        
         }
         table {
             width: 100%;

@@ -1,0 +1,23 @@
+{
+    "courier new": {
+        "bold": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/courier_new_bold_ff5008ddef9edfedbb96b0c8054eb80f",
+        "normal": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/courier_new_normal_0baf98f70b8afd4f2b01579ba5e27715",
+        "bold_italic": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/courier_new_bold_italic_2f7be3d29636279c1d5e9584a8335da9",
+        "italic": "courier_new_italic_27bab35f52f83d4f75fb529a60310fd6"
+    },
+    "couriernew": {
+        "bold": "couriernew_bold_0baf98f70b8afd4f2b01579ba5e27715"
+    },
+    "arial": {
+        "normal": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/arial_normal_29ee5a16cbe6e6081e3d64aaf26e1577",
+        "bold": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/arial_bold_b6bb085749c8d91a5099b70922f1029d",
+        "italic": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/arial_italic_cd7f5394d6e6bc12b4422ffb18912073",
+        "bold_italic": "arial_bold_italic_5131d774198d5f3217981988758ffb12"
+    },
+    "comic sans ms": {
+        "normal": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/comic_sans_ms_normal_c79e0e3345ab8ce0fbab84d909723ce7",
+        "bold": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/comic_sans_ms_bold_b9421ec82cd5ebf9f0911849e0e961e1",
+        "italic": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/comic_sans_ms_italic_170822a0e00f2d9eee0c258f8f92ba74",
+        "bold_italic": "comic_sans_ms_bold_italic_d635ccbd4451d58fed7311cde5f24cc4"
+    }
+}
