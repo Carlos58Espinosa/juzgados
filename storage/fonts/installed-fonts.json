@@ -1,9 +1,9 @@
 {
     "courier new": {
-        "bold": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/courier_new_bold_ff5008ddef9edfedbb96b0c8054eb80f",
-        "normal": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/courier_new_normal_0baf98f70b8afd4f2b01579ba5e27715",
-        "bold_italic": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/courier_new_bold_italic_2f7be3d29636279c1d5e9584a8335da9",
-        "italic": "courier_new_italic_27bab35f52f83d4f75fb529a60310fd6"
+        "bold": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/courier_new_bold_452a59b2f5ec548aec43f57bbcf21720",
+        "normal": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/courier_new_normal_37315741579ae4b72491e310cdf909cf",
+        "bold_italic": "courier_new_bold_italic_a59926217023a8897725fc565b5c1473",
+        "italic": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/courier_new_italic_a276e0b9e229b6548368903a51bdfb7c"
     },
     "couriernew": {
         "bold": "couriernew_bold_0baf98f70b8afd4f2b01579ba5e27715"
@@ -15,9 +15,14 @@
         "bold_italic": "arial_bold_italic_5131d774198d5f3217981988758ffb12"
     },
     "comic sans ms": {
-        "normal": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/comic_sans_ms_normal_c79e0e3345ab8ce0fbab84d909723ce7",
-        "bold": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/comic_sans_ms_bold_b9421ec82cd5ebf9f0911849e0e961e1",
-        "italic": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/comic_sans_ms_italic_170822a0e00f2d9eee0c258f8f92ba74",
-        "bold_italic": "comic_sans_ms_bold_italic_d635ccbd4451d58fed7311cde5f24cc4"
+        "normal": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/comic_sans_ms_normal_586a35aff8ed44b4f582d178365784e2",
+        "bold": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/comic_sans_ms_bold_9b55b1dfc34ff1aaebc9e5c673a4ac26",
+        "italic": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/comic_sans_ms_italic_bee2cff01d1077cb8aab59ef675f01ba",
+        "bold_italic": "comic_sans_ms_bold_italic_8727ac08bb6c6df0bfef57e6c388a850"
+    },
+    "times new roman": {
+        "normal": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/times_new_roman_normal_aaae6a8542cba59cfe394380c171562c",
+        "italic": "C:\\Users\\carlo\\Cursos\\Laravel\\juzgados_v1\\storage\\fonts\/times_new_roman_italic_7b09cc1a41b8102cbb80c1e7fe0c4515",
+        "bold_italic": "times_new_roman_bold_italic_05fba6c03383ed286d5c8b1c99b7e204"
     }
 }

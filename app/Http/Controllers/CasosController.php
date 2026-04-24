@@ -375,6 +375,7 @@ class CasosController extends Controller
                 ->whereColumn('casos_valores.casoId', 'casos_plantillas_campos.casoId')
                 ->whereColumn('casos_valores.plantillaId', 'casos_plantillas_campos.plantillaId')
                 ->whereColumn('casos_valores.campo', 'casos_plantillas_campos.campo')
+                ->whereColumn('casos_valores.casoPlantillaId', 'casos_plantillas_campos.casoPlantillaId')
                 ->limit(1);
         }, 'valor')
         ->selectSub(function($query) {
@@ -386,7 +387,7 @@ class CasosController extends Controller
         }, 'sensible')->get();
     }
 
-    public function viewCasosPdf(Request $request) {
+    public function viewCasosPdf(Request $request) {        
         $caso_plantilla_id = openssl_decrypt($request->id, 'AES-128-CTR', 'GeeksforGeeks', 0, '1234567891011121');
         $caso_id = openssl_decrypt($request->caso_id, 'AES-128-CTR', 'GeeksforGeeks', 0, '1234567891011121');
         $banco_datos = $this->getDataBankByCasoIdByTemplateId($caso_plantilla_id);
