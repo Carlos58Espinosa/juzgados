@@ -29,7 +29,7 @@ class CalendarioController extends Controller
         if($user->tipo == 'Cliente') 
             $expedientes = $expedientes_ctrl->getCasesLeader(true);
         else //Casos del Colaborador
-            $expedientes = $expedientes_ctrl->getCasesCollaborator($usuario_id, true);
+            $expedientes = $expedientes_ctrl->getCasesCollaborator($user_id, true);
 
         $expedientes = $expedientes->map(function($exp){
             return [
